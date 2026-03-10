@@ -1,0 +1,5 @@
+{
+  "name": "@corewire/config",
+  "private": true,
+  "type": "module"
+}

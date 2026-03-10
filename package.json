@@ -1,0 +1,7 @@
+{
+  "name": "corewire",
+  "private": true,
+  "scripts": {
+    "test:repo": "node scripts/test-repo-structure.mjs"
+  }
+}

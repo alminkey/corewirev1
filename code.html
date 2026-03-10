@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>COREWIRE | COMMAND_CENTER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                brand: {
+                  orange: '#ff8a66',
+                  bg: '#050505',
+                  panel: '#0a0a0a',
+                  border: '#1a1a1a',
+                  accent: '#ff5c26'
+                }
+              },
+              fontFamily: {
+                mono: ['JetBrains Mono', 'monospace'],
+              }
+            }
+          }
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-brand-bg text-gray-300 font-mono;
+                background-image: 
+                    linear-gradient(rgba(255, 138, 102, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 138, 102, 0.03) 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+        }
+        .console-panel {
+            @apply border border-brand-border bg-brand-panel relative overflow-hidden;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+        .console-header {
+            @apply border-b border-brand-border bg-black/40 px-3 py-1 flex items-center justify-between text-[10px] tracking-tighter;
+        }
+        .orange-glow {
+            text-shadow: 0 0 10px rgba(255, 138, 102, 0.6);
+        }
+        .orange-glow-box {
+            box-shadow: 0 0 15px rgba(255, 138, 102, 0.15);
+        }
+        .crt-line {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+        .status-blink {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .3; }
+        }
+        .data-stream::-webkit-scrollbar {
+            width: 4px;
+        }
+        .data-stream::-webkit-scrollbar-thumb {
+            background: #1a1a1a;
+        }
+    </style>
+</head>
+<body class="min-h-screen selection:bg-brand-orange selection:text-black">
+<div class="fixed inset-0 pointer-events-none crt-line z-[100] opacity-30"></div>
+<header class="border-b border-brand-border bg-brand-bg/80 backdrop-blur-sm sticky top-0 z-50">
+<div class="max-w-[1600px] mx-auto flex items-center justify-between px-6 h-14">
+<div class="flex items-center gap-4">
+<span class="text-brand-orange font-extrabold text-xl tracking-tighter flex items-center gap-2">
+<span class="material-symbols-outlined text-sm status-blink">sensors</span>
+                    COREWIRE_OS
+                </span>
+<span class="text-[10px] text-white/20 border border-white/10 px-2 py-0.5 rounded">V.4.0.2_STABLE</span>
+</div>
+<nav class="hidden md:flex items-center gap-10 text-[11px] font-bold tracking-widest">
+<a class="text-brand-orange hover:text-white transition-colors" href="#">//_TERMINAL</a>
+<a class="text-white/40 hover:text-brand-orange transition-colors" href="#">//_DATABASE</a>
+<a class="text-white/40 hover:text-brand-orange transition-colors" href="#">//_ARCHIVE</a>
+<button class="bg-brand-orange text-black px-4 py-1 text-[10px] hover:bg-white transition-all uppercase">
+                    Initialize_Session
+                </button>
+</nav>
+</div>
+</header>
+<main class="p-6 max-w-[1600px] mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<div class="md:col-span-8 flex flex-col gap-6">
+<section class="console-panel orange-glow-box">
+<div class="console-header">
+<span class="text-brand-orange font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-brand-orange status-blink"></span>
+                            Priority_Alert_Stream
+                        </span>
+<span class="text-white/30">ID: NW_001_SIG</span>
+</div>
+<div class="p-8 relative min-h-[400px] flex flex-col justify-end">
+<div class="absolute inset-0 z-0">
+<img alt="Data visualization" class="w-full h-full object-cover opacity-20 mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxcj7IUyoyQ_xlwKRxccu4JSGVN9vxukubCUYlSsYqm_OPVE_mWEd241VaAmMFV1ME-MBeZ8UG8jRfvvJ7Ra17bG3gSc_1Tk4oN5YMPZ3slhE457mHB4wLfPdHSu2jFR9I_odFpnDU1-Q0EE5kjuKAQ4RP1CripJ9lI54cX7HSaAcZ2HMcJrPr2DqGeRsaje2lWVSoKkq9wcgLusYy8t25rkY82Z--i9hTr1Mlk3NPDuXNec9l8rh3zZegDot1SCLB7VYzgvmiK4H0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-brand-panel via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10">
+<div class="mb-4 inline-block bg-brand-orange/10 border border-brand-orange/30 px-3 py-1 text-[10px] text-brand-orange font-bold">
+                                SYSTEM_LOG: CRITICAL_UPDATE
+                            </div>
+<h1 class="text-4xl md:text-5xl font-extrabold text-white leading-none mb-6 orange-glow">
+                                GLOBAL ECONOMY SHIFT: TRUMP ALIGNS WITH NEW TRADE PROTOCOLS_
+                            </h1>
+<div class="flex flex-wrap gap-4 items-center">
+<span class="text-xs text-brand-orange font-bold">SOURCE: NYTIMES.NET</span>
+<span class="text-xs text-white/30">TIMESTAMP: 2024.05.12_08:44:00</span>
+<div class="flex gap-2">
+<button class="bg-brand-orange text-black px-6 py-2 text-[11px] font-bold uppercase hover:bg-white transition-all">Execute_Read</button>
+<button class="border border-white/20 text-white/60 px-6 py-2 text-[11px] font-bold uppercase hover:bg-brand-orange hover:text-black transition-all">Map_Source</button>
+</div>
+</div>
+</div>
+</div>
+<div class="border-t border-brand-border p-3 flex justify-between items-center text-[9px] text-white/20 uppercase font-bold">
+<span>Buffer_Capacity: 94%</span>
+<span>Encryption: AES-256_ACTIVE</span>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="console-panel hover:border-brand-orange/40 transition-colors group cursor-pointer">
+<div class="console-header text-[9px]"><span>SIGNAL: ALPHA</span><span class="material-symbols-outlined text-[12px]">analytics</span></div>
+<div class="p-4">
+<div class="aspect-video bg-black/50 mb-4 overflow-hidden border border-brand-border">
+<img alt="Neural Schematic" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlzSroFy0DxDjlRsWDv8QBdACY5Ywaie4Tk-qRNrQv5fVhqFplAebR1H2Gcs9HHcU5VF1X_ejpyRPIM4PX6T1HAdSUfoBg-VmNYufuHn7jN-W9V3mwvAXvhPBrqGPHrnQKkdmi24T99o8Sh06NomojxNo2rxjMFtkFRZljTVqtUbDo5Q2nFiT26P0587eMRotnBakxxXhTkyNez2lmmsDTX9EnZasP_b7LCGDhBAkZCFTbvyAVPXJnE-sxsXRfqb6avXZ53qWact9f"/>
+</div>
+<h3 class="text-xs font-extrabold text-white mb-2 leading-tight group-hover:text-brand-orange">NEURAL_NET: EFFICIENCY_THRESHOLD_BREACHED</h3>
+<p class="text-[10px] text-white/40 leading-relaxed">System architecture analysis: Transformer scaling efficiency exceeds projected 0.4x margin.</p>
+</div>
+</div>
+<div class="console-panel hover:border-brand-orange/40 transition-colors group cursor-pointer">
+<div class="console-header text-[9px]"><span>SIGNAL: BETA</span><span class="material-symbols-outlined text-[12px]">security</span></div>
+<div class="p-4">
+<div class="aspect-video bg-black/50 mb-4 overflow-hidden border border-brand-border">
+<img alt="Quantum Schematic" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkt4c6kV9f5wrap7rRJuB9J53sHKcAm_i0usiN6LeYMUxodKs7ZXLGWZcrX4L8KWUomai9F-zQ_60K-lV9sK6IV0a-rIVvcVHIpARxJNeWTGQA-ij8lAb2pYWZp5bTlOKcrTUbF-OaGCY1DzECjalFv28It91BaQ0wIWFvja4U4NO7gullXfM8uPelll8Stlf_0-Y04Xh-V3UQfKkfFLH4zQFkeqeFYQmufFtcPuJ71CVQcL2JiQW9ArvtCws5RGPidwUsua0Eiv6e"/>
+</div>
+<h3 class="text-xs font-extrabold text-white mb-2 leading-tight group-hover:text-brand-orange">QUANTUM_SEC: ENCRYPTION_FINALIZED</h3>
+<p class="text-[10px] text-white/40 leading-relaxed">Protocol Update: Post-quantum cryptographic standards successfully deployed across node cluster.</p>
+</div>
+</div>
+<div class="console-panel hover:border-brand-orange/40 transition-colors group cursor-pointer">
+<div class="console-header text-[9px]"><span>SIGNAL: GAMMA</span><span class="material-symbols-outlined text-[12px]">public</span></div>
+<div class="p-4">
+<div class="aspect-video bg-black/50 mb-4 overflow-hidden border border-brand-border">
+<img alt="Infrastructure Schematic" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1V7akEfnkAs4r215kjsZtRP2cQJzJh4mE4LzbngaHNcoX2NMlujbm-_vttX3jhRyfYqYpY2BGTUw8YUkLqkR-7C4egKaL2gh3UCUzfbHgxmKIwGbTz7BoczUZF4KgZ90PzX1TheXgneN0ur886gle_vVSR0yeBSlAbvgS_Ck1hPN_gYla2-yLAzz6JEZsnpWu-jUnK76p5AckX0YFOUvFjvkKTWaKU7vjmqDYmy87Jbed8k2q0nZihkWXgS3gxo-TA_cGnOMklREK"/>
+</div>
+<h3 class="text-xs font-extrabold text-white mb-2 leading-tight group-hover:text-brand-orange">SOVEREIGN_AI: INFRASTRUCTURE_GROWTH</h3>
+<p class="text-[10px] text-white/40 leading-relaxed">Regional data sovereignty report: Local compute clusters scaling at 22% monthly rate.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="md:col-span-4 flex flex-col gap-6">
+<section class="console-panel flex-grow">
+<div class="console-header">
+<span class="text-white/60 font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+                            Latest_Intelligence_Log
+                        </span>
+</div>
+<div class="p-4 data-stream h-[700px] overflow-y-auto space-y-4">
+<div class="border-l-2 border-brand-orange bg-white/5 p-4 hover:bg-brand-orange/5 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[9px] text-brand-orange font-bold uppercase tracking-tighter">MARKET_ALERT</span>
+<span class="text-[9px] text-white/20">4M_AGO</span>
+</div>
+<h4 class="text-sm font-bold text-white group-hover:text-brand-orange leading-tight">NASDAQ FUTURES DIP 0.4% AMID GEOPOLITICAL UNCERTAINTY_</h4>
+<div class="mt-2 text-[9px] text-white/40">REUTERS.COM // ID: RT_9921</div>
+</div>
+<div class="border-l-2 border-white/10 bg-white/5 p-4 hover:bg-brand-orange/5 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[9px] text-white/40 font-bold uppercase tracking-tighter">TECH_POLICY</span>
+<span class="text-[9px] text-white/20">18M_AGO</span>
+</div>
+<h4 class="text-sm font-bold text-white group-hover:text-brand-orange leading-tight">EU REGULATORS PROPOSE NEW GUARDRAILS FOR GEN_AI DEPLOYMENT_</h4>
+<div class="mt-2 text-[9px] text-white/40">TECHCRUNCH.COM // ID: TC_4451</div>
+</div>
+<div class="border-l-2 border-white/10 bg-white/5 p-4 hover:bg-brand-orange/5 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[9px] text-white/40 font-bold uppercase tracking-tighter">CLIMATE_DATA</span>
+<span class="text-[9px] text-white/20">1H_AGO</span>
+</div>
+<h4 class="text-sm font-bold text-white group-hover:text-brand-orange leading-tight">ARCTIC SEA ICE LEVELS HIT HISTORIC LOWS IN SATELLITE SCAN_</h4>
+<div class="mt-2 text-[9px] text-white/40">BLOOMBERG.NET // ID: BB_1102</div>
+</div>
+<div class="pt-6 space-y-2">
+<div class="text-[8px] text-white/10 font-mono tracking-tighter">... INITIALIZING_SUBSYSTEM_SYNC</div>
+<div class="text-[8px] text-white/10 font-mono tracking-tighter">... AUTHENTICATING_UPSTREAM_PROVIDERS</div>
+<div class="text-[8px] text-white/10 font-mono tracking-tighter">... [OK] CONNECTION_STABLE</div>
+<div class="text-[8px] text-brand-orange/30 font-mono tracking-tighter animate-pulse">&gt;&gt;&gt; SCANNING_FOR_NEW_SIGNALS_</div>
+</div>
+</div>
+<div class="p-3 border-t border-brand-border">
+<button class="w-full py-2 bg-white/5 text-white/40 text-[10px] font-bold uppercase hover:bg-white/10 transition-all border border-white/5">
+                            Load_More_Packets
+                        </button>
+</div>
+</section>
+<section class="console-panel">
+<div class="console-header"><span>NETWORK_STATUS</span></div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-white/40 uppercase">Node_Connection</span>
+<span class="text-[10px] text-green-500 font-bold">STABLE</span>
+</div>
+<div class="w-full h-1 bg-white/5 overflow-hidden">
+<div class="h-full bg-brand-orange w-3/4"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-white/40 uppercase">CPU_Load</span>
+<span class="text-[10px] text-white/60 font-bold">12.4%</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<footer class="border-t border-brand-border bg-black/50 py-10 mt-12">
+<div class="max-w-[1600px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="md:col-span-2">
+<span class="text-brand-orange font-extrabold text-lg tracking-tighter block mb-4">COREWIRE_INTELLIGENCE</span>
+<p class="text-[10px] text-white/30 max-w-sm leading-relaxed mb-4">
+                    CENTRALIZED INFORMATION HUB. ALL DATA STREAMED THROUGH ENCRYPTED CHANNELS. UNSTABLE CONNECTIONS WILL BE TERMINATED AUTOMATICALLY.
+                </p>
+<p class="text-[9px] text-white/20">© 2024 COREWIRE_SYSTEMS_GLOBAL. VER 4.0.2_REVISION_11.</p>
+</div>
+<div>
+<h5 class="text-[11px] font-bold text-white mb-4 uppercase tracking-widest border-b border-white/10 pb-1">Protocols</h5>
+<ul class="space-y-2 text-[10px] text-white/40">
+<li><a class="hover:text-brand-orange transition-colors" href="#">&gt;&gt; Terminals_API</a></li>
+<li><a class="hover:text-brand-orange transition-colors" href="#">&gt;&gt; Security_Policy</a></li>
+<li><a class="hover:text-brand-orange transition-colors" href="#">&gt;&gt; Data_Handling</a></li>
+</ul>
+</div>
+<div class="flex flex-col items-end">
+<h5 class="text-[11px] font-bold text-white mb-4 uppercase tracking-widest border-b border-white/10 pb-1 w-full text-right">System_Links</h5>
+<div class="flex gap-4">
+<div class="w-9 h-9 border border-brand-border flex items-center justify-center hover:bg-brand-orange hover:text-black transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</div>
+<div class="w-9 h-9 border border-brand-border flex items-center justify-center hover:bg-brand-orange hover:text-black transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+</div>
+<div class="mt-4 text-[9px] text-white/20 uppercase font-bold status-blink">
+                    System_Status: Operational_
+                </div>
+</div>
+</div>
+</footer>
+
+</body></html>
