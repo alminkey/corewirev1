@@ -1,0 +1,236 @@
+:root {
+  --cw-bg: #050505;
+  --cw-panel: #0a0a0a;
+  --cw-panel-soft: rgba(255, 255, 255, 0.03);
+  --cw-border: #1a1a1a;
+  --cw-text: #d4d4d8;
+  --cw-muted: #7c7c85;
+  --cw-accent: #ff8a66;
+  --cw-accent-strong: #ff5c26;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    linear-gradient(rgba(255, 138, 102, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 138, 102, 0.03) 1px, transparent 1px),
+    var(--cw-bg);
+  background-size: 40px 40px, 40px 40px, auto;
+  color: var(--cw-text);
+  font-family: "JetBrains Mono", "Courier New", monospace;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.cw-shell {
+  position: relative;
+  padding: 24px;
+}
+
+.cw-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.22;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+  background-size: 100% 2px, 3px 100%;
+}
+
+.cw-topbar,
+.cw-grid {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.cw-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--cw-border);
+}
+
+.cw-topbar h1,
+.cw-hero h2 {
+  margin: 0;
+  color: #fff4ee;
+}
+
+.cw-kicker {
+  margin: 0 0 6px;
+  color: var(--cw-accent);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cw-nav {
+  display: flex;
+  gap: 20px;
+  color: var(--cw-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.cw-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.cw-main,
+.cw-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cw-panel {
+  border: 1px solid var(--cw-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2)), var(--cw-panel);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.45);
+}
+
+.cw-panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--cw-border);
+  color: var(--cw-accent);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cw-hero-body,
+.cw-card-body,
+.cw-rail-list,
+.cw-developing-list,
+.cw-status {
+  padding: 20px;
+}
+
+.cw-tag {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 138, 102, 0.4);
+  background: rgba(255, 138, 102, 0.1);
+  color: var(--cw-accent);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.cw-hero h2 {
+  max-width: 12ch;
+  font-size: clamp(2rem, 4vw, 4.5rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(255, 138, 102, 0.3);
+}
+
+.cw-summary {
+  max-width: 60ch;
+  color: #b7b7bf;
+  line-height: 1.6;
+}
+
+.cw-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--cw-accent);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.cw-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.cw-card h3,
+.cw-rail-item h3,
+.cw-developing-item h3 {
+  margin: 0 0 10px;
+  color: #f2f2f4;
+  line-height: 1.3;
+}
+
+.cw-card p,
+.cw-rail-item p,
+.cw-developing-item p,
+.cw-status dt,
+.cw-status dd {
+  margin: 0;
+  color: var(--cw-muted);
+  line-height: 1.5;
+}
+
+.cw-rail-list,
+.cw-developing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cw-rail-item,
+.cw-developing-item {
+  padding: 14px;
+  border-left: 2px solid rgba(255, 138, 102, 0.3);
+  background: var(--cw-panel-soft);
+}
+
+.cw-status dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cw-status div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+@media (max-width: 1100px) {
+  .cw-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cw-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .cw-shell {
+    padding: 16px;
+  }
+
+  .cw-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cw-nav {
+    flex-wrap: wrap;
+  }
+}
