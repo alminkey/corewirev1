@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from core.articles.service import list_articles, publish_article
+from core.articles.service import get_article_by_slug, list_articles, publish_article
 
 
 router = APIRouter()
@@ -9,6 +9,14 @@ router = APIRouter()
 @router.get("/articles")
 def list_articles_route() -> dict:
     return list_articles()
+
+
+@router.get("/articles/{slug}")
+def get_article_route(slug: str) -> dict:
+    article = get_article_by_slug(slug)
+    if article is None:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return article
 
 
 @router.post("/articles/publish")
