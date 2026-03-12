@@ -1,6 +1,14 @@
 from core.db.models.article import ArticleStatus
 
 
+def list_articles() -> dict:
+    return {
+        "lead_story": None,
+        "top_stories": [],
+        "developing_stories": [],
+    }
+
+
 def publish_article(draft: dict, confidence: dict) -> dict:
     is_low_confidence = confidence.get("level") == "low"
 
