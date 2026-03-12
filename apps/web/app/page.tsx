@@ -3,6 +3,12 @@ import { HeroStory } from "../components/home/hero-story";
 import { IntelligenceRail } from "../components/home/intelligence-rail";
 import { StoryGrid } from "../components/home/story-grid";
 import { getHomepage } from "../lib/api";
+import { generateHomepageMetadata } from "../lib/seo";
+
+export async function generateMetadata() {
+  const homepage = await getHomepage();
+  return generateHomepageMetadata(homepage);
+}
 
 export default async function HomePage() {
   const homepage = await getHomepage();

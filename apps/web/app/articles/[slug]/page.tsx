@@ -2,12 +2,27 @@ import { AnalysisSection } from "../../../components/article/analysis-section";
 import { ArticleHeader } from "../../../components/article/article-header";
 import { DisagreementSection } from "../../../components/article/disagreement-section";
 import { FactsSection } from "../../../components/article/facts-section";
+import { ArticleJsonLd } from "../../../components/seo/article-json-ld";
 import { SourcesSection } from "../../../components/article/sources-section";
 import { getArticleBySlug } from "../../../lib/api";
+import { buildArticleMetadata } from "../../../lib/seo";
 
 type ArticlePageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateMetadata({ params }: ArticlePageProps) {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
+  const noindex = article.status === "developing_story";
+  const metadata_with_robots = {
+    ...buildArticleMetadata(article),
+    robots: noindex
+      ? { index: false, follow: false }
+      : { index: true, follow: true },
+  };
+  return metadata_with_robots;
+}
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
@@ -17,6 +32,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     <main className="cw-shell">
       <div className="cw-overlay" />
       <article className="cw-article">
+        <ArticleJsonLd article={article} />
         <ArticleHeader
           article={{
             headline: article.headline,
