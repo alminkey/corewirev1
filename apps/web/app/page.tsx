@@ -2,8 +2,11 @@ import { DevelopingStories } from "../components/home/developing-stories";
 import { HeroStory } from "../components/home/hero-story";
 import { IntelligenceRail } from "../components/home/intelligence-rail";
 import { StoryGrid } from "../components/home/story-grid";
+import { getHomepage } from "../lib/api";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const homepage = await getHomepage();
+
   return (
     <main className="cw-shell">
       <div className="cw-overlay" />
@@ -21,11 +24,17 @@ export default function HomePage() {
 
       <section className="cw-grid">
         <div className="cw-main">
-          <HeroStory />
-          <StoryGrid />
-          <DevelopingStories />
+          <HeroStory story={homepage.lead_story} />
+          <StoryGrid stories={homepage.top_stories} />
+          <DevelopingStories stories={homepage.developing_stories} />
         </div>
-        <IntelligenceRail />
+        <IntelligenceRail
+          entries={[
+            homepage.lead_story.headline,
+            ...homepage.top_stories.map((story) => story.headline),
+            ...homepage.developing_stories.map((story) => story.headline),
+          ]}
+        />
       </section>
     </main>
   );

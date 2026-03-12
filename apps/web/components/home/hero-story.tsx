@@ -1,4 +1,14 @@
-export function HeroStory() {
+type HeroStoryProps = {
+  story: {
+    headline: string;
+    dek: string;
+    status: string;
+    confidence: string;
+    source_count: number;
+  };
+};
+
+export function HeroStory({ story }: HeroStoryProps) {
   return (
     <section className="cw-panel cw-hero">
       <div className="cw-panel-header">
@@ -7,15 +17,12 @@ export function HeroStory() {
       </div>
       <div className="cw-hero-body">
         <p className="cw-tag">System Log: Critical Update</p>
-        <h2>CoreWire publishes evidence-linked reporting with visible confidence.</h2>
-        <p className="cw-summary">
-          Verified from 6 sources. Analysis blocks are separated from factual blocks and
-          developing stories stay off the main lead stack.
-        </p>
+        <h2>{story.headline}</h2>
+        <p className="cw-summary">{story.dek}</p>
         <div className="cw-meta">
-          <span>Reported</span>
-          <span>Sources: 6</span>
-          <span>Confidence: High</span>
+          <span>{story.status}</span>
+          <span>Sources: {story.source_count}</span>
+          <span>Confidence: {story.confidence}</span>
         </div>
       </div>
     </section>

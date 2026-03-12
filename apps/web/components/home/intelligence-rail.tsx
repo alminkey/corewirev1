@@ -1,10 +1,8 @@
-const entries = [
-  "Nasdaq futures dip as geopolitical risk returns to the lead narrative.",
-  "EU regulators propose new guardrails for frontier AI deployment.",
-  "Arctic satellite scans show another sharp break from seasonal averages.",
-];
+type IntelligenceRailProps = {
+  entries: string[];
+};
 
-export function IntelligenceRail() {
+export function IntelligenceRail({ entries }: IntelligenceRailProps) {
   return (
     <aside className="cw-rail">
       <section className="cw-panel">
