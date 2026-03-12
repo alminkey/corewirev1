@@ -17,16 +17,30 @@ CoreWire is an autonomous AI news portal MVP that ingests sources, extracts clai
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-2. Run focused verification:
+2. Run migrations and seed demo data:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/migrate-local.ps1
+python scripts/seed-demo-data.py
+```
+
+3. Run focused verification:
 
 ```bash
 pnpm test:repo
 pnpm --filter corewire-web test
 pytest apps/api/tests -v
 pytest apps/workers/tests -v
+pytest tests/integration -v
 ```
 
-3. Explore the worktree branch used for implementation:
+4. Use the local bootstrap helper when you want the current integrated demo flow:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/bootstrap-local.ps1
+```
+
+5. Explore the worktree branch used for implementation:
 
 ```bash
 git worktree list
@@ -43,6 +57,7 @@ git worktree list
 - Publish gate for `published` vs `developing_story`
 - Premium command-center homepage and article page skeleton
 - Scheduler, retry helper, and audit event helper
+- Early integration bootstrap for pipeline orchestration and demo seeding
 
 ## Known Limitations
 
