@@ -1,0 +1,35 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    environment:
+      COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+      COREWIRE_INTERNAL_TOKEN: corewire-internal-token
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+
+  workers:
+    build:
+      context: ../..
+      dockerfile: apps/workers/Dockerfile
+    environment:
+      COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+    depends_on:
+      - postgres
+      - redis
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+    environment:
+      COREWIRE_API_BASE_URL: http://api:8000/api
+      COREWIRE_SITE_URL: http://localhost:3000
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"

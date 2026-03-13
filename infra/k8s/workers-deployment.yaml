@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: corewire-workers
+  namespace: corewire
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: corewire-workers
+  template:
+    metadata:
+      labels:
+        app: corewire-workers
+    spec:
+      containers:
+        - name: workers
+          image: corewire/workers:latest
+          env:
+            - name: COREWIRE_DATABASE_URL
+              value: postgresql://corewire:corewire@postgres:5432/corewire
+            - name: COREWIRE_QUEUE_NAME
+              value: corewire-default

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: corewire-web
+  namespace: corewire
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: corewire-web
+  template:
+    metadata:
+      labels:
+        app: corewire-web
+    spec:
+      containers:
+        - name: web
+          image: corewire/web:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: COREWIRE_API_BASE_URL
+              value: http://corewire-api:8000/api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: corewire-web
+  namespace: corewire
+spec:
+  selector:
+    app: corewire-web
+  ports:
+    - port: 3000
+      targetPort: 3000
