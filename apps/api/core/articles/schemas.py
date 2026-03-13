@@ -9,6 +9,9 @@ class StoryCard(TypedDict):
     source_count: int
     updated_at: str
     dek: str
+    story_tier: str
+    requested_profile: str
+    effective_profile: str
 
 
 class ArticleDetail(StoryCard):
