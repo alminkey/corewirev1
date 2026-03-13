@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from core.admin.auth import require_owner_token
+from core.admin.settings import get_autonomy_settings
 
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -13,3 +14,8 @@ def get_admin_overview() -> dict:
         "system_health": "stable",
         "review_queue_count": 3,
     }
+
+
+@router.get("/settings/autonomy", dependencies=[Depends(require_owner_token)])
+def get_admin_autonomy_settings() -> dict:
+    return get_autonomy_settings()
