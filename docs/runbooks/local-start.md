@@ -30,6 +30,14 @@ powershell -ExecutionPolicy Bypass -File scripts/migrate-local.ps1
 python scripts/seed-demo-data.py
 ```
 
+Set local environment:
+
+```bash
+$env:COREWIRE_API_BASE_URL="http://localhost:8000/api"
+$env:COREWIRE_SITE_URL="http://localhost:3000"
+$env:COREWIRE_INTERNAL_TOKEN="corewire-internal-token"
+```
+
 4. Start API:
 
 ```bash
@@ -66,3 +74,15 @@ pnpm --filter corewire-web test
 - API metrics: `http://localhost:8000/metrics`
 - API readiness: `http://localhost:8000/ready`
 - MinIO console: `http://localhost:9001`
+
+## Runtime Contract
+
+- `COREWIRE_API_BASE_URL` should point the web app to the local API
+- `COREWIRE_SITE_URL` should reflect the public local web origin
+- `COREWIRE_INTERNAL_TOKEN` should match the token expected by internal operator routes
+- API process command:
+  - `python -m uvicorn app:app --app-dir apps/api --host 0.0.0.0 --port 8000`
+- Worker process command:
+  - `python apps/workers/main.py`
+- Web process command:
+  - `pnpm --dir apps/web dev`

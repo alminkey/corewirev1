@@ -40,7 +40,13 @@ pytest tests/integration -v
 powershell -ExecutionPolicy Bypass -File scripts/bootstrap-local.ps1
 ```
 
-5. Explore the worktree branch used for implementation:
+5. Full local runtime contract is documented in:
+
+```bash
+docs/runbooks/local-start.md
+```
+
+6. Explore the worktree branch used for implementation:
 
 ```bash
 git worktree list
