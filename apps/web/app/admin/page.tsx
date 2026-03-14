@@ -1,4 +1,5 @@
 import { AdminShell } from "../../components/admin/admin-shell";
+import { ArticleActions } from "../../components/admin/article-actions";
 import { AutonomyControls } from "../../components/admin/autonomy-controls";
 import { ReviewQueue } from "../../components/admin/review-queue";
 
@@ -32,6 +33,7 @@ export default function AdminPage() {
           { id: "flag-1", headline: "Story requires compliance review" },
         ]}
       />
+      <ArticleActions />
     </>
   );
 }
