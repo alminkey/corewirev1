@@ -5,6 +5,8 @@ from core.clustering.service import assign_story_clusters
 from core.confidence.service import score_confidence
 from core.corroboration.service import match_evidence
 from core.drafting.service import build_draft
+from core.editorial.standards import validate_standards
+from core.editorial.style import polish_draft
 from core.validation.citations import validate_article
 
 
@@ -32,14 +34,16 @@ def run_pipeline(
     analysis = analyze_story({"claims": clustered_claims, "evidence": evidence})
     confidence = score_confidence({"evidence": evidence})
     draft = build_draft(analysis)
+    draft = polish_draft(draft)
     draft["id"] = f"draft-{source_item_id}"
     draft["slug"] = document.get("slug", source_item_id)
 
+    standards_validation = validate_standards(draft)
     validation = validate_article(draft)
 
     status = "invalid"
     homepage_eligible = False
-    if validation["valid"]:
+    if validation["valid"] and standards_validation["valid"]:
         status = "published"
         homepage_eligible = True
         if confidence["level"] == "low":
