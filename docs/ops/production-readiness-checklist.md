@@ -27,3 +27,4 @@
 - [ ] ingress hostnames and TLS are configured for the target environment
 - [ ] rollback path is documented before first deployment
 - [ ] logs and metrics are wired into the target platform
+- [ ] launch signoff is recorded after staging rehearsal and preflight checks
