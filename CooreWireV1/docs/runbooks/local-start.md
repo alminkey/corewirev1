@@ -1,5 +1,11 @@
 # CoreWire Local Start
 
+Run all commands in this document from:
+
+```text
+F:\2026\CoreWire\CooreWireV1
+```
+
 ## Goal
 
 Start the current integrated CoreWire stack locally, seed demo data, and run smoke verification.
