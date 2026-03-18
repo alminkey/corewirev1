@@ -1,5 +1,9 @@
 $ErrorActionPreference = "Stop"
 
+Write-Host "Using PostgreSQL by default for local migrations."
+Write-Host "Override with:"
+Write-Host 'powershell -ExecutionPolicy Bypass -File "scripts/migrate-local.ps1" -DatabaseUrl "sqlite:///corewire-local.db"'
+
 Write-Host "Running local migration..."
 & powershell -ExecutionPolicy Bypass -File "scripts/migrate-local.ps1"
 

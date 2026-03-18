@@ -30,6 +30,18 @@ docker compose -f infra/docker/docker-compose.yml up -d
 powershell -ExecutionPolicy Bypass -File scripts/migrate-local.ps1
 ```
 
+The default local database target is Docker PostgreSQL at:
+
+```text
+postgresql://corewire:corewire@localhost:5432/corewire
+```
+
+If you intentionally want the old SQLite fallback instead, run:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/migrate-local.ps1 -DatabaseUrl "sqlite:///corewire-local.db"
+```
+
 3. Seed demo data:
 
 ```bash

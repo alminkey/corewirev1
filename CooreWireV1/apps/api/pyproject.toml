@@ -5,6 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.18",
     "fastapi>=0.116",
+    "psycopg2-binary>=2.9",
     "pydantic>=2.11",
     "sqlalchemy>=2.0",
 ]

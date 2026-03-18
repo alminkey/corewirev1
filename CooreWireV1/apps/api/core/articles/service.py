@@ -1,6 +1,11 @@
+import json
+import os
+
 from core.db.models.article import ArticleStatus
+from core.db.session import build_engine, build_session_factory
 
 from core.articles.schemas import ArticleDetail, StoryCard
+from core.repositories.articles import ArticleRepository
 
 
 def _story_cards() -> list[StoryCard]:
@@ -70,7 +75,81 @@ def _article_details() -> dict[str, ArticleDetail]:
     }
 
 
+def _database_url() -> str:
+    return os.getenv("COREWIRE_DATABASE_URL", "sqlite:///corewire-local.db")
+
+
+def _snapshot_to_story_card(snapshot: dict) -> StoryCard:
+    return {
+        "slug": snapshot["slug"],
+        "headline": snapshot["headline"],
+        "status": snapshot["status"],
+        "confidence": snapshot.get("confidence", "unknown"),
+        "source_count": snapshot.get("source_count", 0),
+        "updated_at": snapshot.get("updated_at", ""),
+        "dek": snapshot.get("dek", ""),
+        "story_tier": snapshot.get("story_tier", "standard"),
+        "requested_profile": snapshot.get("requested_profile", "balanced"),
+        "effective_profile": snapshot.get("effective_profile", "balanced"),
+    }
+
+
+def _snapshot_to_article_detail(snapshot: dict) -> ArticleDetail:
+    return {
+        **_snapshot_to_story_card(snapshot),
+        "facts": snapshot.get("facts", []),
+        "analysis": snapshot.get("analysis", []),
+        "disagreements": snapshot.get("disagreements", []),
+        "sources": snapshot.get("sources", []),
+    }
+
+
+def _load_articles_from_database() -> list[dict]:
+    engine = build_engine(_database_url())
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            repository = ArticleRepository(session)
+            articles = repository.list_published_articles()
+            snapshots = [
+                json.loads(article.rendered_snapshot_json)
+                for article in articles
+                if article.rendered_snapshot_json
+            ]
+            return snapshots
+    finally:
+        engine.dispose()
+
+
+def _load_article_detail_from_database(slug: str) -> dict | None:
+    engine = build_engine(_database_url())
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            repository = ArticleRepository(session)
+            article = repository.get_published_article_by_slug(slug)
+            if article is None or not article.rendered_snapshot_json:
+                return None
+            return json.loads(article.rendered_snapshot_json)
+    finally:
+        engine.dispose()
+
+
 def list_articles() -> dict:
+    database_articles = _load_articles_from_database()
+    if database_articles:
+        published = [item for item in database_articles if item.get("status") == ArticleStatus.PUBLISHED.value]
+        developing = [item for item in database_articles if item.get("status") == ArticleStatus.DEVELOPING.value]
+        lead_story = published[0] if published else (developing[0] if developing else database_articles[0])
+        top_stories = published[1:] if len(published) > 1 else []
+        return {
+            "lead_story": _snapshot_to_story_card(lead_story),
+            "top_stories": [_snapshot_to_story_card(item) for item in top_stories],
+            "developing_stories": [_snapshot_to_story_card(item) for item in developing],
+        }
+
     story_cards = _story_cards()
     return {
         "lead_story": story_cards[0],
@@ -80,6 +159,9 @@ def list_articles() -> dict:
 
 
 def get_article_by_slug(slug: str) -> ArticleDetail | None:
+    database_article = _load_article_detail_from_database(slug)
+    if database_article is not None:
+        return _snapshot_to_article_detail(database_article)
     return _article_details().get(slug)
 
 

@@ -5,3 +5,8 @@ node_modules/
 __pycache__/
 *.pyc
 .pytest_cache/
+.next/
+.web-*.log
+CooreWireV1/corewire-local.db
+CooreWireV1/test-*.db
+CooreWireV1/apps/web/package-lock.json

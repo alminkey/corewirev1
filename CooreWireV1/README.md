@@ -32,6 +32,8 @@ powershell -ExecutionPolicy Bypass -File scripts/migrate-local.ps1
 python scripts/seed-demo-data.py
 ```
 
+By default, `scripts/migrate-local.ps1` now targets local PostgreSQL (`postgresql://corewire:corewire@localhost:5432/corewire`). If you explicitly need the SQLite fallback for ad-hoc debugging, pass `-DatabaseUrl "sqlite:///corewire-local.db"`.
+
 3. Run focused verification:
 
 ```bash
