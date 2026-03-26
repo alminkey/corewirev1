@@ -6,20 +6,17 @@ param(
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
-$composeBase = Join-Path $root "infra\docker\docker-compose.yml"
 $composeProd = Join-Path $root "infra\docker\docker-compose.prod.yml"
 
 Write-Host "Deploying CoreWire to Webtropia for domain $Domain"
 
 docker compose `
     -p $ComposeProjectName `
-    -f $composeBase `
     -f $composeProd `
     pull
 
 docker compose `
     -p $ComposeProjectName `
-    -f $composeBase `
     -f $composeProd `
     up -d --build
 

@@ -17,7 +17,12 @@ CoreWire runs on one VPS with Docker Compose services for:
 
 ## DNS
 
-Point the production domain to the VPS public IP:
+For staging over raw IP, set:
+
+- `COREWIRE_SITE_ADDRESS=http://213.202.216.222`
+- `COREWIRE_SITE_URL=http://213.202.216.222`
+
+For a domain-based deploy, point the production domain to the VPS public IP:
 
 - `A corewire.example.com -> <webtropia-vps-ip>`
 
@@ -25,13 +30,13 @@ If you use the root domain instead, point the root `A` record to the same VPS IP
 
 ## TLS
 
-`Caddy` terminates TLS and provisions certificates automatically once DNS is pointing to the VPS and ports `80/443` are reachable.
+`Caddy` can serve plain HTTP for raw-IP staging and can terminate TLS automatically once DNS is pointing to the VPS and ports `80/443` are reachable.
 
 Before first deploy:
 
 1. Open ports `80` and `443` in the VPS firewall.
-2. Replace `corewire.example.com` in `infra/docker/Caddyfile` with the real domain.
-3. Replace the placeholder email in the same file with the real ops email.
+2. For domain mode, set `COREWIRE_SITE_ADDRESS` to the real hostname and `COREWIRE_SITE_URL` to the public HTTPS origin.
+3. Replace the placeholder ops email via `COREWIRE_OPS_EMAIL`.
 
 ## Deploy
 
@@ -67,6 +72,7 @@ At minimum, production must define:
 - `COREWIRE_OWNER_TOKEN`
 - `OPENROUTER_API_KEY`
 - `COREWIRE_SITE_URL`
+- `COREWIRE_SITE_ADDRESS`
 
 ## Startup Order
 

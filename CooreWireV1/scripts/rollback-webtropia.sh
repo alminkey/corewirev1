@@ -8,13 +8,13 @@ fi
 
 TARGET_REF="$1"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-corewire}"
+COMPOSE_FILE="infra/docker/docker-compose.prod.yml"
 
 git checkout "${TARGET_REF}"
 
 docker compose \
   -p "${COMPOSE_PROJECT_NAME}" \
-  -f infra/docker/docker-compose.yml \
-  -f infra/docker/docker-compose.prod.yml \
+  -f "${COMPOSE_FILE}" \
   up -d --build
 
 echo "Rollback deployed for ${TARGET_REF}"

@@ -1,8 +1,8 @@
 {
-    email ops@example.com
+    email {$COREWIRE_OPS_EMAIL:ops@example.com}
 }
 
-corewire.example.com {
+{$COREWIRE_SITE_ADDRESS:http://213.202.216.222} {
     encode zstd gzip
 
     @api path /api/* /health /ready /metrics

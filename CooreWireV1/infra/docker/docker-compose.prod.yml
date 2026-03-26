@@ -4,6 +4,9 @@ services:
     depends_on:
       - web
       - api
+    environment:
+      COREWIRE_SITE_ADDRESS: ${COREWIRE_SITE_ADDRESS:-http://213.202.216.222}
+      COREWIRE_OPS_EMAIL: ${COREWIRE_OPS_EMAIL:-ops@example.com}
     ports:
       - "80:80"
       - "443:443"
@@ -20,6 +23,7 @@ services:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
       COREWIRE_INTERNAL_TOKEN: corewire-internal-token
       COREWIRE_OWNER_TOKEN: corewire-owner-token
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     depends_on:
       - postgres
       - redis
@@ -31,6 +35,7 @@ services:
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
       COREWIRE_INTERNAL_TOKEN: corewire-internal-token
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     depends_on:
       - postgres
       - redis
@@ -43,6 +48,7 @@ services:
     working_dir: /app/apps/workers
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     depends_on:
       - postgres
       - redis
@@ -53,7 +59,8 @@ services:
       dockerfile: apps/web/Dockerfile
     environment:
       COREWIRE_API_BASE_URL: http://api:8000/api
-      COREWIRE_SITE_URL: https://corewire.example.com
+      COREWIRE_SITE_URL: ${COREWIRE_SITE_URL:-http://213.202.216.222}
+      COREWIRE_OWNER_TOKEN: ${COREWIRE_OWNER_TOKEN:-corewire-owner-token}
       COREWIRE_ADSENSE_ENABLED: "true"
     depends_on:
       - api

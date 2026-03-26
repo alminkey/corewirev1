@@ -18,11 +18,13 @@ def test_webtropia_deployment_assets_exist_and_cover_runtime():
     compose_path = root / "infra" / "docker" / "docker-compose.prod.yml"
     caddyfile_path = root / "infra" / "docker" / "Caddyfile"
     deploy_script_path = root / "scripts" / "deploy-webtropia.ps1"
+    deploy_script_linux = root / "scripts" / "deploy-webtropia.sh"
     runbook_path = root / "docs" / "ops" / "webtropia-deploy.md"
 
     assert compose_path.exists()
     assert caddyfile_path.exists()
     assert deploy_script_path.exists()
+    assert deploy_script_linux.exists()
     assert runbook_path.exists()
 
     compose_text = compose_path.read_text(encoding="utf-8")
@@ -35,6 +37,13 @@ def test_webtropia_deployment_assets_exist_and_cover_runtime():
     caddyfile_text = caddyfile_path.read_text(encoding="utf-8")
     assert "reverse_proxy web:3000" in caddyfile_text
     assert "reverse_proxy api:8000" in caddyfile_text
+
+    deploy_ps1_text = deploy_script_path.read_text(encoding="utf-8")
+    deploy_sh_text = deploy_script_linux.read_text(encoding="utf-8")
+    assert "docker-compose.prod.yml" in deploy_ps1_text
+    assert "docker-compose.yml" not in deploy_ps1_text
+    assert "docker-compose.prod.yml" in deploy_sh_text
+    assert "docker-compose.yml" not in deploy_sh_text
 
 
 def test_webtropia_runbook_documents_dns_tls_and_rollbacks():
