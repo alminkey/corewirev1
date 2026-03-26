@@ -3,43 +3,64 @@ import { AnalyticsDashboard } from "../../components/admin/analytics-dashboard";
 import { ArticleActions } from "../../components/admin/article-actions";
 import { AutonomyControls } from "../../components/admin/autonomy-controls";
 import { ReviewQueue } from "../../components/admin/review-queue";
+import {
+  getAdminOverview,
+  getAutonomySettings,
+  getPublishedArticles,
+  getReviewQueue,
+} from "../../lib/api";
 
-
-export default function AdminPage() {
+export default async function AdminPage() {
+  const [overview, autonomySettings, reviewQueue, publishedArticles] = await Promise.all([
+    getAdminOverview(),
+    getAutonomySettings(),
+    getReviewQueue(),
+    getPublishedArticles(),
+  ]);
+  const reviewQueueCount =
+    reviewQueue.pending_drafts.length +
+    reviewQueue.low_confidence.length +
+    reviewQueue.flagged_items.length;
   return (
     <>
       <AdminShell
-        publishMode="Hybrid"
-        systemHealth="Stable"
-        reviewQueueCount={3}
+        publishMode={overview.publish_mode}
+        systemHealth={overview.system_health}
+        reviewQueueCount={reviewQueueCount || overview.review_queue_count}
       />
       <AutonomyControls
-        mode="hybrid"
-        homepageAutoPublish={true}
-        developingStoryAutoPublish={true}
-        pauseIngest={false}
-        pausePublish={false}
+        mode={autonomySettings.mode}
+        homepageAutoPublish={autonomySettings.homepage_auto_publish}
+        developingStoryAutoPublish={autonomySettings.developing_story_auto_publish}
+        pauseIngest={autonomySettings.pause_ingest}
+        pausePublish={autonomySettings.pause_publish}
       />
       <ReviewQueue
-        pendingDrafts={[
-          { id: "draft-1", headline: "Flagship draft awaiting owner review" },
-        ]}
-        lowConfidence={[
-          {
-            id: "story-1",
-            headline: "Developing story with limited corroboration",
-          },
-        ]}
-        flaggedItems={[
-          { id: "flag-1", headline: "Story requires compliance review" },
-        ]}
+        pendingDrafts={reviewQueue.pending_drafts}
+        lowConfidence={reviewQueue.low_confidence}
+        flaggedItems={reviewQueue.flagged_items}
       />
       <AnalyticsDashboard
-        articleThroughput="42 articles published this month"
-        queueStatus="3 jobs pending, 0 failed"
-        confidenceDistribution="High 60%, Medium 30%, Low 10%"
-        costSummary="$182.50 spent this month"
+        articleThroughput={`${publishedArticles.length} published stories in the live feed`}
+        queueStatus={`${reviewQueue.pending_drafts.length} pending drafts, ${reviewQueue.low_confidence.length} low-confidence, ${reviewQueue.flagged_items.length} flagged`}
+        confidenceDistribution={`${publishedArticles.filter((story) => story.confidence === "high").length} high-confidence published`}
+        costSummary={`Mode ${overview.publish_mode}, health ${overview.system_health}`}
       />
+      <section className="admin-shell__panel">
+        <p className="admin-shell__eyebrow">System Overview</p>
+        <h2>Published Articles</h2>
+        {publishedArticles.length === 0 ? (
+          <p>No published articles yet.</p>
+        ) : (
+          <ul>
+            {publishedArticles.map((story) => (
+              <li key={story.slug}>
+                <a href={`/articles/${story.slug}`}>{story.headline}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <ArticleActions />
     </>
   );

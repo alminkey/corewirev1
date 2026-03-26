@@ -14,9 +14,17 @@ class StoryCard(TypedDict):
     effective_profile: str
 
 
+class ArticleSource(TypedDict):
+    label: str
+    publisher: str | None
+    title: str | None
+    url: str | None
+    role: str
+
+
 class ArticleDetail(StoryCard):
     facts: list[dict]
     analysis: list[str]
     disagreements: list[str]
-    sources: list[str]
+    sources: list[ArticleSource]
 

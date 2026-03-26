@@ -1,10 +1,12 @@
 import json
 import os
 
+from sqlalchemy.exc import OperationalError
+
 from core.db.models.article import ArticleStatus
 from core.db.session import build_engine, build_session_factory
 
-from core.articles.schemas import ArticleDetail, StoryCard
+from core.articles.schemas import ArticleDetail, ArticleSource, StoryCard
 from core.repositories.articles import ArticleRepository
 
 
@@ -56,7 +58,22 @@ def _article_details() -> dict[str, ArticleDetail]:
             "disagreements": [
                 "Sources agree on the launch but differ on how complete the rollout is."
             ],
-            "sources": ["Source 1", "Source 2"],
+            "sources": [
+                {
+                    "label": "Source 1",
+                    "publisher": "Source 1",
+                    "title": None,
+                    "url": None,
+                    "role": "source",
+                },
+                {
+                    "label": "Source 2",
+                    "publisher": "Source 2",
+                    "title": None,
+                    "url": None,
+                    "role": "source",
+                },
+            ],
         },
         "corewire-verifying-the-rollout-details": {
             **_story_cards()[2],
@@ -70,7 +87,15 @@ def _article_details() -> dict[str, ArticleDetail]:
                 "The developing label protects the homepage until independent corroboration arrives."
             ],
             "disagreements": [],
-            "sources": ["Source 3"],
+            "sources": [
+                {
+                    "label": "Source 3",
+                    "publisher": "Source 3",
+                    "title": None,
+                    "url": None,
+                    "role": "source",
+                }
+            ],
         },
     }
 
@@ -94,13 +119,54 @@ def _snapshot_to_story_card(snapshot: dict) -> StoryCard:
     }
 
 
+def _normalize_source(source: object) -> ArticleSource:
+    if isinstance(source, str):
+        return {
+            "label": source,
+            "publisher": source,
+            "title": None,
+            "url": None,
+            "role": "source",
+        }
+
+    if isinstance(source, dict):
+        publisher = source.get("publisher") or source.get("organization") or source.get("label")
+        title = source.get("title") or source.get("type")
+        url = source.get("url")
+        label = source.get("label") or publisher or title or "Unknown source"
+        return {
+            "label": str(label),
+            "publisher": str(publisher) if publisher else None,
+            "title": str(title) if title else None,
+            "url": str(url) if url else None,
+            "role": str(source.get("role") or "source"),
+        }
+
+    return {
+        "label": str(source),
+        "publisher": str(source),
+        "title": None,
+        "url": None,
+        "role": "source",
+    }
+
+
 def _snapshot_to_article_detail(snapshot: dict) -> ArticleDetail:
+    facts = []
+    for fact in snapshot.get("facts", []):
+        facts.append(
+            {
+                "text": fact.get("text") or fact.get("statement", ""),
+                "citations": fact.get("citations") or fact.get("sources", []),
+            }
+        )
+
     return {
         **_snapshot_to_story_card(snapshot),
-        "facts": snapshot.get("facts", []),
+        "facts": facts,
         "analysis": snapshot.get("analysis", []),
         "disagreements": snapshot.get("disagreements", []),
-        "sources": snapshot.get("sources", []),
+        "sources": [_normalize_source(source) for source in snapshot.get("sources", [])],
     }
 
 
@@ -118,8 +184,22 @@ def _load_articles_from_database() -> list[dict]:
                 if article.rendered_snapshot_json
             ]
             return snapshots
+    except OperationalError:
+        return []
     finally:
         engine.dispose()
+
+
+def list_published_articles_feed() -> list[StoryCard]:
+    database_articles = _load_articles_from_database()
+    if not database_articles:
+        return []
+
+    published = [
+        item for item in database_articles
+        if item.get("status") == ArticleStatus.PUBLISHED.value
+    ]
+    return [_snapshot_to_story_card(item) for item in published]
 
 
 def _load_article_detail_from_database(slug: str) -> dict | None:
@@ -133,6 +213,8 @@ def _load_article_detail_from_database(slug: str) -> dict | None:
             if article is None or not article.rendered_snapshot_json:
                 return None
             return json.loads(article.rendered_snapshot_json)
+    except OperationalError:
+        return None
     finally:
         engine.dispose()
 

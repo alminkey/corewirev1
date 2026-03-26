@@ -1,4 +1,17 @@
 services:
+  caddy:
+    image: caddy:2.10
+    depends_on:
+      - web
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
   api:
     build:
       context: ../..
@@ -6,16 +19,28 @@ services:
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
       COREWIRE_INTERNAL_TOKEN: corewire-internal-token
+      COREWIRE_OWNER_TOKEN: corewire-owner-token
     depends_on:
       - postgres
       - redis
-    ports:
-      - "8000:8000"
 
   workers:
     build:
       context: ../..
       dockerfile: apps/workers/Dockerfile
+    environment:
+      COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+      COREWIRE_INTERNAL_TOKEN: corewire-internal-token
+    depends_on:
+      - postgres
+      - redis
+
+  scheduler:
+    build:
+      context: ../..
+      dockerfile: apps/workers/Dockerfile
+    command: ["python", "scheduler.py"]
+    working_dir: /app/apps/workers
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
     depends_on:
@@ -28,8 +53,36 @@ services:
       dockerfile: apps/web/Dockerfile
     environment:
       COREWIRE_API_BASE_URL: http://api:8000/api
-      COREWIRE_SITE_URL: http://localhost:3000
+      COREWIRE_SITE_URL: https://corewire.example.com
+      COREWIRE_ADSENSE_ENABLED: "true"
     depends_on:
       - api
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: corewire
+      POSTGRES_USER: corewire
+      POSTGRES_PASSWORD: corewire
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: corewire
+      MINIO_ROOT_PASSWORD: corewireminio
     ports:
-      - "3000:3000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres_data:
+  minio_data:

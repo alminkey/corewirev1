@@ -5,6 +5,7 @@ from core.analytics.router import router as analytics_router
 from core.articles.router import router as article_router
 from core.compliance.policies import router as compliance_router
 from core.internal.router import router as internal_router
+from core.newsletter.router import router as newsletter_router
 from core.operator.router import router as operator_router
 from core.system.router import router as system_router
 
@@ -15,5 +16,6 @@ app.include_router(internal_router)
 app.include_router(admin_router, prefix="/api")
 app.include_router(analytics_router, prefix="/api")
 app.include_router(compliance_router, prefix="/api")
+app.include_router(newsletter_router, prefix="/api")
 app.include_router(operator_router, prefix="/api")
 app.include_router(article_router, prefix="/api")

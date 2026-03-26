@@ -264,6 +264,36 @@ body {
   margin-top: 10px;
 }
 
+.cw-newsletter-card h3,
+.cw-article-section h1 {
+  margin: 0 0 12px;
+  color: #fff4ee;
+}
+
+.cw-newsletter-card p,
+.cw-ad-slot p,
+.cw-article-section p {
+  color: #b7b7bf;
+  line-height: 1.6;
+}
+
+.cw-inline-link {
+  display: inline-flex;
+  margin-top: 12px;
+  color: var(--cw-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.cw-inline-link:hover {
+  color: var(--cw-accent-strong);
+}
+
+.cw-ad-slot {
+  min-height: 120px;
+}
+
 @media (max-width: 1100px) {
   .cw-grid {
     grid-template-columns: 1fr;

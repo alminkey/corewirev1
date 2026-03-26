@@ -13,6 +13,8 @@
 - [ ] scheduler runs as a single logical instance
 - [ ] retries are bounded and dead-letter behavior is defined
 - [ ] seed/demo data is disabled outside non-production environments
+- [ ] PostgreSQL backup script is exercised before first public launch
+- [ ] PostgreSQL restore script is rehearsed from a known-good dump before first public launch
 
 ## Security
 

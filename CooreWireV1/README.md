@@ -56,7 +56,13 @@ powershell -ExecutionPolicy Bypass -File scripts/bootstrap-local.ps1
 docs/runbooks/local-start.md
 ```
 
-6. Explore the worktree branch used for implementation:
+6. For the first real article batches through the composite operator flow, see:
+
+```bash
+docs/runbooks/content-batch.md
+```
+
+7. Explore the worktree branch used for implementation:
 
 ```bash
 git worktree list

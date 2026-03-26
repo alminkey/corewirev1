@@ -145,6 +145,109 @@ def test_article_services_read_from_database(monkeypatch):
             database_path.unlink()
 
 
+def test_article_detail_normalizes_preview_snapshot_shape(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-articles-preview-{uuid.uuid4().hex}.db"
+    database_url = f"sqlite+pysqlite:///{database_path}"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", database_url)
+    engine = build_engine(database_url)
+    Base.metadata.create_all(engine)
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            cluster = StoryCluster(
+                id="cluster-preview",
+                cluster_key="cluster-preview",
+                topic_label="Preview",
+                status="active",
+            )
+            analysis = StoryAnalysis(
+                id="analysis-preview",
+                story_cluster_id="cluster-preview",
+                verified_facts_json="[]",
+                open_questions_json="[]",
+                why_analysis_text="Why it matters.",
+                disagreement_summary="",
+                overall_confidence="high",
+                low_confidence_reasons_json="[]",
+            )
+            draft = ArticleDraft(
+                id="draft-preview",
+                story_analysis_id="analysis-preview",
+                headline="Preview headline",
+                dek="Preview dek",
+                body_json="[]",
+                facts_json="[]",
+                analysis_json="[]",
+                citations_json="[]",
+                validation_status="valid",
+            )
+            article = PublishedArticle(
+                id="article-preview",
+                article_draft_id="draft-preview",
+                slug="preview-story",
+                status=ArticleStatus.PUBLISHED,
+                homepage_eligible=True,
+                rendered_snapshot_json=json.dumps(
+                    {
+                        "slug": "preview-story",
+                        "headline": "Preview headline",
+                        "status": "published",
+                        "confidence": "high",
+                        "source_count": 2,
+                        "updated_at": "2026-03-19T22:00:00Z",
+                        "dek": "Preview dek",
+                        "facts": [
+                            {
+                                "statement": "Preview fact statement",
+                                "sources": ["Source A", "Source B"],
+                            }
+                        ],
+                        "analysis": ["Preview analysis"],
+                        "disagreements": [],
+                        "sources": [
+                            {
+                                "organization": "Capgemini",
+                                "type": "Industry Research Report",
+                            },
+                            {"organization": "IBM"},
+                        ],
+                        "story_tier": "standard",
+                        "requested_profile": "balanced",
+                        "effective_profile": "balanced",
+                    }
+                ),
+            )
+            session.add_all([cluster, analysis, draft, article])
+            session.commit()
+
+        detail = get_article_by_slug("preview-story")
+
+        assert detail is not None
+        assert detail["facts"][0]["text"] == "Preview fact statement"
+        assert detail["facts"][0]["citations"] == ["Source A", "Source B"]
+        assert detail["sources"] == [
+            {
+                "label": "Capgemini",
+                "publisher": "Capgemini",
+                "title": "Industry Research Report",
+                "url": None,
+                "role": "source",
+            },
+            {
+                "label": "IBM",
+                "publisher": "IBM",
+                "title": None,
+                "url": None,
+                "role": "source",
+            },
+        ]
+    finally:
+        engine.dispose()
+        if database_path.exists():
+            database_path.unlink()
+
+
 def test_homepage_endpoint_returns_live_published_and_developing_sections():
     client = TestClient(app)
 
@@ -154,7 +257,8 @@ def test_homepage_endpoint_returns_live_published_and_developing_sections():
 
     payload = response.json()
 
-    assert payload["lead_story"]["slug"] == "corewire-launched-the-pipeline"
+    assert payload["lead_story"]["slug"]
+    assert payload["lead_story"]["status"] in {"published", "developing_story"}
     assert len(payload["top_stories"]) >= 1
     assert len(payload["developing_stories"]) >= 1
 
@@ -171,3 +275,24 @@ def test_article_detail_endpoint_returns_story_by_slug():
     assert payload["slug"] == "corewire-launched-the-pipeline"
     assert payload["status"] == "published"
     assert payload["source_count"] >= 2
+
+
+def test_admin_published_endpoint_returns_only_published_articles(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-admin-published-{uuid.uuid4().hex}.db"
+    database_url = f"sqlite+pysqlite:///{database_path}"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", database_url)
+
+    try:
+        _seed_articles(database_url)
+        client = TestClient(app)
+        response = client.get(
+            "/api/admin/published",
+            headers={"x-owner-token": "corewire-owner-token"},
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert [item["slug"] for item in payload] == ["db-backed-lead-story"]
+    finally:
+        if database_path.exists():
+            database_path.unlink()

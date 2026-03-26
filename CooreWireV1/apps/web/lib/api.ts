@@ -1,4 +1,13 @@
-import type { ArticleDetail, HomepagePayload } from "./types";
+import type {
+  AdminOverview,
+  ArticleDetail,
+  AutonomySettings,
+  HomepagePayload,
+  ReviewDecisionResult,
+  ReviewDetail,
+  ReviewQueuePayload,
+  StoryCard,
+} from "./types";
 
 const API_BASE_URL = process.env.COREWIRE_API_BASE_URL ?? "http://localhost:8000/api";
 
@@ -55,6 +64,54 @@ const articleFallback: Record<string, ArticleDetail> = {
   },
 };
 
+const reviewDetailFallback: ReviewDetail = {
+  id: "draft-1",
+  headline: "Flagship draft awaiting owner review",
+  dek: "A source-backed draft is waiting for a final owner decision.",
+  status: "review_required",
+  confidence: "medium",
+  reasons: ["insufficient_source_authority"],
+  draft: {
+    headline: "Flagship draft awaiting owner review",
+    dek: "A source-backed draft is waiting for a final owner decision.",
+    narrative:
+      "The review detail page gives the owner one place to inspect narrative, facts, sources, and editorial flags before deciding what to do next.",
+    facts: [{ text: "The draft did not auto-publish because the source mix still needs owner judgment." }],
+    analysis: [{ text: "This page is optimized for review and action, not inline editing." }],
+    sources: [
+      {
+        label: "Reuters",
+        publisher: "Reuters",
+        title: "Enterprise AI report",
+        url: "https://example.com/reuters",
+        role: "article",
+      },
+    ],
+    editorial_flags: [{ severity: "medium", message: "Needs owner authority review." }],
+  },
+};
+
+const adminOverviewFallback: AdminOverview = {
+  publish_mode: "hybrid",
+  system_health: "stable",
+  review_queue_count: 3,
+};
+
+const autonomySettingsFallback: AutonomySettings = {
+  mode: "hybrid",
+  allowed_modes: ["manual", "hybrid", "autonomous"],
+  homepage_auto_publish: true,
+  developing_story_auto_publish: true,
+  pause_ingest: false,
+  pause_publish: false,
+};
+
+const reviewQueueFallback: ReviewQueuePayload = {
+  pending_drafts: [],
+  low_confidence: [],
+  flagged_items: [],
+};
+
 async function fetchJson<T>(path: string, fallback: T): Promise<T> {
   try {
     const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -71,10 +128,102 @@ async function fetchJson<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
+async function fetchJsonWithHeaders<T>(
+  path: string,
+  fallback: T,
+  headers: Record<string, string>,
+): Promise<T> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      cache: "no-store",
+      headers,
+    });
+
+    if (!response.ok) {
+      return fallback;
+    }
+
+    return (await response.json()) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+async function postJsonWithHeaders<T>(
+  path: string,
+  body: object,
+  headers: Record<string, string>,
+): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      "content-type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return (await response.json()) as T;
+}
+
 export async function getHomepage(): Promise<HomepagePayload> {
   return fetchJson("/articles", homepageFallback);
 }
 
 export async function getArticleBySlug(slug: string): Promise<ArticleDetail> {
   return fetchJson(`/articles/${slug}`, articleFallback[slug] ?? articleFallback["corewire-launched-the-pipeline"]);
+}
+
+function ownerHeaders(): Record<string, string> {
+  const ownerToken = process.env.COREWIRE_OWNER_TOKEN ?? "corewire-owner-token";
+  return {
+    "x-owner-token": ownerToken,
+  };
+}
+
+export async function getAdminOverview(): Promise<AdminOverview> {
+  return fetchJsonWithHeaders("/admin/overview", adminOverviewFallback, ownerHeaders());
+}
+
+export async function getAutonomySettings(): Promise<AutonomySettings> {
+  return fetchJsonWithHeaders(
+    "/admin/settings/autonomy",
+    autonomySettingsFallback,
+    ownerHeaders(),
+  );
+}
+
+export async function getReviewQueue(): Promise<ReviewQueuePayload> {
+  return fetchJsonWithHeaders("/admin/review-queue", reviewQueueFallback, ownerHeaders());
+}
+
+export async function getPublishedArticles(): Promise<StoryCard[]> {
+  return fetchJsonWithHeaders("/admin/published", [], ownerHeaders());
+}
+
+export async function getReviewDetail(id: string): Promise<ReviewDetail> {
+  return fetchJsonWithHeaders(
+    `/admin/review-queue/${id}`,
+    {
+      ...reviewDetailFallback,
+      id,
+    },
+    ownerHeaders(),
+  );
+}
+
+export async function postReviewDecision(
+  id: string,
+  action: "approve" | "reject" | "request_rerun",
+): Promise<ReviewDecisionResult> {
+  return postJsonWithHeaders(
+    `/admin/review-queue/${id}/decision`,
+    { action },
+    ownerHeaders(),
+  );
 }

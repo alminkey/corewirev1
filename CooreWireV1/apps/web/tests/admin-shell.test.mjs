@@ -8,6 +8,8 @@ test("renders owner admin shell with control and review sections", () => {
   const shellSource = readFileSync(resolve("components/admin/admin-shell.tsx"), "utf8");
 
   assert.match(pageSource, /AdminShell/);
+  assert.match(pageSource, /Published Articles/i);
+  assert.match(pageSource, /System Overview/i);
   assert.match(shellSource, /Owner Control Plane/i);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);

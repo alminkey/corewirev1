@@ -1,6 +1,8 @@
 import { DevelopingStories } from "../components/home/developing-stories";
 import { HeroStory } from "../components/home/hero-story";
 import { IntelligenceRail } from "../components/home/intelligence-rail";
+import { AdSlot } from "../components/monetization/ad-slot";
+import { NewsletterSignupCard } from "../components/monetization/newsletter-signup-card";
 import { StoryGrid } from "../components/home/story-grid";
 import { getHomepage } from "../lib/api";
 import { generateHomepageMetadata } from "../lib/seo";
@@ -32,7 +34,10 @@ export default async function HomePage() {
         <div className="cw-main">
           <HeroStory story={homepage.lead_story} />
           <StoryGrid stories={homepage.top_stories} />
+          <AdSlot placement="homepage-feed" />
+          <NewsletterSignupCard />
           <DevelopingStories stories={homepage.developing_stories} />
+          <AdSlot placement="homepage-lower" />
         </div>
         <IntelligenceRail
           entries={[

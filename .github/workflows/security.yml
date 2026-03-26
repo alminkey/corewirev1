@@ -1,0 +1,35 @@
+name: security
+
+on:
+  pull_request:
+  schedule:
+    - cron: "0 4 * * 1"
+
+jobs:
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+
+  audit:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: CooreWireV1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          cache-dependency-path: CooreWireV1/pnpm-lock.yaml
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+      - name: Audit npm deps
+        run: pnpm audit --prod

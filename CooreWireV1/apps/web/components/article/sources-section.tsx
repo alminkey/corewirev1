@@ -1,5 +1,7 @@
+import type { ArticleSource } from "../../lib/types";
+
 type SourcesSectionProps = {
-  citations: string[];
+  citations: ArticleSource[];
 };
 
 export function SourcesSection({ citations }: SourcesSectionProps) {
@@ -12,7 +14,12 @@ export function SourcesSection({ citations }: SourcesSectionProps) {
       <div className="cw-article-section">
         <ul className="cw-source-list">
           {citations.map((citation) => (
-            <li key={citation}>{citation}</li>
+            <li key={`${citation.label}-${citation.url ?? "local"}`}>
+              <a href={citation.url ?? "#"} target="_blank" rel="noreferrer">
+                {citation.label}
+              </a>
+              {citation.title ? ` - ${citation.title}` : ""}
+            </li>
           ))}
         </ul>
       </div>

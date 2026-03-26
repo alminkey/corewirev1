@@ -1,6 +1,7 @@
 type QueueItem = {
   id: string;
   headline: string;
+  status?: string;
 };
 
 type ReviewQueueProps = {
@@ -14,19 +15,30 @@ export function ReviewQueue({
   lowConfidence,
   flaggedItems,
 }: ReviewQueueProps) {
+  const renderItem = (item: QueueItem | undefined, emptyLabel: string) => {
+    if (!item) {
+      return <p>{emptyLabel}</p>;
+    }
+    return (
+      <p>
+        <a href={`/admin/review/${item.id}`}>{item.headline}</a>
+      </p>
+    );
+  };
+
   return (
     <section className="admin-shell__grid">
       <article className="admin-shell__panel">
         <h2>Pending Drafts</h2>
-        <p>{pendingDrafts[0]?.headline ?? "No pending drafts"}</p>
+        {renderItem(pendingDrafts[0], "No pending drafts")}
       </article>
       <article className="admin-shell__panel">
         <h2>Low-confidence Stories</h2>
-        <p>{lowConfidence[0]?.headline ?? "No low-confidence stories"}</p>
+        {renderItem(lowConfidence[0], "No low-confidence stories")}
       </article>
       <article className="admin-shell__panel">
         <h2>Flagged Items</h2>
-        <p>{flaggedItems[0]?.headline ?? "No flagged items"}</p>
+        {renderItem(flaggedItems[0], "No flagged items")}
       </article>
     </section>
   );

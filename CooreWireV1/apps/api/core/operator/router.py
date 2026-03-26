@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from core.operator.service import execute_operator_command
 from core.security.internal_auth import require_internal_token
 
 
@@ -10,12 +11,6 @@ router = APIRouter(prefix="/operator", tags=["operator"])
 def run_operator_commands(payload: dict) -> dict:
     results = []
     for command in payload.get("commands", []):
-        results.append(
-            {
-                "type": command.get("type"),
-                "accepted": True,
-                "payload": command.get("payload", {}),
-            }
-        )
+        results.append(execute_operator_command(command))
 
     return {"results": results}

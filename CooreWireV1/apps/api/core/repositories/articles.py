@@ -40,3 +40,24 @@ class ArticleRepository:
             .where(PublishedArticle.slug == slug)
         )
         return self.session.scalars(statement).first()
+
+    def update_published_article_status(
+        self,
+        slug: str,
+        *,
+        status: str,
+        homepage_eligible: bool,
+        rendered_snapshot_json: str | None = None,
+        updated_at=None,
+    ) -> PublishedArticle | None:
+        article = self.get_published_article_by_slug(slug)
+        if article is None:
+            return None
+
+        article.status = ArticleStatus(status)
+        article.homepage_eligible = homepage_eligible
+        article.updated_at = updated_at
+        if rendered_snapshot_json is not None:
+            article.rendered_snapshot_json = rendered_snapshot_json
+        self.session.flush()
+        return article

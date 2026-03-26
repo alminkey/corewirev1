@@ -1,0 +1,32 @@
+name: deploy-prod
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload production bundle to Webtropia
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.WEBTROPIA_HOST }}
+          username: ${{ secrets.WEBTROPIA_USER }}
+          key: ${{ secrets.WEBTROPIA_SSH_KEY }}
+          source: "CooreWireV1/*"
+          target: "~/corewire-prod"
+
+      - name: Run production deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.WEBTROPIA_HOST }}
+          username: ${{ secrets.WEBTROPIA_USER }}
+          key: ${{ secrets.WEBTROPIA_SSH_KEY }}
+          script: |
+            cd ~/corewire-prod/CooreWireV1
+            chmod +x scripts/deploy-webtropia.sh
+            COMPOSE_PROJECT_NAME=corewire-prod ./scripts/deploy-webtropia.sh
