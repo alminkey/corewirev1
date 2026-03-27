@@ -20,6 +20,11 @@ docker compose `
     -f $composeProd `
     up -d --build
 
+docker compose `
+    -p $ComposeProjectName `
+    -f $composeProd `
+    exec -T api sh -lc 'cd /app && PYTHONPATH=/app/apps/api COREWIRE_DATABASE_URL="${COREWIRE_DATABASE_URL}" DATABASE_URL="${COREWIRE_DATABASE_URL}" alembic -c apps/api/alembic.ini upgrade head'
+
 Write-Host "Running smoke checks..."
 Start-Sleep -Seconds 5
 Invoke-WebRequest "http://localhost/health" | Out-Null

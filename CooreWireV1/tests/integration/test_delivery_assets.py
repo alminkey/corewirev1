@@ -34,6 +34,8 @@ def test_webtropia_deployment_assets_exist_and_cover_runtime():
     assert "redis:" in compose_text
     assert "minio:" in compose_text
     assert "COREWIRE_REDIS_URL: redis://redis:6379/0" in compose_text
+    assert "COREWIRE_OWNER_TOKEN: ${COREWIRE_OWNER_TOKEN:-corewire-owner-token}" in compose_text
+    assert "COREWIRE_INTERNAL_TOKEN: ${COREWIRE_INTERNAL_TOKEN:-corewire-internal-token}" in compose_text
 
     caddyfile_text = caddyfile_path.read_text(encoding="utf-8")
     assert "reverse_proxy web:3000" in caddyfile_text
@@ -45,6 +47,8 @@ def test_webtropia_deployment_assets_exist_and_cover_runtime():
     assert "docker-compose.yml" not in deploy_ps1_text
     assert "docker-compose.prod.yml" in deploy_sh_text
     assert "docker-compose.yml" not in deploy_sh_text
+    assert "alembic -c apps/api/alembic.ini upgrade head" in deploy_sh_text
+    assert "alembic -c apps/api/alembic.ini upgrade head" in deploy_ps1_text
 
 
 def test_webtropia_runbook_documents_dns_tls_and_rollbacks():
