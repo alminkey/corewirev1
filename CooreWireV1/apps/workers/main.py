@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import os
 from pathlib import Path
 
 from core.config import WorkerSettings
@@ -47,3 +48,28 @@ def run_worker_loop(
         on_error=on_error,
     )
     return runtime
+
+
+def _read_int_env(name: str) -> int | None:
+    raw_value = os.getenv(name, "").strip()
+    if not raw_value:
+        return None
+    return int(raw_value)
+
+
+def _read_float_env(name: str, *, default: float) -> float:
+    raw_value = os.getenv(name, "").strip()
+    if not raw_value:
+        return default
+    return float(raw_value)
+
+
+def main() -> None:
+    run_worker_loop(
+        max_cycles=_read_int_env("COREWIRE_WORKER_MAX_CYCLES"),
+        sleep_seconds=_read_float_env("COREWIRE_WORKER_SLEEP_SECONDS", default=5.0),
+    )
+
+
+if __name__ == "__main__":
+    main()

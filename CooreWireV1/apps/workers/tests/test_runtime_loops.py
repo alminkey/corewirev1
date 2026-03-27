@@ -3,8 +3,12 @@ import json
 import sys
 import uuid
 
+import pytest
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+import main as worker_main
+import scheduler as scheduler_module
 from main import run_worker_loop
 from scheduler import run_scheduler_loop
 
@@ -81,3 +85,37 @@ def test_scheduler_loop_waits_for_dependencies_and_runs_one_cycle():
 
     assert state["ready_calls"] == 1
     assert state["enqueue_calls"] == 1
+
+
+def test_worker_main_invokes_runtime_loop(monkeypatch: pytest.MonkeyPatch):
+    state = {"called": 0}
+
+    def fake_run_worker_loop(**kwargs) -> None:
+        state["called"] += 1
+        assert kwargs["max_cycles"] == 1
+        assert kwargs["sleep_seconds"] == 0.0
+
+    monkeypatch.setattr(worker_main, "run_worker_loop", fake_run_worker_loop)
+    monkeypatch.setenv("COREWIRE_WORKER_MAX_CYCLES", "1")
+    monkeypatch.setenv("COREWIRE_WORKER_SLEEP_SECONDS", "0")
+
+    worker_main.main()
+
+    assert state["called"] == 1
+
+
+def test_scheduler_main_invokes_runtime_loop(monkeypatch: pytest.MonkeyPatch):
+    state = {"called": 0}
+
+    def fake_run_scheduler_loop(**kwargs) -> None:
+        state["called"] += 1
+        assert kwargs["max_cycles"] == 1
+        assert kwargs["sleep_seconds"] == 0.0
+
+    monkeypatch.setattr(scheduler_module, "run_scheduler_loop", fake_run_scheduler_loop)
+    monkeypatch.setenv("COREWIRE_SCHEDULER_MAX_CYCLES", "1")
+    monkeypatch.setenv("COREWIRE_SCHEDULER_SLEEP_SECONDS", "0")
+
+    scheduler_module.main()
+
+    assert state["called"] == 1
