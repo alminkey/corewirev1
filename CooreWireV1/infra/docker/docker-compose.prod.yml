@@ -21,6 +21,7 @@ services:
       dockerfile: apps/api/Dockerfile
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+      COREWIRE_REDIS_URL: redis://redis:6379/0
       COREWIRE_INTERNAL_TOKEN: corewire-internal-token
       COREWIRE_OWNER_TOKEN: corewire-owner-token
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
@@ -34,6 +35,7 @@ services:
       dockerfile: apps/workers/Dockerfile
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+      COREWIRE_REDIS_URL: redis://redis:6379/0
       COREWIRE_INTERNAL_TOKEN: corewire-internal-token
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     depends_on:
@@ -48,6 +50,7 @@ services:
     working_dir: /app/apps/workers
     environment:
       COREWIRE_DATABASE_URL: postgresql://corewire:corewire@postgres:5432/corewire
+      COREWIRE_REDIS_URL: redis://redis:6379/0
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     depends_on:
       - postgres

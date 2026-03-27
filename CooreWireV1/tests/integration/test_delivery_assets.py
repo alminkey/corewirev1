@@ -33,6 +33,7 @@ def test_webtropia_deployment_assets_exist_and_cover_runtime():
     assert "postgres:" in compose_text
     assert "redis:" in compose_text
     assert "minio:" in compose_text
+    assert "COREWIRE_REDIS_URL: redis://redis:6379/0" in compose_text
 
     caddyfile_text = caddyfile_path.read_text(encoding="utf-8")
     assert "reverse_proxy web:3000" in caddyfile_text
