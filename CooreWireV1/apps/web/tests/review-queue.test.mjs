@@ -28,4 +28,7 @@ test("renders review detail page with source summary and decision actions", () =
   assert.match(detailPageSource, /Editorial Flags/i);
   assert.match(detailPageSource, /<form/);
   assert.match(detailPageSource, /submitReviewDecision|postReviewDecision/);
+  assert.match(detailPageSource, /source\.label/);
+  assert.match(detailPageSource, /source\.url/);
+  assert.match(detailPageSource, /source\.publisher/);
 });

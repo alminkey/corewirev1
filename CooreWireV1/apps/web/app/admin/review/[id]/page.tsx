@@ -58,6 +58,12 @@ export default async function ReviewDetailPage({ params }: ReviewDetailPageProps
             {detail.draft.sources.map((source) => (
               <li key={`${detail.id}-${source.label}`}>
                 <a href={source.url ?? "#"}>{source.title ?? source.label}</a>
+                {(source.publisher || source.label !== source.title) && (
+                  <p>
+                    {source.publisher ?? source.label}
+                    {source.url ? ` · ${source.url}` : ""}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
