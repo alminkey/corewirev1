@@ -41,6 +41,18 @@ export type ReviewDetail = {
   status: string;
   confidence: string;
   reasons: string[];
+  decision_summary: string;
+  recommendation: {
+    action: "approve" | "reject" | "request_rerun";
+    label: string;
+    reason: string;
+  };
+  source_quality: {
+    source_count: number;
+    unique_publishers: number;
+    authority: string;
+    blockers: string[];
+  };
   draft: {
     headline: string;
     dek: string;

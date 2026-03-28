@@ -142,6 +142,7 @@ def _serialize_review_detail(draft: ArticleDraft, analysis: StoryAnalysis) -> di
     reasons = _extract_reason_strings(
         _parse_json_list(analysis.low_confidence_reasons_json)
     ) or _extract_reason_strings(citations)
+    source_quality = _build_source_quality(sources)
 
     return {
         "id": draft.id,
@@ -150,6 +151,11 @@ def _serialize_review_detail(draft: ArticleDraft, analysis: StoryAnalysis) -> di
         "status": draft.validation_status,
         "confidence": analysis.overall_confidence,
         "reasons": reasons,
+        "decision_summary": _build_decision_summary(analysis.overall_confidence, source_quality),
+        "recommendation": _build_recommendation(
+            analysis.overall_confidence, draft.validation_status, source_quality
+        ),
+        "source_quality": source_quality,
         "draft": {
             "headline": draft_payload.get("headline") or draft.headline or "Untitled draft",
             "dek": draft_payload.get("dek") or draft.dek or "",
@@ -206,3 +212,56 @@ def _extract_source_objects(values: list) -> list[dict]:
         ):
             sources.append(value)
     return sources
+
+
+def _build_source_quality(sources: list[dict]) -> dict:
+    publisher_keys = {
+        (source.get("publisher") or source.get("label") or source.get("title") or "").strip().lower()
+        for source in sources
+        if isinstance(source, dict)
+    }
+    unique_publishers = len({key for key in publisher_keys if key})
+    source_count = len(sources)
+
+    blockers: list[str] = []
+    if source_count <= 1:
+        blockers.append("Only one corroborating source is available.")
+
+    authority = "limited" if source_count <= 1 or unique_publishers <= 1 else "mixed"
+
+    return {
+        "source_count": source_count,
+        "unique_publishers": unique_publishers,
+        "authority": authority,
+        "blockers": blockers,
+    }
+
+
+def _build_decision_summary(confidence: str, source_quality: dict) -> str:
+    if confidence == "low" and source_quality["source_count"] <= 1:
+        return "Low-confidence draft with limited corroboration needs owner review before publish."
+    if confidence == "low":
+        return "Low-confidence draft needs owner review before publish."
+    if source_quality["blockers"]:
+        return "Draft needs owner review before publish."
+    return "Draft is ready for owner review."
+
+
+def _build_recommendation(confidence: str, status: str, source_quality: dict) -> dict:
+    if confidence == "low" and source_quality["source_count"] <= 1:
+        return {
+            "action": "request_rerun",
+            "label": "Request rerun",
+            "reason": "Only one corroborating source is available, so the draft needs stronger sourcing before publish.",
+        }
+    if status == "flagged":
+        return {
+            "action": "reject",
+            "label": "Reject",
+            "reason": "The draft is flagged and needs a fresh editorial pass before publish.",
+        }
+    return {
+        "action": "approve",
+        "label": "Approve",
+        "reason": "The draft has enough support for an owner approval decision.",
+    }

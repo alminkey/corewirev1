@@ -287,6 +287,21 @@ def test_review_detail_normalizes_legacy_reason_and_source_payloads(monkeypatch)
                 "text": "The developing label protects the homepage until independent corroboration arrives."
             }
         ]
+        assert (
+            payload["decision_summary"]
+            == "Low-confidence draft with limited corroboration needs owner review before publish."
+        )
+        assert payload["recommendation"] == {
+            "action": "request_rerun",
+            "label": "Request rerun",
+            "reason": "Only one corroborating source is available, so the draft needs stronger sourcing before publish.",
+        }
+        assert payload["source_quality"] == {
+            "source_count": 1,
+            "unique_publishers": 1,
+            "authority": "limited",
+            "blockers": ["Only one corroborating source is available."],
+        }
     finally:
         engine.dispose()
         if database_path.exists():

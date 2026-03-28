@@ -17,21 +17,55 @@ export default async function ReviewDetailPage({ params }: ReviewDetailPageProps
         <p className="article-dek">{detail.dek}</p>
 
         <section>
-          <h2>Decision Reasons</h2>
+          <h2>Decision Summary</h2>
+          <p>{detail.decision_summary}</p>
+        </section>
+
+        <section>
+          <h2>Recommendation</h2>
+          <p>
+            <strong>{detail.recommendation.label}</strong>: {detail.recommendation.reason}
+          </p>
+        </section>
+
+        <section>
+          <h2>Source Quality</h2>
           <ul>
-            {detail.reasons.map((reason) => (
-              <li key={typeof reason === "string" ? reason : JSON.stringify(reason)}>
-                {typeof reason === "string"
-                  ? reason
-                  : reason.message ?? reason.title ?? reason.label ?? "Review reason"}
-              </li>
+            <li>{detail.source_quality.source_count} corroborating sources</li>
+            <li>{detail.source_quality.unique_publishers} unique publishers</li>
+            <li>Authority mix: {detail.source_quality.authority}</li>
+            {detail.source_quality.blockers.map((blocker) => (
+              <li key={`${detail.id}-blocker-${blocker}`}>{blocker}</li>
             ))}
           </ul>
         </section>
 
         <section>
+          <h2>Decision Reasons</h2>
+          <ul>
+            {detail.reasons.length ? (
+              detail.reasons.map((reason) => (
+                <li key={typeof reason === "string" ? reason : JSON.stringify(reason)}>
+                  {typeof reason === "string"
+                    ? reason
+                    : reason.message ?? reason.title ?? reason.label ?? "Review reason"}
+                </li>
+              ))
+            ) : (
+              <li>No explicit decision reasons were recorded.</li>
+            )}
+          </ul>
+        </section>
+
+        <section>
+          <h2>Draft Preview</h2>
+          <h3>{detail.draft.headline}</h3>
+          <p>{detail.draft.dek}</p>
+        </section>
+
+        <section>
           <h2>Narrative</h2>
-          <p>{detail.draft.narrative}</p>
+          <p>{detail.draft.narrative || "Narrative not provided for this draft."}</p>
         </section>
 
         <section>
