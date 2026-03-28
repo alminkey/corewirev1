@@ -209,3 +209,85 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
         engine.dispose()
         if database_path.exists():
             database_path.unlink()
+
+
+def test_review_detail_normalizes_legacy_reason_and_source_payloads(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-review-legacy-{uuid.uuid4().hex}.db"
+    database_url = f"sqlite+pysqlite:///{database_path}"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", database_url)
+
+    engine = build_engine(database_url)
+    Base.metadata.create_all(engine)
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            cluster = StoryCluster(
+                id="cluster-review-legacy",
+                cluster_key="cluster-review-legacy",
+                topic_label="Legacy Review Detail",
+                status="active",
+            )
+            analysis = StoryAnalysis(
+                id="analysis-review-legacy",
+                story_cluster_id="cluster-review-legacy",
+                verified_facts_json="[]",
+                open_questions_json="[]",
+                why_analysis_text="Why it matters.",
+                disagreement_summary="",
+                overall_confidence="low",
+                low_confidence_reasons_json=json.dumps(["insufficient_source_authority"]),
+            )
+            draft = ArticleDraft(
+                id="draft-review-legacy",
+                story_analysis_id="analysis-review-legacy",
+                headline="Legacy review draft",
+                dek="Still needs review",
+                body_json=json.dumps(
+                    {
+                        "headline": "Legacy review draft",
+                        "dek": "Still needs review",
+                        "narrative": "",
+                    }
+                ),
+                facts_json=json.dumps(
+                    [{"text": "Only one source currently backs the rollout details."}]
+                ),
+                analysis_json=json.dumps(
+                    ["The developing label protects the homepage until independent corroboration arrives."]
+                ),
+                citations_json=json.dumps(
+                    [
+                        {
+                            "label": "Source 3",
+                            "publisher": "Ops Monitor",
+                            "title": "Rollout verification note",
+                            "url": "https://example.com/verify-1",
+                            "role": "reference",
+                        }
+                    ]
+                ),
+                validation_status="review_required",
+            )
+            session.add_all([cluster, analysis, draft])
+            session.commit()
+
+        client = TestClient(app)
+        response = client.get(
+            "/api/admin/review-queue/draft-review-legacy",
+            headers={"x-owner-token": "corewire-owner-token"},
+        )
+
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["reasons"] == ["insufficient_source_authority"]
+        assert payload["draft"]["sources"][0]["publisher"] == "Ops Monitor"
+        assert payload["draft"]["analysis"] == [
+            {
+                "text": "The developing label protects the homepage until independent corroboration arrives."
+            }
+        ]
+    finally:
+        engine.dispose()
+        if database_path.exists():
+            database_path.unlink()

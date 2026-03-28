@@ -130,11 +130,18 @@ def _load_review_queue_from_database() -> dict | None:
 
 def _serialize_review_detail(draft: ArticleDraft, analysis: StoryAnalysis) -> dict:
     draft_payload = _parse_json_object(draft.body_json)
-    sources = draft_payload.get("sources") or []
+    citations = _parse_json_list(draft.citations_json)
+    sources = draft_payload.get("sources") or _extract_source_objects(citations)
     editorial_flags = draft_payload.get("editorial_flags") or []
-    facts = _parse_json_list(draft.facts_json) or draft_payload.get("fact_blocks") or []
-    analysis_blocks = _parse_json_list(draft.analysis_json) or draft_payload.get("analysis_blocks") or []
-    reasons = _parse_json_list(draft.citations_json) or _parse_json_list(analysis.low_confidence_reasons_json)
+    facts = _normalize_content_blocks(
+        _parse_json_list(draft.facts_json) or draft_payload.get("fact_blocks") or []
+    )
+    analysis_blocks = _normalize_content_blocks(
+        _parse_json_list(draft.analysis_json) or draft_payload.get("analysis_blocks") or []
+    )
+    reasons = _extract_reason_strings(
+        _parse_json_list(analysis.low_confidence_reasons_json)
+    ) or _extract_reason_strings(citations)
 
     return {
         "id": draft.id,
@@ -167,3 +174,35 @@ def _parse_json_list(value: str | None) -> list:
         return []
     parsed = json.loads(value)
     return parsed if isinstance(parsed, list) else []
+
+
+def _normalize_content_blocks(values: list) -> list[dict]:
+    normalized: list[dict] = []
+    for value in values:
+        if isinstance(value, str):
+            normalized.append({"text": value})
+        elif isinstance(value, dict):
+            normalized.append(value)
+    return normalized
+
+
+def _extract_reason_strings(values: list) -> list[str]:
+    reasons: list[str] = []
+    for value in values:
+        if isinstance(value, str):
+            reasons.append(value)
+        elif isinstance(value, dict):
+            maybe_reason = value.get("message") or value.get("reason")
+            if isinstance(maybe_reason, str):
+                reasons.append(maybe_reason)
+    return reasons
+
+
+def _extract_source_objects(values: list) -> list[dict]:
+    sources: list[dict] = []
+    for value in values:
+        if isinstance(value, dict) and any(
+            value.get(key) for key in ("label", "publisher", "title", "url")
+        ):
+            sources.append(value)
+    return sources
