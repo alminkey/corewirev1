@@ -10,6 +10,16 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(pageSource, /AdminShell/);
   assert.match(pageSource, /Published Articles/i);
   assert.match(pageSource, /System Overview/i);
+  assert.match(pageSource, /Published Status/i);
+  assert.match(pageSource, /Confidence/i);
+  assert.match(pageSource, /Sources/i);
+  assert.match(pageSource, /Updated/i);
+  assert.match(pageSource, /Open article/i);
+  assert.match(pageSource, /story\.status/);
+  assert.match(pageSource, /story\.confidence/);
+  assert.match(pageSource, /story\.source_count/);
+  assert.match(pageSource, /story\.updated_at/);
+  assert.match(pageSource, /href=\{`\/articles\/\$\{story\.slug\}`\}/);
   assert.match(shellSource, /Owner Control Plane/i);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);

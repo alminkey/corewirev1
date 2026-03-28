@@ -52,10 +52,36 @@ export default async function AdminPage() {
         {publishedArticles.length === 0 ? (
           <p>No published articles yet.</p>
         ) : (
-          <ul>
+          <ul className="story-list">
             {publishedArticles.map((story) => (
               <li key={story.slug}>
-                <a href={`/articles/${story.slug}`}>{story.headline}</a>
+                <article>
+                  <h3>
+                    <a href={`/articles/${story.slug}`}>{story.headline}</a>
+                  </h3>
+                  <p>{story.dek}</p>
+                  <dl>
+                    <div>
+                      <dt>Published Status</dt>
+                      <dd>{story.status}</dd>
+                    </div>
+                    <div>
+                      <dt>Confidence</dt>
+                      <dd>{story.confidence}</dd>
+                    </div>
+                    <div>
+                      <dt>Sources</dt>
+                      <dd>{story.source_count}</dd>
+                    </div>
+                    <div>
+                      <dt>Updated</dt>
+                      <dd>{story.updated_at}</dd>
+                    </div>
+                  </dl>
+                  <p>
+                    <a href={`/articles/${story.slug}`}>Open article</a>
+                  </p>
+                </article>
               </li>
             ))}
           </ul>
