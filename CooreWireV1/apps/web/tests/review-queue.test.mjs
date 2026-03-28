@@ -31,4 +31,6 @@ test("renders review detail page with source summary and decision actions", () =
   assert.match(detailPageSource, /source\.label/);
   assert.match(detailPageSource, /source\.url/);
   assert.match(detailPageSource, /source\.publisher/);
+  assert.match(detailPageSource, /typeof reason === "string"/);
+  assert.match(detailPageSource, /reason\.label|reason\.message|reason\.title/);
 });

@@ -20,7 +20,11 @@ export default async function ReviewDetailPage({ params }: ReviewDetailPageProps
           <h2>Decision Reasons</h2>
           <ul>
             {detail.reasons.map((reason) => (
-              <li key={reason}>{reason}</li>
+              <li key={typeof reason === "string" ? reason : JSON.stringify(reason)}>
+                {typeof reason === "string"
+                  ? reason
+                  : reason.message ?? reason.title ?? reason.label ?? "Review reason"}
+              </li>
             ))}
           </ul>
         </section>
