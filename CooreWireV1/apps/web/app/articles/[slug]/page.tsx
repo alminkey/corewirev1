@@ -31,8 +31,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
 
   return (
-    <main className="cw-shell">
+    <main className="cw-shell cw-article-shell">
       <div className="cw-overlay" />
+      <div className="cw-article-signal" aria-hidden="true" />
       <article className="cw-article">
         <ArticleJsonLd article={article} />
         <ArticleHeader

@@ -16,17 +16,27 @@ export default async function HomePage() {
   const homepage = await getHomepage();
 
   return (
-    <main className="cw-shell">
+    <main className="cw-shell cw-shell--home">
       <div className="cw-overlay" />
-      <header className="cw-topbar">
-        <div>
-          <p className="cw-kicker">COREWIRE_OS</p>
-          <h1>Command Center</h1>
+      <header className="cw-topbar cw-panel">
+        <div className="cw-brand-lockup">
+          <span className="cw-signal-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <div>
+            <p className="cw-kicker">COREWIRE_OS</p>
+            <h1>CoreWire Signal Desk</h1>
+            <p className="cw-topbar-note">
+              A live editorial wire for autonomous reporting, review, and signal-driven publishing.
+            </p>
+          </div>
         </div>
         <nav className="cw-nav">
-          <span>// Terminal</span>
-          <span>// Database</span>
-          <span>// Archive</span>
+          <span>// Signal Mesh</span>
+          <span>// Wire Index</span>
+          <span>// Review Queue</span>
         </nav>
       </header>
 

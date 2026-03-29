@@ -15,7 +15,10 @@ test("renders hero story, intelligence rail, and developing stories section", ()
   assert.match(pageSource, /HeroStory/);
   assert.match(pageSource, /IntelligenceRail/);
   assert.match(pageSource, /DevelopingStories/);
+  assert.match(pageSource, /CoreWire Signal Desk/i);
+  assert.match(pageSource, /cw-signal-mark/);
   assert.match(heroSource, /Priority Alert Stream/i);
+  assert.match(heroSource, /Signal Mesh/i);
   assert.match(railSource, /Latest Intelligence Log/i);
   assert.match(developingSource, /Developing Stories/i);
 });

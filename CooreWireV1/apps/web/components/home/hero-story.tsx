@@ -13,10 +13,10 @@ export function HeroStory({ story }: HeroStoryProps) {
     <section className="cw-panel cw-hero">
       <div className="cw-panel-header">
         <span>Priority Alert Stream</span>
-        <span>ID: NW_001_SIG</span>
+        <span>Signal Mesh // NW_001_SIG</span>
       </div>
       <div className="cw-hero-body">
-        <p className="cw-tag">System Log: Critical Update</p>
+        <p className="cw-tag">Signal Mesh: Hot lane</p>
         <h2>{story.headline}</h2>
         <p className="cw-summary">{story.dek}</p>
         <div className="cw-meta">

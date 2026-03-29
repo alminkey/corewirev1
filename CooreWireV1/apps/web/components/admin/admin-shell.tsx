@@ -10,14 +10,21 @@ export function AdminShell({
   reviewQueueCount,
 }: AdminShellProps) {
   return (
-    <main className="admin-shell">
+    <section className="admin-shell cw-panel">
       <section className="admin-shell__hero">
-        <p className="admin-shell__eyebrow">Owner Control Plane</p>
-        <h1>Newsroom command center</h1>
-        <p>
-          Control autonomy, inspect operational health, and review publish
-          decisions from one owner-only surface.
-        </p>
+        <div className="admin-shell__signal" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div>
+          <p className="admin-shell__eyebrow">Owner Control Plane</p>
+          <h1>Signal Desk for the newsroom command center</h1>
+          <p>
+            Control autonomy, inspect operational health, and review publish decisions from one
+            owner-only surface.
+          </p>
+        </div>
       </section>
 
       <section className="admin-shell__grid">
@@ -34,6 +41,6 @@ export function AdminShell({
           <p>{reviewQueueCount} stories waiting</p>
         </article>
       </section>
-    </main>
+    </section>
   );
 }

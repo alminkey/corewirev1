@@ -21,6 +21,8 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(pageSource, /story\.updated_at/);
   assert.match(pageSource, /href=\{`\/articles\/\$\{story\.slug\}`\}/);
   assert.match(shellSource, /Owner Control Plane/i);
+  assert.match(shellSource, /Signal Desk/i);
+  assert.match(shellSource, /admin-shell__signal/);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);
 });

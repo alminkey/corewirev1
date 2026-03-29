@@ -11,13 +11,17 @@ test("renders facts and analysis in separate labeled sections", () => {
     "utf8",
   );
   const sourcesSource = readFileSync(resolve("components/article/sources-section.tsx"), "utf8");
+  const headerSource = readFileSync(resolve("components/article/article-header.tsx"), "utf8");
 
   assert.match(pageSource, /FactsSection/);
   assert.match(pageSource, /AnalysisSection/);
   assert.match(pageSource, /SourcesSection/);
+  assert.match(pageSource, /cw-article-shell/);
+  assert.match(pageSource, /cw-article-signal/);
   assert.match(factsSource, /What is Verified/i);
   assert.match(analysisSource, /Analysis/i);
   assert.match(sourcesSource, /Sources/i);
+  assert.match(headerSource, /Wire Report/i);
 });
 
 test("renders article sources as structured links instead of raw strings", () => {

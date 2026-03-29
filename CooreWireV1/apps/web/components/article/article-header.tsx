@@ -13,10 +13,11 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
   return (
     <header className="cw-panel cw-article-header">
       <div className="cw-panel-header">
-        <span>{article.status}</span>
+        <span>Wire Report // {article.status}</span>
         <span>Confidence: {article.confidence}</span>
       </div>
       <div className="cw-article-header-body">
+        <p className="cw-kicker">Signal Desk Article Brief</p>
         <h1>{article.headline}</h1>
         <p>{article.dek}</p>
         <div className="cw-meta">
