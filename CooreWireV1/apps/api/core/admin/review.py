@@ -1,14 +1,19 @@
 import json
 import os
+import re
+import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import joinedload
 
+from core.db.models.article import ArticleStatus
 from core.db.base import Base
 from core.db.models.article import ArticleDraft
 from core.db.models.story import StoryAnalysis
 from core.db.session import build_engine, build_session_factory
+from core.repositories.articles import ArticleRepository
 
 
 def _database_url() -> str:
@@ -74,6 +79,8 @@ def apply_review_decision(review_id: str, action: str) -> dict | None:
             if draft is None:
                 return None
             draft.validation_status = status_map[action]
+            if action == "approve":
+                _publish_review_draft(session, draft)
             session.commit()
             return {
                 "id": draft.id,
@@ -265,3 +272,69 @@ def _build_recommendation(confidence: str, status: str, source_quality: dict) ->
         "label": "Approve",
         "reason": "The draft has enough support for an owner approval decision.",
     }
+
+
+def _publish_review_draft(session, draft: ArticleDraft) -> None:
+    analysis = session.get(StoryAnalysis, draft.story_analysis_id)
+    if analysis is None:
+        return
+
+    article_repository = ArticleRepository(session)
+    payload = _parse_json_object(draft.body_json)
+    sources = payload.get("sources") or _extract_source_objects(_parse_json_list(draft.citations_json))
+    facts = _normalize_content_blocks(_parse_json_list(draft.facts_json) or payload.get("fact_blocks") or [])
+    analysis_blocks = _normalize_content_blocks(
+        _parse_json_list(draft.analysis_json) or payload.get("analysis_blocks") or []
+    )
+
+    now = datetime.now(UTC)
+    slug = _slugify(draft.headline or payload.get("headline") or draft.id)
+    status = (
+        ArticleStatus.DEVELOPING.value
+        if analysis.overall_confidence == "low"
+        else ArticleStatus.PUBLISHED.value
+    )
+    snapshot = {
+        "slug": slug,
+        "headline": draft.headline or payload.get("headline") or "Untitled draft",
+        "status": status,
+        "confidence": analysis.overall_confidence or "medium",
+        "source_count": len(sources),
+        "updated_at": now.isoformat(),
+        "dek": draft.dek or payload.get("dek") or "",
+        "facts": facts,
+        "analysis": [item.get("text") or item.get("content", "") for item in analysis_blocks],
+        "disagreements": [],
+        "sources": sources,
+        "story_tier": "developing" if status == ArticleStatus.DEVELOPING.value else "standard",
+        "requested_profile": "balanced",
+        "effective_profile": "balanced",
+    }
+
+    existing_article = article_repository.get_published_article_by_slug(slug)
+    if existing_article is not None:
+        article_repository.update_published_article_status(
+            slug,
+            status=status,
+            homepage_eligible=status == ArticleStatus.PUBLISHED.value,
+            rendered_snapshot_json=json.dumps(snapshot),
+            updated_at=now,
+        )
+        return
+
+    article_repository.create_published_article(
+        {
+            "id": str(uuid.uuid4()),
+            "article_draft_id": draft.id,
+            "slug": slug,
+            "status": status,
+            "homepage_eligible": status == ArticleStatus.PUBLISHED.value,
+            "published_at": now,
+            "updated_at": now,
+            "rendered_snapshot_json": json.dumps(snapshot),
+        }
+    )
+
+
+def _slugify(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")[:180]

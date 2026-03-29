@@ -10,6 +10,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app import app
 from core.admin.review import get_review_queue
+from core.articles.service import list_articles, list_published_articles_feed
 from core.db.base import Base
 from core.db.models.article import ArticleDraft
 from core.db.models.story import StoryAnalysis, StoryCluster
@@ -205,6 +206,110 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
         assert queue_response.status_code == 200
         queue_payload = queue_response.json()
         assert queue_payload["pending_drafts"] == []
+    finally:
+        engine.dispose()
+        if database_path.exists():
+            database_path.unlink()
+
+
+def test_owner_approve_publishes_review_draft_into_live_feeds(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-review-approve-publish-{uuid.uuid4().hex}.db"
+    database_url = f"sqlite+pysqlite:///{database_path}"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", database_url)
+
+    engine = build_engine(database_url)
+    Base.metadata.create_all(engine)
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            cluster = StoryCluster(
+                id="cluster-review-approve",
+                cluster_key="cluster-review-approve",
+                topic_label="Review Approve",
+                status="active",
+            )
+            analysis = StoryAnalysis(
+                id="analysis-review-approve",
+                story_cluster_id="cluster-review-approve",
+                verified_facts_json="[]",
+                open_questions_json="[]",
+                why_analysis_text="Why it matters.",
+                disagreement_summary="",
+                overall_confidence="medium",
+                low_confidence_reasons_json=json.dumps(["insufficient_source_authority"]),
+            )
+            draft = ArticleDraft(
+                id="draft-review-approve",
+                story_analysis_id="analysis-review-approve",
+                headline="Approved review story",
+                dek="Approved through owner review",
+                body_json=json.dumps(
+                    {
+                        "headline": "Approved review story",
+                        "dek": "Approved through owner review",
+                        "narrative": "Narrative text.",
+                        "fact_blocks": [{"text": "Fact block", "citations": ["Reuters", "Bloomberg"]}],
+                        "analysis_blocks": [{"text": "Analysis block"}],
+                        "sources": [
+                            {
+                                "label": "Reuters",
+                                "publisher": "Reuters",
+                                "title": "Enterprise AI report",
+                                "url": "https://example.com/reuters",
+                                "role": "article",
+                            },
+                            {
+                                "label": "Bloomberg",
+                                "publisher": "Bloomberg",
+                                "title": "Agent market story",
+                                "url": "https://example.com/bloomberg",
+                                "role": "article",
+                            },
+                        ],
+                    }
+                ),
+                facts_json=json.dumps([{"text": "Fact block", "citations": ["Reuters", "Bloomberg"]}]),
+                analysis_json=json.dumps([{"text": "Analysis block"}]),
+                citations_json=json.dumps(
+                    [
+                        {
+                            "label": "Reuters",
+                            "publisher": "Reuters",
+                            "title": "Enterprise AI report",
+                            "url": "https://example.com/reuters",
+                            "role": "article",
+                        },
+                        {
+                            "label": "Bloomberg",
+                            "publisher": "Bloomberg",
+                            "title": "Agent market story",
+                            "url": "https://example.com/bloomberg",
+                            "role": "article",
+                        },
+                    ]
+                ),
+                validation_status="review_required",
+            )
+            session.add_all([cluster, analysis, draft])
+            session.commit()
+
+        client = TestClient(app)
+        decision_response = client.post(
+            "/api/admin/review-queue/draft-review-approve/decision",
+            headers={"x-owner-token": "corewire-owner-token"},
+            json={"action": "approve"},
+        )
+
+        assert decision_response.status_code == 200
+        decision_payload = decision_response.json()
+        assert decision_payload["status"] == "published"
+
+        published_feed = list_published_articles_feed()
+        assert published_feed[0]["headline"] == "Approved review story"
+
+        homepage = list_articles()
+        assert homepage["lead_story"]["headline"] == "Approved review story"
     finally:
         engine.dispose()
         if database_path.exists():
