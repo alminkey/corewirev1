@@ -10,8 +10,11 @@ export function FactsSection({ blocks }: FactsSectionProps) {
         <span>Facts</span>
       </div>
       <div className="cw-article-section">
-        {blocks.map((block) => (
-          <article className="cw-fact-block" key={block.text}>
+        {blocks.map((block, index) => (
+          <article
+            className="cw-fact-block"
+            key={`fact-${index}-${block.citations.join("|")}`}
+          >
             <p>{block.text}</p>
             <small>Citations: {block.citations.join(", ")}</small>
           </article>

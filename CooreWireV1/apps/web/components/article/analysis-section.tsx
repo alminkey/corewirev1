@@ -10,8 +10,8 @@ export function AnalysisSection({ blocks }: AnalysisSectionProps) {
         <span>Interpretation</span>
       </div>
       <div className="cw-article-section">
-        {blocks.map((block) => (
-          <p className="cw-analysis-block" key={block}>
+        {blocks.map((block, index) => (
+          <p className="cw-analysis-block" key={`analysis-${index}`}>
             {block}
           </p>
         ))}

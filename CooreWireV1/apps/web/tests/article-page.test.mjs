@@ -33,3 +33,16 @@ test("renders article sources as structured links instead of raw strings", () =>
   assert.match(sourcesSource, /href=\{citation\.url \?\? "#"\}/);
   assert.match(sourcesSource, /citation\.label/);
 });
+
+test("article facts and analysis do not use duplicated text as react keys", () => {
+  const factsSource = readFileSync(resolve("components/article/facts-section.tsx"), "utf8");
+  const analysisSource = readFileSync(
+    resolve("components/article/analysis-section.tsx"),
+    "utf8",
+  );
+
+  assert.doesNotMatch(factsSource, /key=\{block\.text\}/);
+  assert.match(factsSource, /key=\{`fact-\$\{index\}-\$\{block\.citations\.join\("\|"\)\}`/);
+  assert.doesNotMatch(analysisSource, /key=\{block\}/);
+  assert.match(analysisSource, /key=\{`analysis-\$\{index\}`\}/);
+});
