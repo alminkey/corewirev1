@@ -522,3 +522,272 @@ button:hover {
     flex-wrap: wrap;
   }
 }
+
+.cw-shell--home,
+.cw-article-shell--light {
+  background: #f7f1e8;
+  color: #201918;
+}
+
+.cw-shell--home .cw-public-header,
+.cw-article-shell--light .cw-public-header {
+  max-width: 1600px;
+  margin: 0 auto 24px;
+  border-bottom: 1px solid #ddd2c2;
+}
+
+.cw-public-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 0 10px;
+  color: #8f8070;
+  font-size: 0.78rem;
+}
+
+.cw-public-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  padding: 16px 0 18px;
+}
+
+.cw-public-logo {
+  color: #c13b2f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cw-public-nav {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cw-public-nav a,
+.cw-hero-link,
+.cw-card-link,
+.cw-rail-link,
+.cw-developing-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cw-public-nav a {
+  color: #564d45;
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cw-public-nav a:hover,
+.cw-public-nav a:focus-visible,
+.cw-hero-link:hover .cw-hero-cta,
+.cw-hero-link:focus-visible .cw-hero-cta,
+.cw-card-link:hover h3,
+.cw-card-link:focus-visible h3,
+.cw-rail-link:hover h3,
+.cw-rail-link:focus-visible h3,
+.cw-developing-link:hover h3,
+.cw-developing-link:focus-visible h3 {
+  color: #c13b2f;
+}
+
+.cw-shell--home .cw-grid--public {
+  grid-template-columns: minmax(0, 2.1fr) minmax(290px, 0.9fr);
+}
+
+.cw-shell--home .cw-panel,
+.cw-article-shell--light .cw-panel,
+.cw-shell--home .cw-panel--light,
+.cw-article-shell--light .cw-panel--light {
+  border: 1px solid #ddd2c2;
+  background: rgba(252, 248, 242, 0.94);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.cw-shell--home .cw-panel-header,
+.cw-article-shell--light .cw-panel-header {
+  color: #8a493e;
+  border-bottom-color: #e2d8ca;
+}
+
+.cw-shell--home .cw-kicker,
+.cw-article-shell--light .cw-kicker {
+  color: #c13b2f;
+}
+
+.cw-shell--home .cw-topbar,
+.cw-article-shell--light .cw-topbar,
+.cw-shell--home .cw-overlay,
+.cw-article-shell--light .cw-overlay,
+.cw-article-shell--light .cw-article-signal {
+  display: none;
+}
+
+.cw-hero--light {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(38, 29, 23, 0.12), rgba(38, 29, 23, 0.5)),
+    linear-gradient(90deg, rgba(67, 49, 37, 0.75), rgba(67, 49, 37, 0.2)),
+    radial-gradient(circle at center, rgba(240, 227, 207, 0.12), transparent 45%),
+    #6f5f4d;
+}
+
+.cw-hero-link {
+  display: block;
+}
+
+.cw-hero--light .cw-panel-header {
+  color: rgba(255, 244, 231, 0.84);
+  border-bottom-color: rgba(255, 244, 231, 0.18);
+}
+
+.cw-hero--light .cw-tag {
+  color: #fff4ea;
+  border-color: rgba(255, 244, 234, 0.3);
+  background: rgba(154, 51, 38, 0.48);
+}
+
+.cw-hero--light h2,
+.cw-shell--home .cw-card h3,
+.cw-shell--home .cw-rail-item h3,
+.cw-shell--home .cw-developing-item h3,
+.cw-article-shell--light .cw-article-header h1,
+.cw-article-shell--light .cw-article-section h1 {
+  color: #fdf6ee;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  text-transform: none;
+  text-shadow: none;
+}
+
+.cw-hero--light h2 {
+  max-width: 10ch;
+  font-size: clamp(3rem, 5vw, 5.4rem);
+  line-height: 0.92;
+}
+
+.cw-hero--light .cw-summary,
+.cw-hero--light .cw-meta {
+  color: rgba(255, 248, 240, 0.86);
+}
+
+.cw-hero-cta {
+  display: inline-flex;
+  margin-top: 20px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 244, 231, 0.35);
+  background: rgba(255, 244, 231, 0.14);
+  color: #fff7ef;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cw-card-grid--public {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.cw-card--light,
+.cw-rail-item--light,
+.cw-developing-item--light,
+.cw-article-shell--light .cw-fact-block,
+.cw-article-shell--light .cw-analysis-block,
+.cw-article-shell--light .cw-disagreement-block {
+  background: #f8f3eb;
+  border-left: 3px solid #d75849;
+}
+
+.cw-card-link,
+.cw-rail-link,
+.cw-developing-link {
+  display: block;
+}
+
+.cw-shell--home .cw-card h3,
+.cw-shell--home .cw-rail-item h3,
+.cw-shell--home .cw-developing-item h3,
+.cw-article-shell--light .cw-article-header h1,
+.cw-article-shell--light .cw-review-preview h3,
+.cw-article-shell--light .cw-newsletter-card h3,
+.cw-article-shell--light .cw-article-section h1 {
+  color: #1f1714;
+}
+
+.cw-shell--home .cw-card p,
+.cw-shell--home .cw-rail-item p,
+.cw-shell--home .cw-developing-item p,
+.cw-article-shell--light .cw-article-header p,
+.cw-article-shell--light .cw-newsletter-card p,
+.cw-article-shell--light .cw-article-section p,
+.cw-article-shell--light .cw-source-list li,
+.cw-article-shell--light .cw-analysis-block,
+.cw-article-shell--light .cw-fact-block {
+  color: #5d5148;
+}
+
+.cw-shell--home .cw-status dt,
+.cw-shell--home .cw-status dd,
+.cw-article-shell--light .cw-meta,
+.cw-article-shell--light .cw-fact-block small {
+  color: #8a493e;
+}
+
+.cw-article-shell--light .cw-article {
+  gap: 18px;
+}
+
+.cw-article-header--light .cw-panel-header {
+  color: #8a493e;
+}
+
+.cw-article-header--light h1 {
+  font-size: clamp(2.7rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.cw-article-shell--light .cw-article-header,
+.cw-article-shell--light .cw-newsletter-card,
+.cw-article-shell--light .cw-ad-slot,
+.cw-article-shell--light .cw-panel {
+  background: #fbf7f1;
+}
+
+.cw-article-shell--light .cw-source-list a,
+.cw-shell--home .cw-inline-link,
+.cw-article-shell--light .cw-inline-link {
+  color: #b63f32;
+}
+
+.cw-article-shell--light .cw-source-list a:hover,
+.cw-shell--home .cw-inline-link:hover,
+.cw-article-shell--light .cw-inline-link:hover {
+  color: #8d2d23;
+}
+
+@media (max-width: 1100px) {
+  .cw-card-grid--public,
+  .cw-shell--home .cw-grid--public {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .cw-public-meta,
+  .cw-public-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cw-hero--light h2 {
+    font-size: clamp(2.4rem, 11vw, 4rem);
+  }
+}

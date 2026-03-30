@@ -1,9 +1,9 @@
-import test from "node:test";
+﻿import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-test("renders facts and analysis in separate labeled sections", () => {
+test("renders article page with shared public header and editorial sections", () => {
   const pageSource = readFileSync(resolve("app/articles/[slug]/page.tsx"), "utf8");
   const factsSource = readFileSync(resolve("components/article/facts-section.tsx"), "utf8");
   const analysisSource = readFileSync(
@@ -13,15 +13,15 @@ test("renders facts and analysis in separate labeled sections", () => {
   const sourcesSource = readFileSync(resolve("components/article/sources-section.tsx"), "utf8");
   const headerSource = readFileSync(resolve("components/article/article-header.tsx"), "utf8");
 
+  assert.match(pageSource, /PublicHeader/);
+  assert.match(pageSource, /cw-article-shell--light/);
   assert.match(pageSource, /FactsSection/);
   assert.match(pageSource, /AnalysisSection/);
   assert.match(pageSource, /SourcesSection/);
-  assert.match(pageSource, /cw-article-shell/);
-  assert.match(pageSource, /cw-article-signal/);
   assert.match(factsSource, /What is Verified/i);
   assert.match(analysisSource, /Analysis/i);
   assert.match(sourcesSource, /Sources/i);
-  assert.match(headerSource, /Wire Report/i);
+  assert.match(headerSource, /Investigative report/i);
 });
 
 test("renders article sources as structured links instead of raw strings", () => {
