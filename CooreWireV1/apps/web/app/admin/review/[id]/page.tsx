@@ -112,7 +112,7 @@ export default async function ReviewDetailPage({ params }: ReviewDetailPageProps
                     {(source.publisher || source.label !== source.title) && (
                       <p>
                         {source.publisher ?? source.label}
-                        {source.url ? ` · ${source.url}` : ""}
+                        {source.url ? ` Â· ${source.url}` : ""}
                       </p>
                     )}
                   </li>
