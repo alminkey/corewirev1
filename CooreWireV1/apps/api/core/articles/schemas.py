@@ -27,4 +27,5 @@ class ArticleDetail(StoryCard):
     analysis: list[str]
     disagreements: list[str]
     sources: list[ArticleSource]
+    full_article: str
 
