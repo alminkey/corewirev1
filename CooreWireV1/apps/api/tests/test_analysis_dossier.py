@@ -19,14 +19,25 @@ def test_build_research_dossier_separates_facts_claims_and_unknowns():
                 "url": "https://example.com",
             }
         ],
-        "claims": ["Iran says it is acting defensively"],
+        "claims": [
+            "Iran says it is acting defensively",
+            {"text": "Washington says the pressure is working"},
+        ],
+        "unknowns": ["It is still unclear how long shipping disruptions can be sustained."],
     }
 
     dossier = build_research_dossier(candidate)
 
-    assert "verified_facts" in dossier
-    assert "claims" in dossier
-    assert "unknowns" in dossier
+    assert dossier["topic"] == "Hormuz tensions rise"
+    assert dossier["verified_facts"] == ["Shipping disruption spreads."]
+    assert dossier["claims"] == [
+        "Iran says it is acting defensively",
+        "Washington says the pressure is working",
+    ]
+    assert dossier["unknowns"] == [
+        "It is still unclear how long shipping disruptions can be sustained.",
+        "Independent corroboration remains limited.",
+    ]
 
 
 def test_build_actor_map_tracks_goals_constraints_and_next_moves():
@@ -42,8 +53,28 @@ def test_build_actor_map_tracks_goals_constraints_and_next_moves():
 
 def test_form_analysis_thesis_returns_causal_claim():
     thesis = form_analysis_thesis(
-        {"topic": "War"},
-        [{"name": "US", "goal": "pressure Iran"}],
+        {"topic": "Hormuz crisis"},
+        [
+            {"name": "Iran", "goal": "raise shipping costs"},
+            {"name": "United States", "goal": "force strategic concessions"},
+        ],
     )
 
-    assert thesis
+    assert "because" in thesis.lower()
+    assert "hormuz" in thesis.lower()
+    assert "shipping costs" in thesis.lower() or "strategic concessions" in thesis.lower()
+
+
+def test_form_analysis_thesis_changes_with_topic_and_actor_goals():
+    first = form_analysis_thesis(
+        {"topic": "Hormuz crisis"},
+        [{"name": "Iran", "goal": "raise shipping costs"}],
+    )
+    second = form_analysis_thesis(
+        {"topic": "Chip sanctions"},
+        [{"name": "United States", "goal": "slow Chinese AI capacity"}],
+    )
+
+    assert first != second
+    assert "hormuz" in first.lower()
+    assert "chip" in second.lower() or "chinese ai capacity" in second.lower()
