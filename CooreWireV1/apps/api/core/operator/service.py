@@ -4,6 +4,13 @@ import uuid
 from datetime import UTC, datetime
 from urllib import request
 
+from core.analysis import actors as analysis_actors
+from core.analysis import doctrine as analysis_doctrine
+from core.analysis import dossier as analysis_dossier
+from core.analysis import extraction as analysis_extraction
+from core.analysis import thesis as analysis_thesis
+from core.analysis import writer as analysis_writer
+from core.analysis.types import build_analysis_contract
 from core.config import Settings
 from core.db.base import Base
 from core.db.session import build_engine, build_session_factory
@@ -164,6 +171,38 @@ def build_story_draft(payload: dict) -> dict:
     }
 
 
+def build_analysis_draft(payload: dict) -> dict:
+    candidate = payload.get("candidate", {})
+    dossier = analysis_dossier.build_research_dossier(candidate)
+    actor_inputs = payload.get("actors") or candidate.get("actors", [])
+    actor_map = analysis_actors.build_actor_map(dossier, actor_inputs)
+    thesis = analysis_thesis.form_analysis_thesis(dossier, actor_map)
+    article = analysis_writer.generate_flagship_analysis(dossier, actor_map, thesis)
+    contract = build_analysis_contract(article)
+    sections = analysis_extraction.extract_analysis_sections(contract)
+    doctrine = analysis_doctrine.validate_analysis_doctrine(contract)
+
+    draft = {
+        "headline": candidate.get("title") or contract.get("thesis") or "CoreWire Analysis",
+        "dek": candidate.get("summary") or contract.get("thesis") or "",
+        "narrative": contract.get("full_article", ""),
+        "fact_blocks": sections.get("fact_blocks", []),
+        "analysis_blocks": sections.get("analysis_blocks", []),
+        "disagreements": sections.get("disagreements", []),
+        "sources": [_normalize_source(source) for source in candidate.get("sources", [])],
+        "content_type": "analysis",
+        "doctrine": doctrine,
+        **contract,
+    }
+
+    return {
+        "type": "build_analysis_draft",
+        "accepted": True,
+        "draft": draft,
+        "doctrine": doctrine,
+    }
+
+
 def enrich_candidate_sources(candidate: dict) -> dict:
     settings = Settings.from_env()
     research_model = resolve_agent_model("research")
@@ -211,13 +250,28 @@ def run_content_pipeline(payload: dict, *, correlation: dict) -> dict:
     shortlist = shortlist_result.get("shortlist", [])
     candidate_index = payload.get("candidate_index", 0)
     selected_candidate = enrich_candidate_sources(shortlist[candidate_index])
+    content_type = payload.get("content_type", "report")
 
-    draft_result = build_story_draft(
-        {
-            "candidate": selected_candidate,
-            "length": payload.get("length", "full_report"),
-        }
-    )
+    if content_type == "analysis":
+        draft_result = build_analysis_draft(
+            {
+                "candidate": selected_candidate,
+                "actors": payload.get("actors") or selected_candidate.get("actors", []),
+                "length": payload.get("length", "full_report"),
+            }
+        )
+    else:
+        draft_result = build_story_draft(
+            {
+                "candidate": selected_candidate,
+                "length": payload.get("length", "full_report"),
+            }
+        )
+
+    publish_flags = list(payload.get("flags", []))
+    doctrine = draft_result.get("doctrine", {})
+    for violation in doctrine.get("violations", []):
+        publish_flags.append(f"doctrine:{violation}")
 
     publish_result = publish_if_eligible(
         {
@@ -226,7 +280,7 @@ def run_content_pipeline(payload: dict, *, correlation: dict) -> dict:
                 "level": selected_candidate.get("confidence", "medium"),
                 "homepage_eligible": selected_candidate.get("confidence") == "high",
             },
-            "flags": payload.get("flags", []),
+            "flags": publish_flags,
             "story_tier": payload.get("story_tier", "standard"),
             "requested_profile": shortlist_result.get("profile"),
             "effective_profile": draft_result.get("profile"),
@@ -243,6 +297,8 @@ def run_content_pipeline(payload: dict, *, correlation: dict) -> dict:
         "decision": publish_result["decision"],
         "correlation": correlation,
     }
+    if draft_result.get("doctrine") is not None:
+        result["doctrine"] = draft_result["doctrine"]
 
     if "article" in publish_result:
         result["article"] = publish_result["article"]

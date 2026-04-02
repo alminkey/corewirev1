@@ -1,9 +1,11 @@
 from pathlib import Path
+from types import SimpleNamespace
 import uuid
 import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+import core.operator.service as operator_service
 from core.operator.service import execute_operator_command
 from core.operator.service import OpenRouterClient
 
@@ -1518,3 +1520,149 @@ def test_openrouter_client_extracts_json_from_fenced_code_blocks(monkeypatch):
     )
 
     assert result["shortlist"][0]["title"] == "Trend A"
+
+
+def test_run_content_pipeline_uses_analysis_engine_for_analysis_content(monkeypatch):
+    called = {
+        "dossier": False,
+        "actors": False,
+        "thesis": False,
+        "writer": False,
+        "extract": False,
+        "doctrine": False,
+    }
+    candidate = {
+        "title": "Middle East war analysis",
+        "summary": "Escalation is reshaping energy and diplomacy.",
+        "why_it_matters": "The conflict is altering global risk pricing.",
+        "sources": [
+            {"publisher": "AP", "url": "https://example.com/ap"},
+            {"publisher": "Reuters", "url": "https://example.com/reuters"},
+            {"publisher": "IEA", "url": "https://example.com/iea"},
+        ],
+        "actors": [
+            {"name": "Iran", "goal": "raise the cost of war"},
+            {"name": "United States", "goal": "force strategic concessions"},
+        ],
+    }
+
+    monkeypatch.setattr(
+        operator_service,
+        "discover_trending_story",
+        lambda payload: {"shortlist": [candidate], "profile": "balanced"},
+    )
+    monkeypatch.setattr(operator_service, "enrich_candidate_sources", lambda selected: selected)
+
+    def fail_legacy_draft(*args, **kwargs):
+        raise AssertionError("legacy build_story_draft path should not run for analysis content")
+
+    monkeypatch.setattr(operator_service, "build_story_draft", fail_legacy_draft)
+
+    def fake_dossier(selected_candidate):
+        called["dossier"] = True
+        assert selected_candidate["title"] == candidate["title"]
+        return {
+            "topic": selected_candidate["title"],
+            "verified_facts": [selected_candidate["summary"]],
+            "claims": [],
+            "sources": selected_candidate["sources"],
+            "unknowns": ["Whether escalation is sustainable."],
+        }
+
+    def fake_actor_map(dossier, actors):
+        called["actors"] = True
+        assert actors == candidate["actors"]
+        return [{"name": actor["name"], "goal": actor["goal"]} for actor in actors]
+
+    def fake_thesis(dossier, actor_map):
+        called["thesis"] = True
+        return "The war is being fought to change the region's cost structure because pressure alone has failed."
+
+    def fake_writer(dossier, actor_map, thesis):
+        called["writer"] = True
+        return {
+            "thesis": thesis,
+            "known_facts": dossier["verified_facts"],
+            "actor_map": actor_map,
+            "obscured_layer": ["Infrastructure coercion matters more than battlefield optics."],
+            "next_moves": ["Maritime pressure is likely to continue."],
+            "unknowns": dossier["unknowns"],
+            "full_article": "A" * 2000,
+        }
+
+    def fake_extract(article):
+        called["extract"] = True
+        return {
+            "fact_blocks": [{"text": "Shipping disruption is spreading.", "citations": []}],
+            "analysis_blocks": [{"text": "Energy leverage has become the main theater."}],
+            "disagreements": ["Whether deterrence will hold."],
+        }
+
+    def fake_doctrine(article):
+        called["doctrine"] = True
+        return {"passed": True, "violations": []}
+
+    def fake_publish(payload, *, correlation):
+        assert payload["draft"]["thesis"].startswith("The war is being fought")
+        assert payload["draft"]["full_article"] == "A" * 2000
+        assert payload["draft"]["fact_blocks"]
+        assert payload["draft"]["analysis_blocks"]
+        return {
+            "type": "publish_if_eligible",
+            "accepted": True,
+            "decision": {"action": "auto_publish", "reasons": []},
+            "article": {"slug": "analysis-slug", "status": "published"},
+            "correlation": correlation,
+        }
+
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_dossier",
+        SimpleNamespace(build_research_dossier=fake_dossier),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_actors",
+        SimpleNamespace(build_actor_map=fake_actor_map),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_thesis",
+        SimpleNamespace(form_analysis_thesis=fake_thesis),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_writer",
+        SimpleNamespace(generate_flagship_analysis=fake_writer),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_extraction",
+        SimpleNamespace(extract_analysis_sections=fake_extract),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_doctrine",
+        SimpleNamespace(validate_analysis_doctrine=fake_doctrine),
+        raising=False,
+    )
+    monkeypatch.setattr(operator_service, "publish_if_eligible", fake_publish)
+
+    result = operator_service.run_content_pipeline(
+        {"content_type": "analysis", "domain": "politics-diplomacy"},
+        correlation={},
+    )
+
+    assert called["dossier"] is True
+    assert called["actors"] is True
+    assert called["thesis"] is True
+    assert called["writer"] is True
+    assert called["extract"] is True
+    assert called["doctrine"] is True
+    assert result["draft"]["headline"] == candidate["title"]
+    assert result["decision"]["action"] == "auto_publish"
