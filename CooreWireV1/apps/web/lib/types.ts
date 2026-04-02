@@ -41,6 +41,10 @@ export type ReviewDetail = {
   status: string;
   confidence: string;
   reasons: string[];
+  doctrine: {
+    passed: boolean;
+    violations: string[];
+  };
   decision_summary: string;
   recommendation: {
     action: "approve" | "reject" | "request_rerun";

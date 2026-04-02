@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import joinedload
 
+from core.analysis.doctrine import validate_analysis_doctrine
 from core.db.models.article import ArticleStatus
 from core.db.base import Base
 from core.db.models.article import ArticleDraft
@@ -150,6 +151,23 @@ def _serialize_review_detail(draft: ArticleDraft, analysis: StoryAnalysis) -> di
         _parse_json_list(analysis.low_confidence_reasons_json)
     ) or _extract_reason_strings(citations)
     source_quality = _build_source_quality(sources)
+    doctrine = validate_analysis_doctrine(
+        {
+            "thesis": draft_payload.get("thesis", ""),
+            "body": (
+                draft_payload.get("full_article")
+                or draft_payload.get("narrative")
+                or "\n\n".join(
+                    item.get("text") or item.get("content", "")
+                    for item in analysis_blocks
+                    if isinstance(item, dict)
+                )
+            ),
+            "full_article": draft_payload.get("full_article", ""),
+            "actor_map": draft_payload.get("actor_map") or [],
+            "obscured_layer": draft_payload.get("obscured_layer") or [],
+        }
+    )
 
     return {
         "id": draft.id,
@@ -158,6 +176,7 @@ def _serialize_review_detail(draft: ArticleDraft, analysis: StoryAnalysis) -> di
         "status": draft.validation_status,
         "confidence": analysis.overall_confidence,
         "reasons": reasons,
+        "doctrine": doctrine,
         "decision_summary": _build_decision_summary(analysis.overall_confidence, source_quality),
         "recommendation": _build_recommendation(
             analysis.overall_confidence, draft.validation_status, source_quality

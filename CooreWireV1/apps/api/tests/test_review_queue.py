@@ -149,6 +149,13 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
                         "headline": "Persisted review detail draft",
                         "dek": "Needs owner review before publish",
                         "narrative": "Narrative text.",
+                        "thesis": "The conflict is widening because coercion has displaced diplomacy.",
+                        "actor_map": [
+                            {"name": "Iran", "goal": "raise the cost of war"},
+                            {"name": "United States", "goal": "force strategic concessions"},
+                        ],
+                        "obscured_layer": ["Infrastructure coercion matters more than public messaging."],
+                        "full_article": "The conflict is widening because coercion has displaced diplomacy." * 20,
                         "fact_blocks": [{"text": "Fact block"}],
                         "analysis_blocks": [{"text": "Analysis block"}],
                         "sources": [
@@ -187,6 +194,7 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
         assert detail_payload["reasons"] == ["insufficient_source_authority"]
         assert detail_payload["draft"]["narrative"] == "Narrative text."
         assert detail_payload["draft"]["sources"][0]["publisher"] == "Reuters"
+        assert detail_payload["doctrine"] == {"passed": True, "violations": []}
 
         decision_response = client.post(
             "/api/admin/review-queue/draft-review-detail/decision",
@@ -392,6 +400,9 @@ def test_review_detail_normalizes_legacy_reason_and_source_payloads(monkeypatch)
                 "text": "The developing label protects the homepage until independent corroboration arrives."
             }
         ]
+        assert payload["doctrine"]["passed"] is False
+        assert "missing_thesis" in payload["doctrine"]["violations"]
+        assert "missing_actor_map" in payload["doctrine"]["violations"]
         assert (
             payload["decision_summary"]
             == "Low-confidence draft with limited corroboration needs owner review before publish."

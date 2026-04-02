@@ -24,6 +24,7 @@ test("renders review detail page with source summary and decision actions", () =
   assert.match(detailPageSource, /Decision Summary/i);
   assert.match(detailPageSource, /Recommendation/i);
   assert.match(detailPageSource, /Source Quality/i);
+  assert.match(detailPageSource, /Doctrine Status/i);
   assert.match(detailPageSource, /Draft Preview/i);
   assert.match(detailPageSource, /Approve/i);
   assert.match(detailPageSource, /Reject/i);
@@ -38,6 +39,7 @@ test("renders review detail page with source summary and decision actions", () =
   assert.match(detailPageSource, /detail\.decision_summary/);
   assert.match(detailPageSource, /detail\.recommendation/);
   assert.match(detailPageSource, /detail\.source_quality/);
+  assert.match(detailPageSource, /detail\.doctrine/);
   assert.match(detailPageSource, /typeof reason === "string"/);
   assert.match(detailPageSource, /reason\.label|reason\.message|reason\.title/);
 });

@@ -62,6 +62,20 @@ export default async function ReviewDetailPage({ params }: ReviewDetailPageProps
                 )}
               </ul>
             </article>
+
+            <article className="cw-review-card">
+              <h2>Doctrine Status</h2>
+              <p>{detail.doctrine.passed ? "Analysis doctrine passed." : "Analysis doctrine needs work."}</p>
+              <ul>
+                {detail.doctrine.violations.length ? (
+                  detail.doctrine.violations.map((violation) => (
+                    <li key={`${detail.id}-doctrine-${violation}`}>{violation}</li>
+                  ))
+                ) : (
+                  <li>No doctrine violations.</li>
+                )}
+              </ul>
+            </article>
           </section>
 
           <section className="cw-panel cw-review-preview">
