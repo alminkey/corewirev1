@@ -62,7 +62,13 @@ docs/runbooks/local-start.md
 docs/runbooks/content-batch.md
 ```
 
-7. Explore the worktree branch used for implementation:
+7. For the writer-first flagship analysis evaluation loop, see:
+
+```bash
+docs/runbooks/corewire-analysis-evaluation.md
+```
+
+8. Explore the worktree branch used for implementation:
 
 ```bash
 git worktree list
@@ -75,6 +81,7 @@ git worktree list
 - Claim extraction with supporting quotes
 - Story clustering and evidence matching
 - Analysis and confidence scoring
+- Writer-first `CoreWire Analysis` path for flagship analysis content
 - Citation validation before publish
 - Publish gate for `published` vs `developing_story`
 - Premium command-center homepage and article page skeleton
