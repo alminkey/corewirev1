@@ -296,3 +296,118 @@ def test_admin_published_endpoint_returns_only_published_articles(monkeypatch):
     finally:
         if database_path.exists():
             database_path.unlink()
+
+
+def test_published_analysis_prefers_full_article_snapshot(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-analysis-detail-{uuid.uuid4().hex}.db"
+    database_url = f"sqlite+pysqlite:///{database_path}"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", database_url)
+    engine = build_engine(database_url)
+    Base.metadata.create_all(engine)
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            cluster = StoryCluster(
+                id="cluster-analysis-detail",
+                cluster_key="cluster-analysis-detail",
+                topic_label="Analysis Detail",
+                status="active",
+            )
+            analysis = StoryAnalysis(
+                id="analysis-detail",
+                story_cluster_id="cluster-analysis-detail",
+                verified_facts_json="[]",
+                open_questions_json="[]",
+                why_analysis_text="Why it matters.",
+                disagreement_summary="",
+                overall_confidence="high",
+                low_confidence_reasons_json="[]",
+            )
+            draft = ArticleDraft(
+                id="draft-analysis-detail",
+                story_analysis_id="analysis-detail",
+                headline="Analysis detail headline",
+                dek="Analysis dek",
+                body_json=json.dumps(
+                    {
+                        "headline": "Analysis detail headline",
+                        "dek": "Analysis dek",
+                        "narrative": "Narrative fallback",
+                        "full_article": "The conflict matters because leverage is now the point of the war. " * 30,
+                    }
+                ),
+                facts_json=json.dumps(
+                    [
+                        {"text": "", "citations": []},
+                        {"text": "Verified fact block", "citations": ["Source A"]},
+                    ]
+                ),
+                analysis_json=json.dumps(
+                    [
+                        {"text": ""},
+                        {"text": "Meaningful analysis block"},
+                    ]
+                ),
+                citations_json=json.dumps(
+                    [
+                        {
+                            "label": "Source A",
+                            "publisher": "Reuters",
+                            "title": "Analysis source",
+                            "url": "https://example.com/reuters",
+                            "role": "article",
+                        }
+                    ]
+                ),
+                validation_status="published",
+            )
+            article = PublishedArticle(
+                id="article-analysis-detail",
+                article_draft_id="draft-analysis-detail",
+                slug="analysis-detail-story",
+                status=ArticleStatus.PUBLISHED,
+                homepage_eligible=True,
+                rendered_snapshot_json=json.dumps(
+                    {
+                        "slug": "analysis-detail-story",
+                        "headline": "Analysis detail headline",
+                        "status": "published",
+                        "confidence": "high",
+                        "source_count": 1,
+                        "updated_at": "2026-04-01T10:00:00Z",
+                        "dek": "Analysis dek",
+                        "facts": [{"text": "", "citations": []}],
+                        "analysis": [""],
+                        "disagreements": ["", "What remains unknown is how long the pressure can hold."],
+                        "sources": [
+                            {
+                                "label": "Source A",
+                                "publisher": "Reuters",
+                                "title": "Analysis source",
+                                "url": "https://example.com/reuters",
+                                "role": "article",
+                            }
+                        ],
+                        "story_tier": "analysis",
+                        "requested_profile": "balanced",
+                        "effective_profile": "balanced",
+                    }
+                ),
+            )
+            session.add_all([cluster, analysis, draft, article])
+            session.commit()
+
+        detail = get_article_by_slug("analysis-detail-story")
+
+        assert detail is not None
+        assert detail["full_article"].startswith("The conflict matters because leverage is now the point")
+        assert detail["facts"] == [{"text": "Verified fact block", "citations": ["Source A"]}]
+        assert detail["analysis"] == ["Meaningful analysis block"]
+        assert detail["disagreements"] == [
+            "What remains unknown is how long the pressure can hold."
+        ]
+    finally:
+        engine.dispose()
+        if database_path.exists():
+            database_path.unlink()

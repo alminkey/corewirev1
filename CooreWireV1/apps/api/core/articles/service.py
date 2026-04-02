@@ -46,6 +46,10 @@ def _article_details() -> dict[str, ArticleDetail]:
     return {
         "corewire-launched-the-pipeline": {
             **_story_cards()[0],
+            "full_article": (
+                "Two supporting source documents confirm the pipeline launch. "
+                "The successful orchestration path reduces the gap between skeleton code and a runnable runtime."
+            ),
             "facts": [
                 {
                     "text": "Two supporting source documents confirm the pipeline launch.",
@@ -77,6 +81,10 @@ def _article_details() -> dict[str, ArticleDetail]:
         },
         "corewire-verifying-the-rollout-details": {
             **_story_cards()[2],
+            "full_article": (
+                "Only one source currently backs the rollout details. "
+                "The developing label protects the homepage until independent corroboration arrives."
+            ),
             "facts": [
                 {
                     "text": "Only one source currently backs the rollout details.",
@@ -151,21 +159,68 @@ def _normalize_source(source: object) -> ArticleSource:
     }
 
 
-def _snapshot_to_article_detail(snapshot: dict) -> ArticleDetail:
-    facts = []
-    for fact in snapshot.get("facts", []):
-        facts.append(
-            {
-                "text": fact.get("text") or fact.get("statement", ""),
-                "citations": fact.get("citations") or fact.get("sources", []),
-            }
-        )
+def _parse_json_object(value: str | None) -> dict:
+    if not value:
+        return {}
+    parsed = json.loads(value)
+    return parsed if isinstance(parsed, dict) else {}
 
+
+def _parse_json_list(value: str | None) -> list:
+    if not value:
+        return []
+    parsed = json.loads(value)
+    return parsed if isinstance(parsed, list) else []
+
+
+def _normalize_fact_blocks(values: list) -> list[dict]:
+    facts = []
+    for fact in values:
+        text = ""
+        citations: list[str] = []
+
+        if isinstance(fact, str):
+            text = fact
+        elif isinstance(fact, dict):
+            text = fact.get("text") or fact.get("statement") or fact.get("content", "")
+            citations = fact.get("citations") or fact.get("sources") or []
+
+        if str(text).strip():
+            facts.append({"text": str(text).strip(), "citations": citations})
+
+    return facts
+
+
+def _normalize_analysis_blocks(values: list) -> list[str]:
+    normalized = []
+    for value in values:
+        text = ""
+        if isinstance(value, str):
+            text = value
+        elif isinstance(value, dict):
+            text = value.get("text") or value.get("analysis") or value.get("content", "")
+
+        if str(text).strip():
+            normalized.append(str(text).strip())
+
+    return normalized
+
+
+def _normalize_disagreements(values: list) -> list[str]:
+    disagreements = []
+    for value in values:
+        if isinstance(value, str) and value.strip():
+            disagreements.append(value.strip())
+    return disagreements
+
+
+def _snapshot_to_article_detail(snapshot: dict) -> ArticleDetail:
     return {
         **_snapshot_to_story_card(snapshot),
-        "facts": facts,
-        "analysis": snapshot.get("analysis", []),
-        "disagreements": snapshot.get("disagreements", []),
+        "full_article": snapshot.get("full_article", ""),
+        "facts": _normalize_fact_blocks(snapshot.get("facts", [])),
+        "analysis": _normalize_analysis_blocks(snapshot.get("analysis", [])),
+        "disagreements": _normalize_disagreements(snapshot.get("disagreements", [])),
         "sources": [_normalize_source(source) for source in snapshot.get("sources", [])],
     }
 
@@ -212,7 +267,33 @@ def _load_article_detail_from_database(slug: str) -> dict | None:
             article = repository.get_published_article_by_slug(slug)
             if article is None or not article.rendered_snapshot_json:
                 return None
-            return json.loads(article.rendered_snapshot_json)
+            snapshot = json.loads(article.rendered_snapshot_json)
+            draft_payload = _parse_json_object(article.draft.body_json if article.draft else None)
+            draft_facts = _normalize_fact_blocks(
+                _parse_json_list(article.draft.facts_json if article.draft else None)
+                or draft_payload.get("fact_blocks")
+                or []
+            )
+            draft_analysis = _normalize_analysis_blocks(
+                _parse_json_list(article.draft.analysis_json if article.draft else None)
+                or draft_payload.get("analysis_blocks")
+                or []
+            )
+            draft_sources = _parse_json_list(article.draft.citations_json if article.draft else None)
+
+            snapshot["full_article"] = (
+                snapshot.get("full_article")
+                or draft_payload.get("full_article")
+                or draft_payload.get("narrative")
+                or ""
+            )
+            snapshot["facts"] = _normalize_fact_blocks(snapshot.get("facts", [])) or draft_facts
+            snapshot["analysis"] = (
+                _normalize_analysis_blocks(snapshot.get("analysis", [])) or draft_analysis
+            )
+            snapshot["disagreements"] = _normalize_disagreements(snapshot.get("disagreements", []))
+            snapshot["sources"] = snapshot.get("sources") or draft_sources
+            return snapshot
     except OperationalError:
         return None
     finally:
