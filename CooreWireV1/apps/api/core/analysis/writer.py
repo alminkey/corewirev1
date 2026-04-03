@@ -52,6 +52,7 @@ def generate_flagship_analysis(
     topic = str(dossier.get("topic") or "This crisis").strip()
     facts = _clean_lines(dossier.get("verified_facts", []))
     claims = _clean_lines(dossier.get("claims", []))
+    stakes = _clean_lines(dossier.get("stakes", []))
     unknowns = _clean_lines(dossier.get("unknowns", []))
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
@@ -87,6 +88,7 @@ def generate_flagship_analysis(
             if claims
             else f"Public messaging around {topic.lower()} is shaping how the crisis is understood."
         ),
+        " ".join(stakes) if stakes else "",
         " ".join(actor_sentences) if actor_sentences else "",
         " ".join(obscured_layer),
         " ".join(next_moves),
@@ -106,6 +108,7 @@ def generate_flagship_analysis(
         "thesis": thesis,
         "known_facts": facts,
         "actor_map": actor_map,
+        "stakes": stakes,
         "obscured_layer": obscured_layer,
         "next_moves": next_moves,
         "unknowns": unknowns,

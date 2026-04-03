@@ -6,6 +6,10 @@ def extract_analysis_sections(article: dict) -> dict:
             fact_blocks.append({"text": text, "citations": []})
 
     analysis_blocks = []
+    for value in article.get("stakes", []):
+        text = str(value or "").strip()
+        if text:
+            analysis_blocks.append({"text": text})
     for value in article.get("obscured_layer", []):
         text = str(value or "").strip()
         if text:
