@@ -1,3 +1,16 @@
+CLAIM_MARKERS = (
+    " says ",
+    " warns ",
+    " claims ",
+    " vowed ",
+    " vows ",
+    " promised ",
+    " promises ",
+    " denied ",
+    " denies ",
+)
+
+
 def _normalize_text_list(values: list[object]) -> list[str]:
     normalized: list[str] = []
     for value in values:
@@ -19,6 +32,16 @@ def _normalize_text_list(values: list[object]) -> list[str]:
     return normalized
 
 
+def _is_claim_like(text: str) -> bool:
+    lowered = f" {text.lower()} "
+    return any(marker in lowered for marker in CLAIM_MARKERS)
+
+
+def _is_fact_like_source_title(text: str) -> bool:
+    words = [word for word in text.split() if word.strip()]
+    return len(words) >= 5 or len(text) >= 40
+
+
 def build_research_dossier(candidate: dict) -> dict:
     verified_facts = []
     summary = str(candidate.get("summary") or "").strip()
@@ -32,11 +55,23 @@ def build_research_dossier(candidate: dict) -> dict:
 
     claims = _normalize_text_list(candidate.get("claims", []))
     unknowns = _normalize_text_list(candidate.get("unknowns", []))
+    stakes = _normalize_text_list([candidate.get("why_it_matters", "")])
     valid_sources = [
         source
         for source in candidate.get("sources", [])
         if isinstance(source, dict) and source.get("url")
     ]
+
+    source_titles = _normalize_text_list(
+        [source.get("title", "") for source in valid_sources if isinstance(source, dict)]
+    )
+    for title in source_titles:
+        if _is_claim_like(title):
+            if title not in claims:
+                claims.append(title)
+        elif _is_fact_like_source_title(title) and title not in verified_facts:
+            verified_facts.append(title)
+
     if len(valid_sources) < 2 and "Independent corroboration remains limited." not in unknowns:
         unknowns.append("Independent corroboration remains limited.")
 
@@ -45,5 +80,6 @@ def build_research_dossier(candidate: dict) -> dict:
         "verified_facts": verified_facts,
         "claims": claims,
         "sources": candidate.get("sources", []),
+        "stakes": stakes,
         "unknowns": unknowns,
     }

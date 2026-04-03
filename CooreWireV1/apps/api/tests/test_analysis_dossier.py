@@ -40,6 +40,39 @@ def test_build_research_dossier_separates_facts_claims_and_unknowns():
     ]
 
 
+def test_build_research_dossier_uses_source_titles_and_stakes_context():
+    candidate = {
+        "title": "Hormuz shipping crisis deepens",
+        "summary": "Oil shipping disruption spreads across Gulf routes.",
+        "why_it_matters": "The conflict is changing insurance, fuel, and trade costs.",
+        "sources": [
+            {
+                "publisher": "AP",
+                "title": "Insurance costs rise as Gulf routes remain exposed",
+                "url": "https://example.com/ap",
+            },
+            {
+                "publisher": "Reuters",
+                "title": "Iran says maritime pressure will continue until strikes stop",
+                "url": "https://example.com/reuters",
+            },
+        ],
+    }
+
+    dossier = build_research_dossier(candidate)
+
+    assert dossier["verified_facts"] == [
+        "Oil shipping disruption spreads across Gulf routes.",
+        "Insurance costs rise as Gulf routes remain exposed",
+    ]
+    assert dossier["claims"] == [
+        "Iran says maritime pressure will continue until strikes stop",
+    ]
+    assert dossier["stakes"] == [
+        "The conflict is changing insurance, fuel, and trade costs.",
+    ]
+
+
 def test_build_actor_map_tracks_goals_constraints_current_position_and_next_moves():
     actor_map = build_actor_map(
         {
