@@ -40,15 +40,37 @@ def test_build_research_dossier_separates_facts_claims_and_unknowns():
     ]
 
 
-def test_build_actor_map_tracks_goals_constraints_and_next_moves():
+def test_build_actor_map_tracks_goals_constraints_current_position_and_next_moves():
     actor_map = build_actor_map(
-        {},
-        [{"name": "Iran", "goal": "raise cost"}],
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption spreads."],
+            "unknowns": ["How long pressure can be sustained remains unclear."],
+        },
+        [
+            {
+                "name": "Iran",
+                "goal": "raise shipping costs",
+                "constraints": ["sanctions pressure"],
+                "current_advantages": ["can pressure maritime flows"],
+                "current_pressures": ["risk of escalation"],
+            },
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+            },
+        ],
     )
 
-    assert actor_map[0]["goal"] == "raise cost"
+    assert actor_map[0]["goal"] == "raise shipping costs"
     assert "constraints" in actor_map[0]
+    assert actor_map[0]["currently_benefits"] == ["can pressure maritime flows"]
+    assert actor_map[0]["currently_pressures"] == ["risk of escalation"]
     assert "likely_next_move" in actor_map[0]
+    assert actor_map[0]["likely_next_move"]
+    assert actor_map[1]["currently_benefits"] == []
+    assert actor_map[1]["currently_pressures"] == []
+    assert actor_map[1]["likely_next_move"]
 
 
 def test_form_analysis_thesis_returns_causal_claim():
