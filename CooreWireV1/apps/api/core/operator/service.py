@@ -7,6 +7,7 @@ from urllib import request
 from core.analysis import actors as analysis_actors
 from core.analysis import doctrine as analysis_doctrine
 from core.analysis import dossier as analysis_dossier
+from core.analysis import evaluation as analysis_evaluation
 from core.analysis import extraction as analysis_extraction
 from core.analysis import thesis as analysis_thesis
 from core.analysis import writer as analysis_writer
@@ -181,6 +182,7 @@ def build_analysis_draft(payload: dict) -> dict:
     contract = build_analysis_contract(article)
     sections = analysis_extraction.extract_analysis_sections(contract)
     doctrine = analysis_doctrine.validate_analysis_doctrine(contract)
+    evaluation = analysis_evaluation.score_analysis_output(article, doctrine)
 
     draft = {
         "headline": candidate.get("title") or contract.get("thesis") or "CoreWire Analysis",
@@ -192,6 +194,7 @@ def build_analysis_draft(payload: dict) -> dict:
         "sources": [_normalize_source(source) for source in candidate.get("sources", [])],
         "content_type": "analysis",
         "doctrine": doctrine,
+        "evaluation": evaluation,
         **contract,
     }
 
@@ -200,6 +203,7 @@ def build_analysis_draft(payload: dict) -> dict:
         "accepted": True,
         "draft": draft,
         "doctrine": doctrine,
+        "evaluation": evaluation,
     }
 
 
@@ -299,6 +303,8 @@ def run_content_pipeline(payload: dict, *, correlation: dict) -> dict:
     }
     if draft_result.get("doctrine") is not None:
         result["doctrine"] = draft_result["doctrine"]
+    if draft_result.get("evaluation") is not None:
+        result["evaluation"] = draft_result["evaluation"]
 
     if "article" in publish_result:
         result["article"] = publish_result["article"]

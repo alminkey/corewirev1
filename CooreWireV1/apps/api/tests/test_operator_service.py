@@ -1602,6 +1602,22 @@ def test_run_content_pipeline_uses_analysis_engine_for_analysis_content(monkeypa
         called["doctrine"] = True
         return {"passed": True, "violations": []}
 
+    def fake_evaluation(article, doctrine):
+        assert doctrine == {"passed": True, "violations": []}
+        return {
+            "decision": "accept",
+            "passed": True,
+            "scores": {
+                "thesis_strength": 3,
+                "why_explanation": 3,
+                "new_value": 3,
+                "actor_map_quality": 3,
+                "fact_claim_discipline": 2,
+                "agenda_resistance": 2,
+                "tone_corewire_identity": 2,
+            },
+        }
+
     def fake_publish(payload, *, correlation):
         assert payload["draft"]["thesis"].startswith("The war is being fought")
         assert payload["draft"]["full_article"] == "A" * 2000
@@ -1651,6 +1667,12 @@ def test_run_content_pipeline_uses_analysis_engine_for_analysis_content(monkeypa
         SimpleNamespace(validate_analysis_doctrine=fake_doctrine),
         raising=False,
     )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_evaluation",
+        SimpleNamespace(score_analysis_output=fake_evaluation),
+        raising=False,
+    )
     monkeypatch.setattr(operator_service, "publish_if_eligible", fake_publish)
 
     result = operator_service.run_content_pipeline(
@@ -1665,4 +1687,5 @@ def test_run_content_pipeline_uses_analysis_engine_for_analysis_content(monkeypa
     assert called["extract"] is True
     assert called["doctrine"] is True
     assert result["draft"]["headline"] == candidate["title"]
+    assert result["evaluation"]["decision"] == "accept"
     assert result["decision"]["action"] == "auto_publish"
