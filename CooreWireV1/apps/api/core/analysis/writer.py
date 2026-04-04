@@ -39,6 +39,58 @@ def _subject_possessive(subject: str) -> str:
     return "their" if _is_plural_subject(subject) else "its"
 
 
+def _goal_as_activity(goal: str) -> str:
+    known_verbs = {
+        "force",
+        "degrade",
+        "raise",
+        "restore",
+        "prevent",
+        "keep",
+        "slow",
+        "change",
+        "reduce",
+        "expand",
+        "block",
+        "stabilize",
+    }
+
+    def _verb_to_ing(verb: str) -> str:
+        lowered = verb.lower()
+        irregular = {
+            "force": "forcing",
+            "degrade": "degrading",
+            "raise": "raising",
+            "restore": "restoring",
+            "prevent": "preventing",
+            "keep": "keeping",
+            "slow": "slowing",
+        }
+        verb_form = irregular.get(lowered)
+        if verb_form is None:
+            if lowered.endswith("e") and len(lowered) > 2:
+                verb_form = f"{lowered[:-1]}ing"
+            else:
+                verb_form = f"{lowered}ing"
+        return verb_form
+
+    text = str(goal or "").strip()
+    if not text:
+        return "changing the balance"
+
+    segments = []
+    for segment in text.split(" and "):
+        words = segment.split(maxsplit=1)
+        verb = words[0]
+        rest = words[1] if len(words) > 1 else ""
+        if verb.lower() in known_verbs:
+            segments.append(f"{_verb_to_ing(verb)} {rest}".strip())
+        else:
+            segments.append(segment.strip())
+
+    return " and ".join(segments)
+
+
 def _topic_subject(topic: str) -> str:
     cleaned = str(topic or "").strip()
     if not cleaned:
@@ -126,7 +178,7 @@ def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
         parts: list[str] = []
 
         if goal:
-            parts.append(f"{name} {'want' if plural_subject else 'wants'} to {goal}.")
+            parts.append(f"For {name}, the crisis is now about {_goal_as_activity(goal)}.")
         else:
             parts.append(f"{name} {'are' if plural_subject else 'is'} trying to improve its position.")
         if constraints:
@@ -149,8 +201,21 @@ def _build_next_phase_paragraph(next_moves: list[str]) -> str:
         return ""
     return " ".join(
         [
-            "From here, the conflict is likely to move along a few predictable tracks.",
+            "The next phase is likely to follow a few predictable tracks.",
             *clean_moves,
+        ]
+    )
+
+
+def _build_unknowns_paragraph(unknowns: list[str]) -> str:
+    clean_unknowns = [item for item in unknowns if str(item or "").strip()]
+    if not clean_unknowns:
+        return ""
+    return " ".join(
+        [
+            "The hardest questions are still open.",
+            *clean_unknowns,
+            "Until those questions are resolved, the crisis will keep spilling costs beyond the battlefield.",
         ]
     )
 
@@ -177,19 +242,15 @@ def generate_flagship_analysis(
             f"{' '.join(facts[:2])}"
         ).strip(),
         (
-            f"Publicly, the sides are trying to define the crisis on their own terms. {' '.join(claims[:2])}"
+            f"The public case for the confrontation is straightforward. {' '.join(claims[:2])}"
             if claims
-            else f"Publicly, rival actors are still trying to define what {topic.lower()} is really about."
+            else "The public case for the confrontation is still being shaped by competing narratives."
         ),
         " ".join(stakes) if stakes else "",
         *actor_paragraphs,
         " ".join(obscured_layer),
         _build_next_phase_paragraph(next_moves),
-        (
-            f"What remains unresolved is straightforward but decisive. {' '.join(unknowns)}"
-            if unknowns
-            else ""
-        ),
+        _build_unknowns_paragraph(unknowns),
     ]
     body = "\n\n".join(part for part in body_parts if part).strip()
 

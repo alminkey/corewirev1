@@ -86,11 +86,39 @@ def test_generate_flagship_analysis_avoids_source_title_leakage_and_groups_next_
         "United States and Israel are likely to increase military and diplomatic pressure.",
         "Iran is likely to keep using maritime pressure to raise costs.",
     ]
-    assert "\n\nUnited States wants to force strategic concessions" in article["full_article"]
-    assert "\n\nIsrael wants to degrade Iran's deterrence" in article["full_article"]
+    assert "\n\nFor United States, the crisis is now about forcing strategic concessions." in article["full_article"]
+    assert (
+        "\n\nFor Israel, the crisis is now about degrading Iran's deterrence."
+        in article["full_article"]
+    )
     assert "; it currently benefits from" not in article["full_article"]
     assert "Its next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
-    assert "From here, the conflict is likely to move along a few predictable tracks." in article["full_article"]
+    assert "The next phase is likely to follow a few predictable tracks." in article["full_article"]
+
+
+def test_generate_flagship_analysis_uses_more_editorial_voice_and_closing_cadence():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Iran says it is acting defensively."],
+            "stakes": ["The conflict is changing insurance, fuel, and trade costs."],
+            "unknowns": ["It remains unclear how long the pressure can be sustained."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "Iran",
+                "goal": "raise shipping costs",
+                "likely_next_move": "keep using maritime pressure to raise costs",
+            }
+        ],
+        "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+    )
+
+    assert "The public case for the confrontation is straightforward." in article["full_article"]
+    assert "What remains unresolved is straightforward but decisive." not in article["full_article"]
+    assert "Until those questions are resolved, the crisis will keep spilling costs beyond the battlefield." in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
@@ -117,6 +145,7 @@ def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names()
         "Bahrain and Gulf states are likely to press for shipping security without a blank-check war mandate."
     ]
     assert "Bahrain and Gulf states wants to restore shipping security" not in article["full_article"]
+    assert "For Bahrain and Gulf states, the crisis is now about restoring shipping security." in article["full_article"]
     assert "Their next move is likely to be to press for shipping security without a blank-check war mandate." in article["full_article"]
 
 
