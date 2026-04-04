@@ -31,6 +31,14 @@ def _is_plural_subject(subject: str) -> bool:
     return _subject_verb(subject) == "are"
 
 
+def _subject_pronoun(subject: str) -> str:
+    return "they" if _is_plural_subject(subject) else "it"
+
+
+def _subject_possessive(subject: str) -> str:
+    return "their" if _is_plural_subject(subject) else "its"
+
+
 def _topic_subject(topic: str) -> str:
     cleaned = str(topic or "").strip()
     if not cleaned:
@@ -94,6 +102,59 @@ def _build_next_moves(actor_map: list[dict]) -> list[str]:
     return ["Escalation risk remains high."]
 
 
+def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
+    if not actor_map:
+        return []
+
+    paragraphs = ["The strategic problem now looks different for each actor."]
+    for actor in actor_map:
+        if not isinstance(actor, dict):
+            continue
+
+        name = str(actor.get("name") or "").strip()
+        goal = str(actor.get("goal") or "").strip()
+        constraints = [str(item).strip() for item in (actor.get("constraints") or []) if str(item).strip()]
+        benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
+        pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
+        likely_next_move = str(actor.get("likely_next_move") or "").strip()
+        if not name:
+            continue
+
+        plural_subject = _is_plural_subject(name)
+        pronoun = _subject_pronoun(name).capitalize()
+        possessive = _subject_possessive(name).capitalize()
+        parts: list[str] = []
+
+        if goal:
+            parts.append(f"{name} {'want' if plural_subject else 'wants'} to {goal}.")
+        else:
+            parts.append(f"{name} {'are' if plural_subject else 'is'} trying to improve its position.")
+        if constraints:
+            parts.append(f"{pronoun} {'face' if plural_subject else 'faces'} {', '.join(constraints)}.")
+        if benefits:
+            parts.append(f"{pronoun} currently {'benefit' if plural_subject else 'benefits'} from {', '.join(benefits)}.")
+        if pressures:
+            parts.append(f"{pronoun} {'are' if plural_subject else 'is'} under pressure from {', '.join(pressures)}.")
+        if likely_next_move:
+            parts.append(f"{possessive} next move is likely to be to {likely_next_move}.")
+
+        paragraphs.append(" ".join(parts))
+
+    return paragraphs
+
+
+def _build_next_phase_paragraph(next_moves: list[str]) -> str:
+    clean_moves = [move for move in next_moves if str(move or "").strip()]
+    if not clean_moves:
+        return ""
+    return " ".join(
+        [
+            "From here, the conflict is likely to move along a few predictable tracks.",
+            *clean_moves,
+        ]
+    )
+
+
 def generate_flagship_analysis(
     dossier: dict,
     actor_map: list[dict],
@@ -107,32 +168,7 @@ def generate_flagship_analysis(
     unknowns = _clean_lines(dossier.get("unknowns", []))
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
-    actor_sentences = []
-    for actor in actor_map:
-        if not isinstance(actor, dict):
-            continue
-        name = str(actor.get("name") or "").strip()
-        goal = str(actor.get("goal") or "").strip()
-        constraints = actor.get("constraints") or []
-        benefits = actor.get("currently_benefits") or []
-        pressures = actor.get("currently_pressures") or []
-        likely_next_move = str(actor.get("likely_next_move") or "").strip()
-        if not name:
-            continue
-
-        plural_subject = _is_plural_subject(name)
-        sentence = name
-        if goal:
-            sentence += f" {'want' if plural_subject else 'wants'} to {goal}"
-        if constraints:
-            sentence += f" but {'face' if plural_subject else 'faces'} {', '.join(str(item) for item in constraints if str(item).strip())}"
-        if benefits:
-            sentence += f"; {'they' if plural_subject else 'it'} currently {'benefit' if plural_subject else 'benefits'} from {', '.join(str(item) for item in benefits if str(item).strip())}"
-        if pressures:
-            sentence += f"; {'they are' if plural_subject else 'it is'} under pressure from {', '.join(str(item) for item in pressures if str(item).strip())}"
-        if likely_next_move:
-            sentence += f"; {'their' if plural_subject else 'its'} next move is likely to be to {likely_next_move}"
-        actor_sentences.append(sentence + ".")
+    actor_paragraphs = _build_actor_paragraphs(actor_map)
 
     body_parts = [
         thesis,
@@ -146,13 +182,9 @@ def generate_flagship_analysis(
             else f"Publicly, rival actors are still trying to define what {topic.lower()} is really about."
         ),
         " ".join(stakes) if stakes else "",
-        " ".join(actor_sentences) if actor_sentences else "",
+        *actor_paragraphs,
         " ".join(obscured_layer),
-        (
-            f"The next phase is likely to revolve around {' '.join(next_moves)}"
-            if next_moves
-            else ""
-        ),
+        _build_next_phase_paragraph(next_moves),
         (
             f"What remains unresolved is straightforward but decisive. {' '.join(unknowns)}"
             if unknowns

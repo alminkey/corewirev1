@@ -38,6 +38,7 @@ def test_generate_flagship_analysis_uses_dossier_and_actor_inputs():
     assert "force strategic concessions" in article["full_article"]
     assert "insurance, fuel, and trade costs" in article["full_article"]
     assert "maintain maritime pressure" in article["next_moves"][0]
+    assert "The strategic problem now looks different for each actor." in article["full_article"]
     assert len(article["full_article"]) > 1200
 
 
@@ -85,6 +86,11 @@ def test_generate_flagship_analysis_avoids_source_title_leakage_and_groups_next_
         "United States and Israel are likely to increase military and diplomatic pressure.",
         "Iran is likely to keep using maritime pressure to raise costs.",
     ]
+    assert "\n\nUnited States wants to force strategic concessions" in article["full_article"]
+    assert "\n\nIsrael wants to degrade Iran's deterrence" in article["full_article"]
+    assert "; it currently benefits from" not in article["full_article"]
+    assert "Its next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
+    assert "From here, the conflict is likely to move along a few predictable tracks." in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
@@ -111,6 +117,7 @@ def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names()
         "Bahrain and Gulf states are likely to press for shipping security without a blank-check war mandate."
     ]
     assert "Bahrain and Gulf states wants to restore shipping security" not in article["full_article"]
+    assert "Their next move is likely to be to press for shipping security without a blank-check war mandate." in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_singular_verb_for_united_states():
