@@ -7,25 +7,67 @@ def _clean_lines(values: list[object]) -> list[str]:
     return cleaned
 
 
+def _join_names(names: list[str]) -> str:
+    cleaned = [name for name in names if name]
+    if not cleaned:
+        return ""
+    if len(cleaned) == 1:
+        return cleaned[0]
+    if len(cleaned) == 2:
+        return f"{cleaned[0]} and {cleaned[1]}"
+    return f"{', '.join(cleaned[:-1])}, and {cleaned[-1]}"
+
+
+def _subject_verb(subject: str) -> str:
+    lowered = subject.lower()
+    if lowered == "united states":
+        return "is"
+    if " and " in lowered or lowered.endswith("states"):
+        return "are"
+    return "is"
+
+
+def _is_plural_subject(subject: str) -> bool:
+    return _subject_verb(subject) == "are"
+
+
+def _topic_subject(topic: str) -> str:
+    cleaned = str(topic or "").strip()
+    if not cleaned:
+        return "The crisis"
+
+    words = cleaned.split()
+    if len(words) > 12 or " because " in cleaned.lower():
+        return "The crisis"
+    return cleaned
+
+
 def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
     claims = _clean_lines(dossier.get("claims", []))
-    goals = [
-        str(actor.get("goal") or "").strip()
+    actor_goals = [
+        (
+            str(actor.get("name") or "").strip(),
+            str(actor.get("goal") or "").strip(),
+        )
         for actor in actor_map
         if isinstance(actor, dict) and str(actor.get("goal") or "").strip()
     ]
 
-    if claims and len(goals) >= 2:
+    if claims and len(actor_goals) >= 2:
+        actor_one, goal_one = actor_goals[0]
+        actor_two, goal_two = actor_goals[1]
         return [
-            f"Public claims focus on {claims[0].lower()}, but the deeper contest is over {goals[0]} versus {goals[1]}."
+            f"Behind the public language, the deeper contest is over whether {actor_one} can {goal_one} "
+            f"before {actor_two} can {goal_two}."
         ]
-    if goals:
-        return [f"The visible event obscures a deeper struggle over {goals[0]}."]
+    if actor_goals:
+        actor, goal = actor_goals[0]
+        return [f"Behind the visible event, the real struggle is over whether {actor} can {goal}."]
     return ["The visible event obscures a deeper struggle over leverage and cost."]
 
 
 def _build_next_moves(actor_map: list[dict]) -> list[str]:
-    next_moves: list[str] = []
+    grouped_moves: dict[str, list[str]] = {}
     for actor in actor_map:
         if not isinstance(actor, dict):
             continue
@@ -33,12 +75,20 @@ def _build_next_moves(actor_map: list[dict]) -> list[str]:
         likely_next_move = str(actor.get("likely_next_move") or "").strip()
         goal = str(actor.get("goal") or "").strip()
 
-        if name and likely_next_move:
-            next_moves.append(f"{name} is likely to {likely_next_move}.")
+        if likely_next_move:
+            grouped_moves.setdefault(likely_next_move, [])
+            if name:
+                grouped_moves[likely_next_move].append(name)
         elif name and goal:
-            next_moves.append(f"{name} is likely to keep pushing to {goal}.")
+            fallback_move = f"keep pushing to {goal}"
+            grouped_moves.setdefault(fallback_move, []).append(name)
 
-    if next_moves:
+    if grouped_moves:
+        next_moves: list[str] = []
+        for move, names in grouped_moves.items():
+            subject = _join_names(names)
+            verb = "are" if len(names) > 1 else _subject_verb(subject)
+            next_moves.append(f"{subject} {verb} likely to {move}.")
         return next_moves
 
     return ["Escalation risk remains high."]
@@ -50,13 +100,13 @@ def generate_flagship_analysis(
     thesis: str,
 ) -> dict:
     topic = str(dossier.get("topic") or "This crisis").strip()
+    topic_subject = _topic_subject(topic)
     facts = _clean_lines(dossier.get("verified_facts", []))
     claims = _clean_lines(dossier.get("claims", []))
     stakes = _clean_lines(dossier.get("stakes", []))
     unknowns = _clean_lines(dossier.get("unknowns", []))
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
-
     actor_sentences = []
     for actor in actor_map:
         if not isinstance(actor, dict):
@@ -64,45 +114,67 @@ def generate_flagship_analysis(
         name = str(actor.get("name") or "").strip()
         goal = str(actor.get("goal") or "").strip()
         constraints = actor.get("constraints") or []
+        benefits = actor.get("currently_benefits") or []
+        pressures = actor.get("currently_pressures") or []
         likely_next_move = str(actor.get("likely_next_move") or "").strip()
         if not name:
             continue
 
+        plural_subject = _is_plural_subject(name)
         sentence = name
         if goal:
-            sentence += f" wants to {goal}"
+            sentence += f" {'want' if plural_subject else 'wants'} to {goal}"
         if constraints:
-            sentence += f" while dealing with {', '.join(str(item) for item in constraints if str(item).strip())}"
+            sentence += f" but {'face' if plural_subject else 'faces'} {', '.join(str(item) for item in constraints if str(item).strip())}"
+        if benefits:
+            sentence += f"; {'they' if plural_subject else 'it'} currently {'benefit' if plural_subject else 'benefits'} from {', '.join(str(item) for item in benefits if str(item).strip())}"
+        if pressures:
+            sentence += f"; {'they are' if plural_subject else 'it is'} under pressure from {', '.join(str(item) for item in pressures if str(item).strip())}"
         if likely_next_move:
-            sentence += f", and is likely to {likely_next_move}"
+            sentence += f"; {'their' if plural_subject else 'its'} next move is likely to be to {likely_next_move}"
         actor_sentences.append(sentence + ".")
 
     body_parts = [
         thesis,
         (
-            f"{topic} is being driven by a collision between visible events and harder strategic objectives. "
+            f"{topic_subject} is being driven by a collision between visible events and harder strategic objectives. "
             f"{' '.join(facts[:2])}"
         ).strip(),
         (
-            f"Public messaging is already shaping the frame of the crisis. {' '.join(claims[:2])}"
+            f"Publicly, the sides are trying to define the crisis on their own terms. {' '.join(claims[:2])}"
             if claims
-            else f"Public messaging around {topic.lower()} is shaping how the crisis is understood."
+            else f"Publicly, rival actors are still trying to define what {topic.lower()} is really about."
         ),
         " ".join(stakes) if stakes else "",
         " ".join(actor_sentences) if actor_sentences else "",
         " ".join(obscured_layer),
-        " ".join(next_moves),
-        " ".join(unknowns) if unknowns else "",
+        (
+            f"The next phase is likely to revolve around {' '.join(next_moves)}"
+            if next_moves
+            else ""
+        ),
+        (
+            f"What remains unresolved is straightforward but decisive. {' '.join(unknowns)}"
+            if unknowns
+            else ""
+        ),
     ]
     body = "\n\n".join(part for part in body_parts if part).strip()
 
+    filler_sentences = [
+        f"That is why {topic.lower()} is becoming a contest over endurance, cost absorption, and political will rather than a story that can be measured only in battlefield damage.",
+        f"The central question is no longer whether pressure exists, but which side can convert pressure into a durable change in the political balance before the wider system pushes back.",
+        f"As long as the costs spill outward into shipping, energy, and alliance cohesion, the conflict will keep reshaping far more than the immediate battlefield.",
+    ]
+    filler_index = 0
     while len(body) < 1400:
         body = "\n\n".join(
             [
                 body,
-                f"The strategic meaning of {topic.lower()} lies less in the headline event than in who can sustain pressure, absorb cost, and force the other side into a worse bargaining position.",
+                filler_sentences[filler_index % len(filler_sentences)],
             ]
         )
+        filler_index += 1
 
     return {
         "thesis": thesis,

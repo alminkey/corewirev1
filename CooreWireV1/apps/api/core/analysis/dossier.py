@@ -62,15 +62,14 @@ def build_research_dossier(candidate: dict) -> dict:
         if isinstance(source, dict) and source.get("url")
     ]
 
-    source_titles = _normalize_text_list(
+    source_signals = _normalize_text_list(
         [source.get("title", "") for source in valid_sources if isinstance(source, dict)]
     )
-    for title in source_titles:
-        if _is_claim_like(title):
-            if title not in claims:
-                claims.append(title)
-        elif _is_fact_like_source_title(title) and title not in verified_facts:
-            verified_facts.append(title)
+    source_signals = [
+        title
+        for title in source_signals
+        if _is_fact_like_source_title(title) or _is_claim_like(title)
+    ]
 
     if len(valid_sources) < 2 and "Independent corroboration remains limited." not in unknowns:
         unknowns.append("Independent corroboration remains limited.")
@@ -79,6 +78,7 @@ def build_research_dossier(candidate: dict) -> dict:
         "topic": candidate.get("title", ""),
         "verified_facts": verified_facts,
         "claims": claims,
+        "source_signals": source_signals,
         "sources": candidate.get("sources", []),
         "stakes": stakes,
         "unknowns": unknowns,
