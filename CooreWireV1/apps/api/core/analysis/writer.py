@@ -102,6 +102,17 @@ def _topic_subject(topic: str) -> str:
     return cleaned
 
 
+def _build_lead_paragraph(topic_subject: str, facts: list[str]) -> str:
+    fact_text = " ".join(facts[:2]).strip()
+    subject = topic_subject
+    if topic_subject.lower().startswith("the "):
+        subject = topic_subject[0].lower() + topic_subject[1:]
+    lead = f"At its core, {subject} is no longer just about the latest exchange."
+    if fact_text:
+        return f"{lead} {fact_text}"
+    return lead
+
+
 def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
     claims = _clean_lines(dossier.get("claims", []))
     actor_goals = [
@@ -237,10 +248,7 @@ def generate_flagship_analysis(
 
     body_parts = [
         thesis,
-        (
-            f"{topic_subject} is being driven by a collision between visible events and harder strategic objectives. "
-            f"{' '.join(facts[:2])}"
-        ).strip(),
+        _build_lead_paragraph(topic_subject, facts),
         (
             f"The public case for the confrontation is straightforward. {' '.join(claims[:2])}"
             if claims

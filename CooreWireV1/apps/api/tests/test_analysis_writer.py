@@ -39,6 +39,8 @@ def test_generate_flagship_analysis_uses_dossier_and_actor_inputs():
     assert "insurance, fuel, and trade costs" in article["full_article"]
     assert "maintain maritime pressure" in article["next_moves"][0]
     assert "The strategic problem now looks different for each actor." in article["full_article"]
+    assert "At its core, Hormuz crisis is no longer just about the latest exchange." in article["full_article"]
+    assert "Hormuz crisis is being driven by a collision between visible events and harder strategic objectives." not in article["full_article"]
     assert len(article["full_article"]) > 1200
 
 
@@ -191,7 +193,7 @@ def test_generate_flagship_analysis_uses_short_subject_when_topic_is_already_a_c
         "The crisis is escalating because coercive pressure is colliding with maritime leverage.",
     )
 
-    assert "The crisis is being driven by a collision between visible events and harder strategic objectives." in article["full_article"]
+    assert "At its core, the crisis is no longer just about the latest exchange." in article["full_article"]
     assert (
         "The Hormuz war is becoming a test of who can impose global costs faster than the other side can impose surrender is being driven"
         not in article["full_article"]

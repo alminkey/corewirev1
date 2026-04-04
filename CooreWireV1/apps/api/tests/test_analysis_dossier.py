@@ -147,8 +147,8 @@ def test_form_analysis_thesis_uses_actor_names_for_more_natural_flagship_claim()
     )
 
     assert thesis == (
-        "Hormuz crisis is escalating because Iran wants to raise shipping costs "
-        "while United States is trying to force strategic concessions."
+        "Hormuz crisis is escalating because the real contest is now between "
+        "Iran's bid to raise shipping costs and the U.S. drive to force strategic concessions."
     )
 
 
@@ -173,6 +173,7 @@ def test_form_analysis_thesis_avoids_repeating_topic_when_title_is_already_a_cla
     )
 
     assert thesis == (
-        "The crisis is escalating because United States wants to force strategic concessions "
-        "from Iran before the costs spread further while Israel is trying to degrade Iran's regional deterrence."
+        "The crisis is escalating because the real contest is now between the U.S. drive to "
+        "force strategic concessions from Iran before the costs spread further and Israel's effort "
+        "to degrade Iran's regional deterrence."
     )
