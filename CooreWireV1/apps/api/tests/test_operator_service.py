@@ -1689,3 +1689,155 @@ def test_run_content_pipeline_uses_analysis_engine_for_analysis_content(monkeypa
     assert result["draft"]["headline"] == candidate["title"]
     assert result["evaluation"]["decision"] == "accept"
     assert result["decision"]["action"] == "auto_publish"
+
+
+def test_run_content_pipeline_routes_shallow_analysis_to_review(monkeypatch):
+    candidate = {
+        "title": "Middle East war analysis",
+        "summary": "Escalation is reshaping energy and diplomacy.",
+        "why_it_matters": "The conflict is altering global risk pricing.",
+        "sources": [
+            {"publisher": "AP", "url": "https://example.com/ap"},
+            {"publisher": "Reuters", "url": "https://example.com/reuters"},
+            {"publisher": "IEA", "url": "https://example.com/iea"},
+        ],
+        "actors": [
+            {"name": "Iran", "goal": "raise the cost of war"},
+            {"name": "United States", "goal": "force strategic concessions"},
+        ],
+    }
+
+    monkeypatch.setattr(
+        operator_service,
+        "discover_trending_story",
+        lambda payload: {"shortlist": [candidate], "profile": "balanced"},
+    )
+    monkeypatch.setattr(operator_service, "enrich_candidate_sources", lambda selected: selected)
+
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_dossier",
+        SimpleNamespace(
+            build_research_dossier=lambda selected_candidate: {
+                "topic": selected_candidate["title"],
+                "verified_facts": [selected_candidate["summary"]],
+                "claims": [],
+                "sources": selected_candidate["sources"],
+                "unknowns": ["Whether escalation is sustainable."],
+            }
+        ),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_actors",
+        SimpleNamespace(
+            build_actor_map=lambda dossier, actors: [
+                {"name": actor["name"], "goal": actor["goal"]} for actor in actors
+            ]
+        ),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_thesis",
+        SimpleNamespace(
+            form_analysis_thesis=lambda dossier, actor_map: (
+                "The war is being fought to change the region's cost structure because pressure alone has failed."
+            )
+        ),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_writer",
+        SimpleNamespace(
+            generate_flagship_analysis=lambda dossier, actor_map, thesis: {
+                "thesis": thesis,
+                "known_facts": dossier["verified_facts"],
+                "actor_map": actor_map,
+                "obscured_layer": ["A thin hidden-layer sentence."],
+                "next_moves": ["Maritime pressure is likely to continue."],
+                "unknowns": dossier["unknowns"],
+                "full_article": "Short analysis body.",
+            }
+        ),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_extraction",
+        SimpleNamespace(
+            extract_analysis_sections=lambda article: {
+                "fact_blocks": [{"text": "Shipping disruption is spreading.", "citations": []}],
+                "analysis_blocks": [{"text": "A thin hidden-layer sentence."}],
+                "disagreements": ["Whether deterrence will hold."],
+            }
+        ),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_doctrine",
+        SimpleNamespace(
+            validate_analysis_doctrine=lambda article: {
+                "passed": False,
+                "violations": ["thin_full_article", "thin_hidden_layer", "thin_consequence_layer"],
+            }
+        ),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        operator_service,
+        "analysis_evaluation",
+        SimpleNamespace(
+            score_analysis_output=lambda article, doctrine: {
+                "decision": "rerun",
+                "passed": False,
+                "scores": {
+                    "thesis_strength": 3,
+                    "why_explanation": 2,
+                    "new_value": 1,
+                    "actor_map_quality": 2,
+                    "fact_claim_discipline": 2,
+                    "agenda_resistance": 2,
+                    "tone_corewire_identity": 1,
+                },
+            }
+        ),
+        raising=False,
+    )
+
+    def fake_publish(payload, *, correlation):
+        assert "doctrine:thin_full_article" in payload["flags"]
+        assert "doctrine:thin_hidden_layer" in payload["flags"]
+        assert "doctrine:thin_consequence_layer" in payload["flags"]
+        return {
+            "type": "publish_if_eligible",
+            "accepted": True,
+            "decision": {
+                "action": "review_required",
+                "reasons": [
+                    "flag:doctrine:thin_full_article",
+                    "flag:doctrine:thin_hidden_layer",
+                    "flag:doctrine:thin_consequence_layer",
+                ],
+            },
+            "review_item": {"id": "review-1", "headline": candidate["title"], "queue": "pending_drafts"},
+            "correlation": correlation,
+        }
+
+    monkeypatch.setattr(operator_service, "publish_if_eligible", fake_publish)
+
+    result = operator_service.run_content_pipeline(
+        {"content_type": "analysis", "domain": "politics-diplomacy"},
+        correlation={},
+    )
+
+    assert result["doctrine"]["violations"] == [
+        "thin_full_article",
+        "thin_hidden_layer",
+        "thin_consequence_layer",
+    ]
+    assert result["evaluation"]["decision"] == "rerun"
+    assert result["decision"]["action"] == "review_required"

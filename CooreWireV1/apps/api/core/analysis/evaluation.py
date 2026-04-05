@@ -23,6 +23,8 @@ def _score_new_value(article: dict, doctrine: dict) -> int:
     stakes = [str(item or "").strip() for item in article.get("stakes", []) if str(item or "").strip()]
     if "missing_new_value" in doctrine.get("violations", []):
         return 0
+    if "thin_hidden_layer" in doctrine.get("violations", []):
+        return 1
     if obscured and stakes:
         return 3
     if obscured:
@@ -79,7 +81,9 @@ def _score_agenda_resistance(doctrine: dict) -> int:
 def _score_tone(doctrine: dict, article: dict) -> int:
     violations = set(doctrine.get("violations", []))
     body = str(article.get("full_article") or "").strip()
-    if "generic_analysis_language" in violations:
+    if "generic_analysis_language" in violations or "thin_full_article" in violations:
+        return 1
+    if "thin_consequence_layer" in violations:
         return 1
     if len(body) > 1000 and "meta_reader_language" not in violations:
         return 3

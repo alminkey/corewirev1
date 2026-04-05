@@ -145,21 +145,29 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
                 headline="Persisted review detail draft",
                 dek="Needs owner review before publish",
                 body_json=json.dumps(
-                    {
-                        "headline": "Persisted review detail draft",
-                        "dek": "Needs owner review before publish",
-                        "narrative": "Narrative text.",
-                        "thesis": "The conflict is widening because coercion has displaced diplomacy.",
-                        "actor_map": [
-                            {"name": "Iran", "goal": "raise the cost of war"},
-                            {"name": "United States", "goal": "force strategic concessions"},
-                        ],
-                        "obscured_layer": ["Infrastructure coercion matters more than public messaging."],
-                        "full_article": "The conflict is widening because coercion has displaced diplomacy." * 20,
-                        "fact_blocks": [{"text": "Fact block"}],
-                        "analysis_blocks": [{"text": "Analysis block"}],
-                        "sources": [
-                            {
+                        {
+                            "headline": "Persisted review detail draft",
+                            "dek": "Needs owner review before publish",
+                            "narrative": "Narrative text.",
+                            "thesis": "The conflict is widening because coercion has displaced diplomacy.",
+                            "actor_map": [
+                                {"name": "Iran", "goal": "raise the cost of war"},
+                                {"name": "United States", "goal": "force strategic concessions"},
+                            ],
+                                "obscured_layer": [
+                                    "Infrastructure coercion matters more than public messaging because maritime disruption now shapes alliance behavior, energy pricing, and the room each government has to keep escalating.",
+                                    "The coalition is also struggling to keep the costs of escalation politically contained, which is why its public case and its private threshold for risk are already drifting apart.",
+                                ],
+                            "stakes": ["The conflict is reshaping shipping risk and energy costs."],
+                            "next_moves": [
+                                "Iran is likely to keep raising the cost of escalation.",
+                                "United States is likely to keep pressing for concessions.",
+                            ],
+                            "full_article": "The conflict is widening because coercion has displaced diplomacy." * 20,
+                            "fact_blocks": [{"text": "Fact block"}],
+                            "analysis_blocks": [{"text": "Analysis block"}],
+                            "sources": [
+                                {
                                 "label": "Reuters",
                                 "publisher": "Reuters",
                                 "title": "Enterprise AI report",

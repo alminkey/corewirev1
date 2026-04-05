@@ -166,6 +166,8 @@ def _serialize_review_detail(draft: ArticleDraft, analysis: StoryAnalysis) -> di
             "full_article": draft_payload.get("full_article", ""),
             "actor_map": draft_payload.get("actor_map") or [],
             "obscured_layer": draft_payload.get("obscured_layer") or [],
+            "stakes": draft_payload.get("stakes") or [],
+            "next_moves": draft_payload.get("next_moves") or [],
         }
     )
 

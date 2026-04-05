@@ -81,3 +81,38 @@ def test_score_analysis_output_reruns_or_rejects_generic_analysis():
     assert evaluation["passed"] is False
     assert evaluation["scores"]["thesis_strength"] < 2
     assert evaluation["scores"]["actor_map_quality"] < 2
+
+
+def test_score_analysis_output_penalizes_shallow_flagship_depth():
+    article = {
+        "thesis": "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+        "known_facts": ["Shipping disruption is spreading."],
+        "claims": ["Iran says it is acting defensively."],
+        "stakes": [],
+        "actor_map": [
+            {"name": "Iran", "goal": "raise shipping costs", "likely_next_move": "maintain maritime pressure"},
+            {"name": "United States", "goal": "force strategic concessions", "likely_next_move": "increase deterrence"},
+        ],
+        "obscured_layer": ["A single thin hidden-layer sentence."],
+        "next_moves": ["Iran is likely to maintain maritime pressure."],
+        "unknowns": ["It remains unclear how long the pressure can be sustained."],
+        "full_article": (
+            "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure. "
+            "One paragraph of summary follows."
+        ),
+    }
+    doctrine = {
+        "passed": False,
+        "violations": [
+            "thin_full_article",
+            "thin_hidden_layer",
+            "thin_consequence_layer",
+        ],
+    }
+
+    evaluation = score_analysis_output(article, doctrine)
+
+    assert evaluation["decision"] == "rerun"
+    assert evaluation["passed"] is False
+    assert evaluation["scores"]["new_value"] < 2
+    assert evaluation["scores"]["tone_corewire_identity"] < 2
