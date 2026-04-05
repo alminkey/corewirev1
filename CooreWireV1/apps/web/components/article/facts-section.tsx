@@ -16,7 +16,9 @@ export function FactsSection({ blocks }: FactsSectionProps) {
             key={`fact-${index}-${block.citations.join("|")}`}
           >
             <p>{block.text}</p>
-            <small>Citations: {block.citations.join(", ")}</small>
+            {block.citations.length > 0 ? (
+              <small>Citations: {block.citations.join(", ")}</small>
+            ) : null}
           </article>
         ))}
       </div>

@@ -28,6 +28,7 @@ export type ArticleSource = {
 };
 
 export type ArticleDetail = StoryCard & {
+  full_article: string;
   facts: ArticleFactBlock[];
   analysis: string[];
   disagreements: string[];

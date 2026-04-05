@@ -48,6 +48,8 @@ const homepageFallback: HomepagePayload = {
 const articleFallback: Record<string, ArticleDetail> = {
   "corewire-launched-the-pipeline": {
     ...homepageFallback.lead_story,
+    full_article:
+      "Two supporting source documents confirm the pipeline launch. The successful orchestration path reduces the gap between skeleton code and a runnable runtime.",
     facts: [
       {
         text: "Two supporting source documents confirm the pipeline launch.",
@@ -60,7 +62,22 @@ const articleFallback: Record<string, ArticleDetail> = {
     disagreements: [
       "Sources agree on the launch but differ on how complete the rollout is.",
     ],
-    sources: ["Source 1", "Source 2"],
+    sources: [
+      {
+        label: "Source 1",
+        publisher: "Source 1",
+        title: null,
+        url: null,
+        role: "source",
+      },
+      {
+        label: "Source 2",
+        publisher: "Source 2",
+        title: null,
+        url: null,
+        role: "source",
+      },
+    ],
   },
 };
 

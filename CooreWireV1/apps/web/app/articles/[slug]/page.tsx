@@ -1,5 +1,6 @@
-﻿import { AnalysisSection } from "../../../components/article/analysis-section";
+import { AnalysisSection } from "../../../components/article/analysis-section";
 import { AdSlot } from "../../../components/monetization/ad-slot";
+import { ArticleBody } from "../../../components/article/article-body";
 import { ArticleHeader } from "../../../components/article/article-header";
 import { DisagreementSection } from "../../../components/article/disagreement-section";
 import { FactsSection } from "../../../components/article/facts-section";
@@ -47,6 +48,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           }}
         />
         <AdSlot placement="article-upper" />
+        <ArticleBody fullArticle={article.full_article} />
         <FactsSection blocks={article.facts} />
         <AnalysisSection blocks={article.analysis} />
         <NewsletterSignupCard />

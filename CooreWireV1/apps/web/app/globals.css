@@ -379,6 +379,18 @@ body {
   line-height: 1.6;
 }
 
+.cw-article-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cw-article-body-paragraph {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.84;
+}
+
 .cw-inline-link,
 .story-list a,
 .cw-review-card a {
@@ -728,6 +740,7 @@ button:hover {
 .cw-article-shell--light .cw-article-header p,
 .cw-article-shell--light .cw-newsletter-card p,
 .cw-article-shell--light .cw-article-section p,
+.cw-article-shell--light .cw-article-body-paragraph,
 .cw-article-shell--light .cw-source-list li,
 .cw-article-shell--light .cw-analysis-block,
 .cw-article-shell--light .cw-fact-block {
