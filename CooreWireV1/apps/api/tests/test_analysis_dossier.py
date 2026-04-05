@@ -74,6 +74,54 @@ def test_build_research_dossier_uses_source_titles_as_signals_and_stakes_context
     ]
 
 
+def test_build_research_dossier_builds_hidden_layers_from_deep_analysis_inputs():
+    candidate = {
+        "title": "Hormuz coalition strain",
+        "summary": "Shipping disruption spreads across Gulf routes.",
+        "public_narrative": "restoring free navigation",
+        "real_objective": "breaking Iran's deterrence before coalition fatigue forces a narrower settlement",
+        "timing_pressures": [
+            "Washington is racing against fuel-price pressure and allied drift.",
+        ],
+        "hidden_incentives": [
+            "Gulf states want shipping reopened without giving Washington a blank-check war mandate.",
+        ],
+        "obscured_questions": [
+            "What the coalition still cannot admit publicly is how much escalation it will tolerate before reopening becomes secondary to containment.",
+        ],
+        "sources": [
+            {
+                "publisher": "AP",
+                "title": "Shipping disruption spreads across Gulf routes",
+                "url": "https://example.com/ap",
+            },
+            {
+                "publisher": "Reuters",
+                "title": "Allies split over burden of reopening the waterway",
+                "url": "https://example.com/reuters",
+            },
+        ],
+    }
+
+    dossier = build_research_dossier(candidate)
+
+    assert dossier["timing_pressures"] == [
+        "Washington is racing against fuel-price pressure and allied drift.",
+    ]
+    assert dossier["hidden_incentives"] == [
+        "Gulf states want shipping reopened without giving Washington a blank-check war mandate.",
+    ]
+    assert dossier["obscured_questions"] == [
+        "What the coalition still cannot admit publicly is how much escalation it will tolerate before reopening becomes secondary to containment.",
+    ]
+    assert dossier["hidden_layers"] == [
+        "The public argument centers on restoring free navigation, but the deeper objective is breaking Iran's deterrence before coalition fatigue forces a narrower settlement.",
+        "Washington is racing against fuel-price pressure and allied drift.",
+        "Gulf states want shipping reopened without giving Washington a blank-check war mandate.",
+        "What the coalition still cannot admit publicly is how much escalation it will tolerate before reopening becomes secondary to containment.",
+    ]
+
+
 def test_build_actor_map_tracks_goals_constraints_current_position_and_next_moves():
     actor_map = build_actor_map(
         {

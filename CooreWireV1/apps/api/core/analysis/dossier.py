@@ -11,6 +11,10 @@ CLAIM_MARKERS = (
 )
 
 
+def _normalize_text(value: object) -> str:
+    return str(value or "").strip()
+
+
 def _normalize_text_list(values: list[object]) -> list[str]:
     normalized: list[str] = []
     for value in values:
@@ -25,7 +29,7 @@ def _normalize_text_list(values: list[object]) -> list[str]:
                 or ""
             )
 
-        text = str(text).strip()
+        text = _normalize_text(text)
         if text and text not in normalized:
             normalized.append(text)
 
@@ -42,9 +46,32 @@ def _is_fact_like_source_title(text: str) -> bool:
     return len(words) >= 5 or len(text) >= 40
 
 
+def _build_hidden_layers(
+    *,
+    public_narrative: str,
+    real_objective: str,
+    timing_pressures: list[str],
+    hidden_incentives: list[str],
+    obscured_questions: list[str],
+) -> list[str]:
+    hidden_layers: list[str] = []
+    if public_narrative and real_objective:
+        hidden_layers.append(
+            f"The public argument centers on {public_narrative.rstrip('. ')}, "
+            f"but the deeper objective is {real_objective.rstrip('. ')}."
+        )
+
+    for value in (*timing_pressures, *hidden_incentives, *obscured_questions):
+        text = _normalize_text(value)
+        if text and text not in hidden_layers:
+            hidden_layers.append(text)
+
+    return hidden_layers
+
+
 def build_research_dossier(candidate: dict) -> dict:
     verified_facts = []
-    summary = str(candidate.get("summary") or "").strip()
+    summary = _normalize_text(candidate.get("summary"))
     if summary:
         verified_facts.append(summary)
     verified_facts.extend(
@@ -56,6 +83,11 @@ def build_research_dossier(candidate: dict) -> dict:
     claims = _normalize_text_list(candidate.get("claims", []))
     unknowns = _normalize_text_list(candidate.get("unknowns", []))
     stakes = _normalize_text_list([candidate.get("why_it_matters", "")])
+    public_narrative = _normalize_text(candidate.get("public_narrative"))
+    real_objective = _normalize_text(candidate.get("real_objective"))
+    timing_pressures = _normalize_text_list(candidate.get("timing_pressures", []))
+    hidden_incentives = _normalize_text_list(candidate.get("hidden_incentives", []))
+    obscured_questions = _normalize_text_list(candidate.get("obscured_questions", []))
     valid_sources = [
         source
         for source in candidate.get("sources", [])
@@ -74,6 +106,14 @@ def build_research_dossier(candidate: dict) -> dict:
     if len(valid_sources) < 2 and "Independent corroboration remains limited." not in unknowns:
         unknowns.append("Independent corroboration remains limited.")
 
+    hidden_layers = _build_hidden_layers(
+        public_narrative=public_narrative,
+        real_objective=real_objective,
+        timing_pressures=timing_pressures,
+        hidden_incentives=hidden_incentives,
+        obscured_questions=obscured_questions,
+    )
+
     return {
         "topic": candidate.get("title", ""),
         "verified_facts": verified_facts,
@@ -82,4 +122,10 @@ def build_research_dossier(candidate: dict) -> dict:
         "sources": candidate.get("sources", []),
         "stakes": stakes,
         "unknowns": unknowns,
+        "public_narrative": public_narrative,
+        "real_objective": real_objective,
+        "timing_pressures": timing_pressures,
+        "hidden_incentives": hidden_incentives,
+        "obscured_questions": obscured_questions,
+        "hidden_layers": hidden_layers,
     }

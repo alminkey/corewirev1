@@ -121,6 +121,10 @@ def _build_lead_paragraph(topic_subject: str, facts: list[str]) -> str:
 
 
 def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
+    hidden_layers = _clean_lines(dossier.get("hidden_layers", []))
+    if hidden_layers:
+        return hidden_layers
+
     claims = _clean_lines(dossier.get("claims", []))
     actor_goals = [
         (
@@ -363,7 +367,7 @@ def generate_flagship_analysis(
         ),
         " ".join(stakes) if stakes else "",
         *actor_paragraphs,
-        " ".join(obscured_layer),
+        *obscured_layer,
         _build_next_phase_paragraph(next_moves),
         _build_unknowns_paragraph(unknowns),
     ]
