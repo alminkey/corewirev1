@@ -96,7 +96,7 @@ def test_generate_flagship_analysis_avoids_source_title_leakage_and_groups_next_
     assert "; it currently benefits from" not in article["full_article"]
     assert "Washington's next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
     assert "Israel's next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
-    assert "The next phase is likely to follow a few predictable tracks." in article["full_article"]
+    assert "That tension makes the next phase easier to sketch than to control." in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_more_editorial_voice_and_closing_cadence():
@@ -216,6 +216,54 @@ def test_generate_flagship_analysis_prefers_deep_hidden_layers_over_generic_obsc
         in article["full_article"]
     )
     assert "Behind the public language, the deeper contest is over whether" not in article["full_article"]
+
+
+def test_generate_flagship_analysis_uses_composed_hidden_layer_and_next_phase_transitions():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Iran says it is acting defensively."],
+            "stakes": ["The conflict is changing insurance, fuel, and trade costs."],
+            "hidden_layers": [
+                "The public argument centers on restoring navigation, but the deeper objective is to keep the coalition together long enough to force Iranian concessions.",
+                "Washington is racing against fuel-price pressure and allied fatigue.",
+                "Gulf states want shipping reopened without turning their own infrastructure into the next battlefield.",
+            ],
+            "unknowns": ["It remains unclear how long the pressure can be sustained."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+                "likely_next_move": "increase military and diplomatic pressure",
+            },
+            {
+                "name": "Israel",
+                "goal": "degrade Iran's deterrence",
+                "likely_next_move": "push to extend the military phase",
+            },
+            {
+                "name": "Iran",
+                "goal": "raise shipping costs",
+                "likely_next_move": "keep using maritime pressure to raise costs",
+            },
+        ],
+        "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+    )
+
+    assert article["obscured_layer"][0] == "What matters more is the pressure building beneath the public case."
+    assert (
+        "The public argument centers on restoring navigation, but the deeper objective is to keep the coalition together long enough to force Iranian concessions. Washington is racing against fuel-price pressure and allied fatigue."
+        in article["obscured_layer"][1]
+    )
+    assert (
+        "What matters more is the pressure building beneath the public case."
+        in article["full_article"]
+    )
+    assert "That tension makes the next phase easier to sketch than to control." in article["full_article"]
+    assert "The next phase is likely to follow a few predictable tracks." not in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():

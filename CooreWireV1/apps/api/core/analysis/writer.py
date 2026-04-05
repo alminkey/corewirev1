@@ -123,7 +123,15 @@ def _build_lead_paragraph(topic_subject: str, facts: list[str]) -> str:
 def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
     hidden_layers = _clean_lines(dossier.get("hidden_layers", []))
     if hidden_layers:
-        return hidden_layers
+        if len(hidden_layers) == 1:
+            return hidden_layers
+
+        composed = ["What matters more is the pressure building beneath the public case."]
+        for start in range(0, len(hidden_layers), 2):
+            paragraph = " ".join(hidden_layers[start : start + 2]).strip()
+            if paragraph:
+                composed.append(paragraph)
+        return composed
 
     claims = _clean_lines(dossier.get("claims", []))
     actor_goals = [
@@ -323,7 +331,7 @@ def _build_next_phase_paragraph(next_moves: list[str]) -> str:
         return ""
     return " ".join(
         [
-            "The next phase is likely to follow a few predictable tracks.",
+            "That tension makes the next phase easier to sketch than to control.",
             *clean_moves,
         ]
     )
