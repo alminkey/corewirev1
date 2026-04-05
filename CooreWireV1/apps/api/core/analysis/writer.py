@@ -39,6 +39,13 @@ def _subject_possessive(subject: str) -> str:
     return "their" if _is_plural_subject(subject) else "its"
 
 
+def _actor_display_name(name: str) -> str:
+    labels = {
+        "United States": "Washington",
+    }
+    return labels.get(name, name)
+
+
 def _goal_as_activity(goal: str) -> str:
     known_verbs = {
         "force",
@@ -170,28 +177,128 @@ def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
         return []
 
     paragraphs = ["The strategic problem now looks different for each actor."]
+    normalized: list[dict] = []
     for actor in actor_map:
         if not isinstance(actor, dict):
             continue
 
+        name = str(actor.get("name") or "").strip()
+        if not name:
+            continue
+        normalized.append(actor)
+
+    if not normalized:
+        return paragraphs
+
+    has_pair = len(normalized) >= 2
+    if has_pair:
+        first = normalized[0]
+        second = normalized[1]
+        first_name = str(first.get("name") or "").strip()
+        second_name = str(second.get("name") or "").strip()
+        first_label = _actor_display_name(first_name)
+        second_label = _actor_display_name(second_name)
+        first_plural = _is_plural_subject(first_name)
+        second_plural = _is_plural_subject(second_name)
+        first_goal = str(first.get("goal") or "").strip()
+        second_goal = str(second.get("goal") or "").strip()
+        first_constraints = [
+            str(item).strip()
+            for item in (first.get("constraints") or [])
+            if str(item).strip()
+        ]
+        second_constraints = [
+            str(item).strip()
+            for item in (second.get("constraints") or [])
+            if str(item).strip()
+        ]
+        first_benefits = [
+            str(item).strip()
+            for item in (first.get("currently_benefits") or [])
+            if str(item).strip()
+        ]
+        second_benefits = [
+            str(item).strip()
+            for item in (second.get("currently_benefits") or [])
+            if str(item).strip()
+        ]
+        first_pressures = [
+            str(item).strip()
+            for item in (first.get("currently_pressures") or [])
+            if str(item).strip()
+        ]
+        second_pressures = [
+            str(item).strip()
+            for item in (second.get("currently_pressures") or [])
+            if str(item).strip()
+        ]
+        first_move = str(first.get("likely_next_move") or "").strip()
+        second_move = str(second.get("likely_next_move") or "").strip()
+        pair_parts = [
+            f"{first_label} and {second_label} are not trying to solve the same problem, but their interests still overlap."
+        ]
+        if first_goal and second_goal:
+            pair_parts.append(
+                f"{first_label} is trying to {first_goal}, while {second_label} is trying to {second_goal}."
+            )
+        if first_constraints:
+            pair_parts.append(
+                f"{first_label} {'face' if first_plural else 'faces'} {', '.join(first_constraints)}."
+            )
+        if first_benefits:
+            pair_parts.append(
+                f"{first_label} currently {'benefit' if first_plural else 'benefits'} from {', '.join(first_benefits)}."
+            )
+        if first_pressures:
+            pair_parts.append(
+                f"{first_label} {'are' if first_plural else 'is'} under pressure from {', '.join(first_pressures)}."
+            )
+        if second_constraints:
+            pair_parts.append(
+                f"{second_label} {'face' if second_plural else 'faces'} {', '.join(second_constraints)}."
+            )
+        if second_benefits:
+            pair_parts.append(
+                f"{second_label} currently {'benefit' if second_plural else 'benefits'} from {', '.join(second_benefits)}."
+            )
+        if second_pressures:
+            pair_parts.append(
+                f"{second_label} {'are' if second_plural else 'is'} under pressure from {', '.join(second_pressures)}."
+            )
+        if first_move:
+            pair_parts.append(f"{first_label}'s next move is likely to be to {first_move}.")
+        if second_move:
+            pair_parts.append(f"{second_label}'s next move is likely to be to {second_move}.")
+        paragraphs.append(" ".join(pair_parts))
+
+    remaining = normalized[2:] if has_pair else normalized
+    for index, actor in enumerate(remaining):
         name = str(actor.get("name") or "").strip()
         goal = str(actor.get("goal") or "").strip()
         constraints = [str(item).strip() for item in (actor.get("constraints") or []) if str(item).strip()]
         benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
         pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
         likely_next_move = str(actor.get("likely_next_move") or "").strip()
+
         if not name:
             continue
 
+        display_name = _actor_display_name(name)
         plural_subject = _is_plural_subject(name)
         pronoun = _subject_pronoun(name).capitalize()
         possessive = _subject_possessive(name).capitalize()
         parts: list[str] = []
 
         if goal:
-            parts.append(f"For {name}, the crisis is now about {_goal_as_activity(goal)}.")
+            if has_pair and index == 0:
+                parts.append(f"{display_name}, by contrast, is trying to {goal}.")
+            else:
+                parts.append(f"{display_name} {'are' if plural_subject else 'is'} trying to {goal}.")
         else:
-            parts.append(f"{name} {'are' if plural_subject else 'is'} trying to improve its position.")
+            if has_pair and index == 0:
+                parts.append(f"{display_name}, by contrast, {'are' if plural_subject else 'is'} trying to improve its position.")
+            else:
+                parts.append(f"{display_name} {'are' if plural_subject else 'is'} trying to improve its position.")
         if constraints:
             parts.append(f"{pronoun} {'face' if plural_subject else 'faces'} {', '.join(constraints)}.")
         if benefits:
