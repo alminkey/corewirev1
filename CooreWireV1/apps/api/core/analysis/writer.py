@@ -18,6 +18,17 @@ def _join_names(names: list[str]) -> str:
     return f"{', '.join(cleaned[:-1])}, and {cleaned[-1]}"
 
 
+def _join_phrases(parts: list[str]) -> str:
+    cleaned = [part for part in parts if part]
+    if not cleaned:
+        return ""
+    if len(cleaned) == 1:
+        return cleaned[0]
+    if len(cleaned) == 2:
+        return f"{cleaned[0]} and {cleaned[1]}"
+    return f"{', '.join(cleaned[:-1])}, and {cleaned[-1]}"
+
+
 def _subject_verb(subject: str) -> str:
     lowered = subject.lower()
     if lowered == "united states":
@@ -154,6 +165,21 @@ def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
         actor, goal = actor_goals[0]
         return [f"Behind the visible event, the real struggle is over whether {actor} can {goal}."]
     return ["The visible event obscures a deeper struggle over leverage and cost."]
+
+
+def _build_timing_paragraph(dossier: dict) -> str:
+    timing_pressures = _clean_lines(dossier.get("timing_pressures", []))
+    hidden_incentives = _clean_lines(dossier.get("hidden_incentives", []))
+    if not timing_pressures and not hidden_incentives:
+        return ""
+
+    parts = [
+        "The timing matters because the pressure is no longer moving at the same speed for every side."
+    ]
+    parts.extend(timing_pressures[:2])
+    if hidden_incentives:
+        parts.append(hidden_incentives[0])
+    return " ".join(parts)
 
 
 def _build_next_moves(actor_map: list[dict]) -> list[str]:
@@ -325,6 +351,45 @@ def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
     return paragraphs
 
 
+def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
+    stakes = _clean_lines(dossier.get("stakes", []))
+    if not stakes:
+        return ""
+
+    pressure_clause = ""
+    benefit_clause = ""
+    for actor in actor_map:
+        if not isinstance(actor, dict):
+            continue
+        name = str(actor.get("name") or "").strip()
+        if not name:
+            continue
+        pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
+        benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
+        display_name = _actor_display_name(name)
+
+        if not pressure_clause and pressures:
+            pressure_clause = (
+                f"That is increasing pressure on {display_name} through {_join_phrases(pressures)}."
+            )
+        if not benefit_clause and benefits:
+            benefit_clause = (
+                f"At the same time, it is giving {display_name} room to exploit {_join_phrases(benefits)}."
+            )
+        if pressure_clause and benefit_clause:
+            break
+
+    parts = [
+        "The consequences are no longer confined to the battlefield.",
+        *stakes[:2],
+    ]
+    if pressure_clause:
+        parts.append(pressure_clause)
+    if benefit_clause:
+        parts.append(benefit_clause)
+    return " ".join(parts)
+
+
 def _build_next_phase_paragraph(next_moves: list[str]) -> str:
     clean_moves = [move for move in next_moves if str(move or "").strip()]
     if not clean_moves:
@@ -364,6 +429,8 @@ def generate_flagship_analysis(
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
     actor_paragraphs = _build_actor_paragraphs(actor_map)
+    timing_paragraph = _build_timing_paragraph(dossier)
+    consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
 
     body_parts = [
         thesis,
@@ -374,8 +441,10 @@ def generate_flagship_analysis(
             else "The public case for the confrontation is still being shaped by competing narratives."
         ),
         " ".join(stakes) if stakes else "",
+        timing_paragraph,
         *actor_paragraphs,
         *obscured_layer,
+        consequence_paragraph,
         _build_next_phase_paragraph(next_moves),
         _build_unknowns_paragraph(unknowns),
     ]

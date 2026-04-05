@@ -266,6 +266,80 @@ def test_generate_flagship_analysis_uses_composed_hidden_layer_and_next_phase_tr
     assert "The next phase is likely to follow a few predictable tracks." not in article["full_article"]
 
 
+def test_generate_flagship_analysis_expands_why_now_from_timing_pressure_signals():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Iran says it is acting defensively."],
+            "stakes": ["The conflict is changing insurance, fuel, and trade costs."],
+            "timing_pressures": [
+                "Washington is racing against fuel-price pressure and allied fatigue.",
+                "Iran is trying to prove it can widen costs before any diplomatic off-ramp hardens.",
+            ],
+            "hidden_incentives": [
+                "Neither side wants to publicly admit how much coalition discipline is shaping the battlefield."
+            ],
+            "unknowns": ["It remains unclear how long the pressure can be sustained."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+                "likely_next_move": "increase military and diplomatic pressure",
+            },
+            {
+                "name": "Iran",
+                "goal": "raise shipping costs",
+                "likely_next_move": "keep using maritime pressure to raise costs",
+            },
+        ],
+        "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+    )
+
+    assert "The timing matters because the pressure is no longer moving at the same speed for every side." in article["full_article"]
+    assert "Washington is racing against fuel-price pressure and allied fatigue." in article["full_article"]
+    assert "Iran is trying to prove it can widen costs before any diplomatic off-ramp hardens." in article["full_article"]
+
+
+def test_generate_flagship_analysis_expands_consequence_layer_beyond_generic_stakes():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Iran says it is acting defensively."],
+            "stakes": [
+                "The conflict is changing insurance, fuel, and trade costs.",
+                "The cost of reopening shipping lanes is starting to split the coalition.",
+            ],
+            "unknowns": ["It remains unclear how long the pressure can be sustained."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+                "currently_pressures": ["fuel-price pressure", "allied reluctance"],
+                "likely_next_move": "increase military and diplomatic pressure",
+            },
+            {
+                "name": "Iran",
+                "goal": "raise shipping costs",
+                "currently_benefits": ["global market leverage"],
+                "likely_next_move": "keep using maritime pressure to raise costs",
+            },
+        ],
+        "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+    )
+
+    assert "The consequences are no longer confined to the battlefield." in article["full_article"]
+    assert "The conflict is changing insurance, fuel, and trade costs." in article["full_article"]
+    assert "The cost of reopening shipping lanes is starting to split the coalition." in article["full_article"]
+    assert "That is increasing pressure on Washington through fuel-price pressure and allied reluctance." in article["full_article"]
+    assert "At the same time, it is giving Iran room to exploit global market leverage." in article["full_article"]
+
+
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
     article = generate_flagship_analysis(
         {
