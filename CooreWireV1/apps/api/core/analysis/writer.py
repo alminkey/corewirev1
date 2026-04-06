@@ -370,6 +370,15 @@ def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
 
 
 def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
+    buried_consequences = _clean_lines(dossier.get("buried_consequences", []))
+    if buried_consequences:
+        return " ".join(
+            [
+                "The buried consequence is easier to miss than the headline event.",
+                *buried_consequences[:2],
+            ]
+        )
+
     stakes = _clean_lines(dossier.get("stakes", []))
     if not stakes:
         return ""
@@ -406,6 +415,20 @@ def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
     if benefit_clause:
         parts.append(benefit_clause)
     return " ".join(parts)
+
+
+def _build_hard_ending_paragraph(dossier: dict) -> str:
+    hard_questions = _clean_lines(dossier.get("hard_questions", []))
+    if not hard_questions:
+        return ""
+
+    return " ".join(
+        [
+            "The hardest pressure point is now becoming unavoidable.",
+            *hard_questions[:2],
+            "Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain.",
+        ]
+    )
 
 
 def _build_next_phase_paragraph(next_moves: list[str]) -> str:
@@ -450,6 +473,7 @@ def generate_flagship_analysis(
     contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
     consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
+    hard_ending_paragraph = _build_hard_ending_paragraph(dossier)
 
     body_parts = [
         thesis,
@@ -466,7 +490,7 @@ def generate_flagship_analysis(
         *obscured_layer,
         consequence_paragraph,
         _build_next_phase_paragraph(next_moves),
-        _build_unknowns_paragraph(unknowns),
+        hard_ending_paragraph or _build_unknowns_paragraph(unknowns),
     ]
     body = "\n\n".join(part for part in body_parts if part).strip()
 

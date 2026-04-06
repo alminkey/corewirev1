@@ -373,6 +373,33 @@ def test_generate_flagship_analysis_surfaces_core_contradiction_and_sharper_why_
     assert "The timing matters because the pressure is no longer moving at the same speed for every side." not in article["full_article"]
 
 
+def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Washington says pressure is needed to reopen the strait."],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition, not at sea."
+            ],
+            "hard_questions": [
+                "Whether Washington can keep pressure rising without forcing allies to pull back."
+            ],
+            "unknowns": ["Whether coalition discipline can hold."],
+            "sources": [],
+        },
+        [],
+        "The crisis is escalating because the real contest is no longer just military.",
+    )
+
+    assert "The buried consequence is easier to miss than the headline event." in article["full_article"]
+    assert "The first real fracture may appear inside the coalition, not at sea." in article["full_article"]
+    assert "The hardest questions are still open." not in article["full_article"]
+    assert "The hardest pressure point is now becoming unavoidable." in article["full_article"]
+    assert "Whether Washington can keep pressure rising without forcing allies to pull back." in article["full_article"]
+    assert "The article should end under pressure, not with a neutral recap." not in article["full_article"]
+
+
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
     article = generate_flagship_analysis(
         {
