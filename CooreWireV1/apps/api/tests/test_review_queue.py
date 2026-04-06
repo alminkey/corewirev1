@@ -145,11 +145,11 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
                 headline="Persisted review detail draft",
                 dek="Needs owner review before publish",
                 body_json=json.dumps(
-                        {
-                            "headline": "Persisted review detail draft",
-                            "dek": "Needs owner review before publish",
-                            "narrative": "Narrative text.",
-                            "thesis": "The conflict is widening because coercion has displaced diplomacy.",
+                            {
+                                "headline": "Persisted review detail draft",
+                                "dek": "Needs owner review before publish",
+                                "narrative": "Narrative text.",
+                                "thesis": "The conflict is widening because coercion has displaced diplomacy.",
                             "actor_map": [
                                 {"name": "Iran", "goal": "raise the cost of war"},
                                 {"name": "United States", "goal": "force strategic concessions"},
@@ -158,15 +158,35 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
                                     "Infrastructure coercion matters more than public messaging because maritime disruption now shapes alliance behavior, energy pricing, and the room each government has to keep escalating.",
                                     "The coalition is also struggling to keep the costs of escalation politically contained, which is why its public case and its private threshold for risk are already drifting apart.",
                                 ],
-                            "stakes": ["The conflict is reshaping shipping risk and energy costs."],
-                            "next_moves": [
-                                "Iran is likely to keep raising the cost of escalation.",
-                                "United States is likely to keep pressing for concessions.",
-                            ],
-                            "full_article": "The conflict is widening because coercion has displaced diplomacy." * 20,
-                            "fact_blocks": [{"text": "Fact block"}],
-                            "analysis_blocks": [{"text": "Analysis block"}],
-                            "sources": [
+                                "core_contradictions": [
+                                    "The public case is about restoring deterrence, but the deeper fight is over whether coercion can keep widening without splitting the coalition underwriting it."
+                                ],
+                                "why_now_signals": [
+                                    "The timing is not incidental because allied political tolerance is narrowing as shipping costs rise."
+                                ],
+                                "buried_consequences": [
+                                    "The first real fracture may appear inside the coalition, not on the battlefield."
+                                ],
+                                "hard_questions": [
+                                    "Whether the coalition can keep escalating without breaking its own political tolerance for cost."
+                                ],
+                                "stakes": ["The conflict is reshaping shipping risk and energy costs."],
+                                "next_moves": [
+                                    "Iran is likely to keep raising the cost of escalation.",
+                                    "United States is likely to keep pressing for concessions.",
+                                ],
+                                "full_article": (
+                                    "The conflict is widening because coercion has displaced diplomacy. "
+                                    "What matters more than the public case is the contradiction underneath it. "
+                                    "The public case is about restoring deterrence, but the deeper fight is over whether coercion can keep widening without splitting the coalition underwriting it. "
+                                    "The timing is not incidental because allied political tolerance is narrowing as shipping costs rise. "
+                                    "The buried consequence is easier to miss than the headline event. The first real fracture may appear inside the coalition, not on the battlefield. "
+                                    "The hardest pressure point is now becoming unavoidable. Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain. "
+                                )
+                                * 6,
+                                "fact_blocks": [{"text": "Fact block"}],
+                                "analysis_blocks": [{"text": "Analysis block"}],
+                                "sources": [
                                 {
                                 "label": "Reuters",
                                 "publisher": "Reuters",

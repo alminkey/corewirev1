@@ -22,6 +22,27 @@ MIN_FLAGSHIP_BODY_CHARS = 1200
 MIN_HIDDEN_LAYER_ITEMS = 2
 MIN_HIDDEN_LAYER_CHARS = 160
 MIN_CONSEQUENCE_SIGNALS = 2
+CONTRADICTION_MARKERS = (
+    "deeper fight",
+    "deeper contest",
+    "contradiction underneath",
+    "public case is about",
+)
+WHY_NOW_MARKERS = (
+    "timing is not incidental",
+    "timing matters because",
+    "racing against",
+)
+BURIED_CONSEQUENCE_MARKERS = (
+    "buried consequence",
+    "first real fracture",
+    "easier to miss than the headline event",
+)
+HARD_ENDING_MARKERS = (
+    "hardest pressure point",
+    "until that pressure breaks",
+    "pressure point is now becoming unavoidable",
+)
 
 
 def _has_meaningful_actor_map(actor_map: list[dict]) -> bool:
@@ -59,6 +80,11 @@ def _has_sufficient_consequence_layer(article: dict) -> bool:
     return len(stakes) + len(next_moves) >= MIN_CONSEQUENCE_SIGNALS
 
 
+def _contains_any_marker(text: str, markers: tuple[str, ...]) -> bool:
+    lowered = text.lower()
+    return any(marker in lowered for marker in markers)
+
+
 def validate_analysis_doctrine(article: dict) -> dict:
     body = str(article.get("body") or article.get("full_article") or "")
     thesis = str(article.get("thesis") or "")
@@ -90,6 +116,18 @@ def validate_analysis_doctrine(article: dict) -> dict:
 
     if not _has_sufficient_consequence_layer(article):
         violations.append("thin_consequence_layer")
+
+    if not _contains_any_marker(body, CONTRADICTION_MARKERS):
+        violations.append("weak_core_contradiction")
+
+    if not _contains_any_marker(body, WHY_NOW_MARKERS):
+        violations.append("weak_why_now")
+
+    if not _contains_any_marker(body, BURIED_CONSEQUENCE_MARKERS):
+        violations.append("weak_buried_consequence")
+
+    if not _contains_any_marker(body, HARD_ENDING_MARKERS):
+        violations.append("weak_hard_ending")
 
     if any(marker in body_lower for marker in GENERIC_LANGUAGE_MARKERS):
         violations.append("generic_analysis_language")
