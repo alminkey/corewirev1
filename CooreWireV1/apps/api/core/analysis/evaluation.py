@@ -1,3 +1,11 @@
+WEAK_INSIGHT_VIOLATIONS = {
+    "weak_core_contradiction",
+    "weak_why_now",
+    "weak_buried_consequence",
+    "weak_hard_ending",
+}
+
+
 def _score_thesis(article: dict, doctrine: dict) -> int:
     thesis = str(article.get("thesis") or "").strip()
     if not thesis or "missing_thesis" in doctrine.get("violations", []):
@@ -11,19 +19,25 @@ def _score_thesis(article: dict, doctrine: dict) -> int:
 
 def _score_why(article: dict, doctrine: dict) -> int:
     body = str(article.get("full_article") or "").lower()
-    if "missing_why" in doctrine.get("violations", []):
+    violations = set(doctrine.get("violations", []))
+    if "missing_why" in violations:
         return 0
+    if "weak_why_now" in violations:
+        return 1
     if "because" in body or "why" in body:
         return 3
     return 2
 
 
 def _score_new_value(article: dict, doctrine: dict) -> int:
+    violations = set(doctrine.get("violations", []))
     obscured = [str(item or "").strip() for item in article.get("obscured_layer", []) if str(item or "").strip()]
     stakes = [str(item or "").strip() for item in article.get("stakes", []) if str(item or "").strip()]
-    if "missing_new_value" in doctrine.get("violations", []):
+    if "missing_new_value" in violations:
         return 0
-    if "thin_hidden_layer" in doctrine.get("violations", []):
+    if "thin_hidden_layer" in violations:
+        return 1
+    if "weak_core_contradiction" in violations or "weak_buried_consequence" in violations:
         return 1
     if obscured and stakes:
         return 3
@@ -85,12 +99,15 @@ def _score_tone(doctrine: dict, article: dict) -> int:
         return 1
     if "thin_consequence_layer" in violations:
         return 1
+    if "weak_hard_ending" in violations or "weak_buried_consequence" in violations:
+        return 1
     if len(body) > 1000 and "meta_reader_language" not in violations:
         return 3
     return 2
 
 
 def score_analysis_output(article: dict, doctrine: dict) -> dict:
+    violations = set(doctrine.get("violations", []))
     scores = {
         "thesis_strength": _score_thesis(article, doctrine),
         "why_explanation": _score_why(article, doctrine),
@@ -110,9 +127,12 @@ def score_analysis_output(article: dict, doctrine: dict) -> dict:
     passed = all(scores[metric] >= 2 for metric in core_metrics) and all(
         scores[metric] > 0 for metric in scores
     )
+    weak_insight_count = len(violations & WEAK_INSIGHT_VIOLATIONS)
 
     if any(scores[metric] == 0 for metric in core_metrics):
         decision = "reject"
+    elif weak_insight_count >= 2:
+        decision = "rerun"
     elif not passed:
         decision = "rerun"
     elif doctrine.get("violations"):

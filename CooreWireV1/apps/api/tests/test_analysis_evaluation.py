@@ -116,3 +116,45 @@ def test_score_analysis_output_penalizes_shallow_flagship_depth():
     assert evaluation["passed"] is False
     assert evaluation["scores"]["new_value"] < 2
     assert evaluation["scores"]["tone_corewire_identity"] < 2
+
+
+def test_score_analysis_output_penalizes_missing_flagship_insight_layers():
+    article = {
+        "thesis": "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+        "known_facts": [
+            "Shipping disruption is spreading.",
+            "Fuel pressure is climbing.",
+        ],
+        "claims": ["Washington says pressure is needed."],
+        "stakes": ["The conflict is raising the cost of shipping and coalition management."],
+        "actor_map": [
+            {
+                "name": "Iran",
+                "goal": "raise global costs",
+                "likely_next_move": "maintain maritime pressure",
+            },
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+                "likely_next_move": "increase military and diplomatic pressure",
+            },
+        ],
+        "obscured_layer": ["The deeper contest is over who can bear the coalition cost of escalation."],
+        "next_moves": ["Washington is likely to harden deadlines while allies hesitate."],
+        "unknowns": ["It remains unclear how long allied discipline can hold."],
+        "full_article": "X" * 1500,
+    }
+    doctrine = {
+        "passed": False,
+        "violations": [
+            "weak_core_contradiction",
+            "weak_why_now",
+            "weak_buried_consequence",
+            "weak_hard_ending",
+        ],
+    }
+
+    evaluation = score_analysis_output(article, doctrine)
+
+    assert evaluation["decision"] == "rerun"
+    assert evaluation["passed"] is False
