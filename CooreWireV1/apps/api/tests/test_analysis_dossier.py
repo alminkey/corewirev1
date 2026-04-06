@@ -122,6 +122,49 @@ def test_build_research_dossier_builds_hidden_layers_from_deep_analysis_inputs()
     ]
 
 
+def test_build_research_dossier_adds_flagship_insight_signals():
+    dossier = build_research_dossier(
+        {
+            "title": "Hormuz crisis",
+            "summary": "Shipping disruption spreads across Gulf routes.",
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "real_objective": "forcing Iran into concessions before coalition discipline frays",
+            "timing_pressures": ["Washington is racing against fuel pressure."],
+            "why_it_matters": "Shipping disruption is splitting the coalition.",
+            "obscured_questions": [
+                "Whether Washington can threaten harder without losing allied support."
+            ],
+            "unknowns": ["Whether the coalition can hold."],
+            "sources": [
+                {
+                    "publisher": "AP",
+                    "title": "Shipping disruption spreads across Gulf routes",
+                    "url": "https://example.com/ap",
+                },
+                {
+                    "publisher": "Reuters",
+                    "title": "Allies split over burden of reopening the waterway",
+                    "url": "https://example.com/reuters",
+                },
+            ],
+        }
+    )
+
+    assert dossier["core_contradictions"] == [
+        "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether forcing Iran into concessions before coalition discipline frays can be achieved without splitting the coalition that has to bear the cost."
+    ]
+    assert dossier["why_now_signals"] == [
+        "Washington is racing against fuel pressure."
+    ]
+    assert dossier["buried_consequences"] == [
+        "Shipping disruption is splitting the coalition."
+    ]
+    assert dossier["hard_questions"] == [
+        "Whether Washington can threaten harder without losing allied support.",
+        "Whether the coalition can hold.",
+    ]
+
+
 def test_build_actor_map_tracks_goals_constraints_current_position_and_next_moves():
     actor_map = build_actor_map(
         {

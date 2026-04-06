@@ -69,6 +69,35 @@ def _build_hidden_layers(
     return hidden_layers
 
 
+def _build_core_contradictions(*, public_narrative: str, real_objective: str, stakes: list[str]) -> list[str]:
+    if not public_narrative or not real_objective:
+        return []
+
+    contradiction = (
+        f"The public case is about {public_narrative.rstrip('. ')}, but the deeper fight is over whether "
+        f"{real_objective.rstrip('. ')} can be achieved"
+    )
+    contradiction = f"{contradiction} without splitting the coalition that has to bear the cost."
+    return [contradiction]
+
+
+def _build_why_now_signals(timing_pressures: list[str]) -> list[str]:
+    return [text for text in timing_pressures if text]
+
+
+def _build_buried_consequences(stakes: list[str]) -> list[str]:
+    return [text for text in stakes if text]
+
+
+def _build_hard_questions(obscured_questions: list[str], unknowns: list[str]) -> list[str]:
+    hard_questions: list[str] = []
+    for value in (*obscured_questions, *unknowns):
+        text = _normalize_text(value)
+        if text and text not in hard_questions:
+            hard_questions.append(text)
+    return hard_questions
+
+
 def build_research_dossier(candidate: dict) -> dict:
     verified_facts = []
     summary = _normalize_text(candidate.get("summary"))
@@ -113,6 +142,14 @@ def build_research_dossier(candidate: dict) -> dict:
         hidden_incentives=hidden_incentives,
         obscured_questions=obscured_questions,
     )
+    core_contradictions = _build_core_contradictions(
+        public_narrative=public_narrative,
+        real_objective=real_objective,
+        stakes=stakes,
+    )
+    why_now_signals = _build_why_now_signals(timing_pressures)
+    buried_consequences = _build_buried_consequences(stakes)
+    hard_questions = _build_hard_questions(obscured_questions, unknowns)
 
     return {
         "topic": candidate.get("title", ""),
@@ -128,4 +165,8 @@ def build_research_dossier(candidate: dict) -> dict:
         "hidden_incentives": hidden_incentives,
         "obscured_questions": obscured_questions,
         "hidden_layers": hidden_layers,
+        "core_contradictions": core_contradictions,
+        "why_now_signals": why_now_signals,
+        "buried_consequences": buried_consequences,
+        "hard_questions": hard_questions,
     }

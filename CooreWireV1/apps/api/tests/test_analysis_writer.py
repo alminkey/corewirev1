@@ -340,6 +340,39 @@ def test_generate_flagship_analysis_expands_consequence_layer_beyond_generic_sta
     assert "At the same time, it is giving Iran room to exploit global market leverage." in article["full_article"]
 
 
+def test_generate_flagship_analysis_surfaces_core_contradiction_and_sharper_why_now():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Washington says pressure is needed to reopen the strait."],
+            "stakes": ["The conflict is changing insurance, fuel, and trade costs."],
+            "core_contradictions": [
+                "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether Washington can force concessions without splitting the coalition that has to bear the cost."
+            ],
+            "why_now_signals": [
+                "Washington is racing against fuel-price pressure and allied reluctance."
+            ],
+            "hidden_incentives": [
+                "Neither side wants to admit how much coalition discipline is shaping the battlefield."
+            ],
+            "unknowns": ["Whether coalition discipline can hold."],
+            "sources": [],
+        },
+        [],
+        "The crisis is escalating because the real contest is no longer just military.",
+    )
+
+    assert "What matters more than the public case is the contradiction underneath it." in article["full_article"]
+    assert (
+        "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether Washington can force concessions without splitting the coalition that has to bear the cost."
+        in article["full_article"]
+    )
+    assert "The timing is not incidental." in article["full_article"]
+    assert "Washington is racing against fuel-price pressure and allied reluctance." in article["full_article"]
+    assert "The timing matters because the pressure is no longer moving at the same speed for every side." not in article["full_article"]
+
+
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
     article = generate_flagship_analysis(
         {

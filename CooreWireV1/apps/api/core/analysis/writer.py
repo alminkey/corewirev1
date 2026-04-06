@@ -167,16 +167,34 @@ def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
     return ["The visible event obscures a deeper struggle over leverage and cost."]
 
 
-def _build_timing_paragraph(dossier: dict) -> str:
-    timing_pressures = _clean_lines(dossier.get("timing_pressures", []))
-    hidden_incentives = _clean_lines(dossier.get("hidden_incentives", []))
-    if not timing_pressures and not hidden_incentives:
+def _build_contradiction_paragraph(dossier: dict) -> str:
+    contradictions = _clean_lines(dossier.get("core_contradictions", []))
+    if not contradictions:
         return ""
 
-    parts = [
-        "The timing matters because the pressure is no longer moving at the same speed for every side."
-    ]
-    parts.extend(timing_pressures[:2])
+    return " ".join(
+        [
+            "What matters more than the public case is the contradiction underneath it.",
+            *contradictions[:2],
+        ]
+    )
+
+
+def _build_timing_paragraph(dossier: dict) -> str:
+    why_now_signals = _clean_lines(dossier.get("why_now_signals", []))
+    timing_pressures = _clean_lines(dossier.get("timing_pressures", []))
+    hidden_incentives = _clean_lines(dossier.get("hidden_incentives", []))
+    if not why_now_signals and not timing_pressures and not hidden_incentives:
+        return ""
+
+    if why_now_signals:
+        parts = ["The timing is not incidental."]
+        parts.extend(why_now_signals[:2])
+    else:
+        parts = [
+            "The timing matters because the pressure is no longer moving at the same speed for every side."
+        ]
+        parts.extend(timing_pressures[:2])
     if hidden_incentives:
         parts.append(hidden_incentives[0])
     return " ".join(parts)
@@ -429,6 +447,7 @@ def generate_flagship_analysis(
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
     actor_paragraphs = _build_actor_paragraphs(actor_map)
+    contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
     consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
 
@@ -441,6 +460,7 @@ def generate_flagship_analysis(
             else "The public case for the confrontation is still being shaped by competing narratives."
         ),
         " ".join(stakes) if stakes else "",
+        contradiction_paragraph,
         timing_paragraph,
         *actor_paragraphs,
         *obscured_layer,
