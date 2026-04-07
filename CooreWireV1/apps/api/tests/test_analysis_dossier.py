@@ -165,6 +165,43 @@ def test_build_research_dossier_adds_flagship_insight_signals():
     ]
 
 
+def test_build_research_dossier_adds_lead_insight_candidates():
+    dossier = build_research_dossier(
+        {
+            "title": "Hormuz crisis",
+            "summary": "Shipping disruption spreads across Gulf routes.",
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "real_objective": "forcing Iran into concessions before coalition discipline frays",
+            "timing_pressures": ["Washington is racing against fuel pressure."],
+            "hidden_incentives": [
+                "Several Gulf capitals want U.S. protection without owning escalation."
+            ],
+            "obscured_questions": [
+                "Whether Washington can threaten harder without losing allied support."
+            ],
+            "why_it_matters": "Shipping disruption is splitting the coalition.",
+            "sources": [
+                {
+                    "publisher": "AP",
+                    "title": "Shipping disruption spreads across Gulf routes",
+                    "url": "https://example.com/ap",
+                },
+                {
+                    "publisher": "Reuters",
+                    "title": "Allies split over burden of reopening the waterway",
+                    "url": "https://example.com/reuters",
+                },
+            ],
+        }
+    )
+
+    assert dossier["lead_insight_candidates"]
+    assert any(
+        "public case" in candidate.lower() or "real contest" in candidate.lower()
+        for candidate in dossier["lead_insight_candidates"]
+    )
+
+
 def test_build_actor_map_tracks_goals_constraints_current_position_and_next_moves():
     actor_map = build_actor_map(
         {
