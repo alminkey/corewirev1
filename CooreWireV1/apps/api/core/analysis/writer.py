@@ -131,6 +131,20 @@ def _build_lead_paragraph(topic_subject: str, facts: list[str]) -> str:
     return lead
 
 
+def _select_lead_insight(dossier: dict, thesis: str) -> str:
+    candidates = _clean_lines(dossier.get("lead_insight_candidates", []))
+    if candidates:
+        return candidates[0]
+    return thesis
+
+
+def _build_suppressed_alternative_paragraph(dossier: dict) -> str:
+    public_narrative = str(dossier.get("public_narrative") or "").strip()
+    if public_narrative:
+        return f"The visible frame is simpler: {public_narrative.rstrip('. ')}."
+    return ""
+
+
 def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
     hidden_layers = _clean_lines(dossier.get("hidden_layers", []))
     if hidden_layers:
@@ -470,14 +484,17 @@ def generate_flagship_analysis(
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
     actor_paragraphs = _build_actor_paragraphs(actor_map)
+    lead_insight = _select_lead_insight(dossier, thesis)
+    suppressed_alternative = _build_suppressed_alternative_paragraph(dossier)
     contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
     consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
     hard_ending_paragraph = _build_hard_ending_paragraph(dossier)
 
     body_parts = [
-        thesis,
+        lead_insight,
         _build_lead_paragraph(topic_subject, facts),
+        suppressed_alternative,
         (
             f"The public case for the confrontation is straightforward. {' '.join(claims[:2])}"
             if claims

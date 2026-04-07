@@ -373,6 +373,42 @@ def test_generate_flagship_analysis_surfaces_core_contradiction_and_sharper_why_
     assert "The timing matters because the pressure is no longer moving at the same speed for every side." not in article["full_article"]
 
 
+def test_generate_flagship_analysis_centers_one_lead_insight_and_visible_frame():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Washington says pressure is needed."],
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "lead_insight_candidates": [
+                "What looks like a fight over reopening shipping is becoming a fight over whether Washington can force concessions before coalition discipline breaks."
+            ],
+            "core_contradictions": [
+                "The public case is about reopening shipping, but the deeper fight is over whether Washington can keep its coalition aligned while forcing concessions."
+            ],
+            "why_now_signals": [
+                "Washington is racing against fuel-price pressure and allied reluctance."
+            ],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition, not at sea."
+            ],
+            "hard_questions": [
+                "Whether coalition discipline can hold."
+            ],
+            "unknowns": ["Whether coalition discipline can hold."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    assert article["full_article"].startswith(
+        "What looks like a fight over reopening shipping is becoming a fight over whether Washington can force concessions before coalition discipline breaks."
+    )
+    assert "The visible frame is simpler: reopening shipping and restoring deterrence." in article["full_article"]
+    assert "Placeholder thesis" not in article["full_article"]
+
+
 def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     article = generate_flagship_analysis(
         {
