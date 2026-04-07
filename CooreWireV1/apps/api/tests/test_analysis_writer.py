@@ -436,6 +436,50 @@ def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     assert "The article should end under pressure, not with a neutral recap." not in article["full_article"]
 
 
+def test_generate_flagship_analysis_uses_proof_stack_not_symmetric_actor_blocks():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Washington says stronger pressure is needed."],
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "lead_insight_candidates": [
+                "The real contest is coalition endurance, not only military pressure."
+            ],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition."
+            ],
+            "hard_questions": [
+                "Whether Washington can keep pressure rising without losing allies."
+            ],
+            "unknowns": ["Whether Washington can keep pressure rising without losing allies."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force concessions",
+                "likely_next_move": "increase pressure",
+                "currently_pressures": ["allied reluctance"],
+            },
+            {
+                "name": "Iran",
+                "goal": "raise global costs",
+                "likely_next_move": "maintain maritime pressure",
+                "currently_benefits": ["maritime leverage"],
+            },
+        ],
+        "Placeholder thesis",
+    )
+
+    assert "Three pressures make that insight hard to ignore." in article["full_article"]
+    assert "The strategic problem now looks different for each actor." not in article["full_article"]
+
+
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
     article = generate_flagship_analysis(
         {

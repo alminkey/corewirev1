@@ -383,6 +383,45 @@ def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
     return paragraphs
 
 
+def _build_proof_stack_paragraphs(dossier: dict, actor_map: list[dict]) -> list[str]:
+    lead_insight_candidates = _clean_lines(dossier.get("lead_insight_candidates", []))
+    if not lead_insight_candidates:
+        return []
+
+    facts = _clean_lines(dossier.get("verified_facts", []))
+    contradictions = _clean_lines(dossier.get("core_contradictions", []))
+    why_now_signals = _clean_lines(dossier.get("why_now_signals", []))
+    proof_lines: list[str] = []
+
+    if facts:
+        proof_lines.append(facts[0])
+    if contradictions:
+        proof_lines.append(contradictions[0])
+    if why_now_signals:
+        proof_lines.append(why_now_signals[0])
+
+    for actor in actor_map:
+        if not isinstance(actor, dict):
+            continue
+        name = str(actor.get("name") or "").strip()
+        pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
+        benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
+        if name and pressures:
+            proof_lines.append(f"{_actor_display_name(name)} is already under pressure from {_join_phrases(pressures)}.")
+            break
+        if name and benefits:
+            proof_lines.append(f"{_actor_display_name(name)} is still benefiting from {_join_phrases(benefits)}.")
+            break
+
+    if not proof_lines:
+        return []
+
+    return [
+        "Three pressures make that insight hard to ignore.",
+        " ".join(proof_lines[:3]),
+    ]
+
+
 def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
     buried_consequences = _clean_lines(dossier.get("buried_consequences", []))
     if buried_consequences:
@@ -483,9 +522,10 @@ def generate_flagship_analysis(
     unknowns = _clean_lines(dossier.get("unknowns", []))
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
-    actor_paragraphs = _build_actor_paragraphs(actor_map)
     lead_insight = _select_lead_insight(dossier, thesis)
     suppressed_alternative = _build_suppressed_alternative_paragraph(dossier)
+    proof_stack_paragraphs = _build_proof_stack_paragraphs(dossier, actor_map)
+    actor_paragraphs = [] if proof_stack_paragraphs else _build_actor_paragraphs(actor_map)
     contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
     consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
@@ -503,6 +543,7 @@ def generate_flagship_analysis(
         " ".join(stakes) if stakes else "",
         contradiction_paragraph,
         timing_paragraph,
+        *proof_stack_paragraphs,
         *actor_paragraphs,
         *obscured_layer,
         consequence_paragraph,
