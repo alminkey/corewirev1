@@ -134,7 +134,19 @@ def _build_lead_paragraph(topic_subject: str, facts: list[str]) -> str:
 def _select_lead_insight(dossier: dict, thesis: str) -> str:
     candidates = _clean_lines(dossier.get("lead_insight_candidates", []))
     if candidates:
-        return candidates[0]
+        first = candidates[0]
+        public_narrative = str(dossier.get("public_narrative") or "").strip()
+        if first.startswith("The public case is about ") and ", but the deeper fight is over whether " in first:
+            visible_frame, deeper_fight = first.split(", but the deeper fight is over whether ", maxsplit=1)
+            visible_frame = visible_frame.removeprefix("The public case is about ").strip().rstrip(".")
+            deeper_fight = deeper_fight.strip().rstrip(".")
+            if visible_frame and deeper_fight:
+                return (
+                    f"What looks like {visible_frame} is becoming a fight over whether {deeper_fight}."
+                )
+        if public_narrative and first.lower().startswith(public_narrative.lower()):
+            return f"What looks like {public_narrative.rstrip('. ')} is becoming {first.rstrip('. ')}."
+        return first
     return thesis
 
 
@@ -202,8 +214,9 @@ def _build_timing_paragraph(dossier: dict) -> str:
         return ""
 
     if why_now_signals:
-        parts = ["The timing is not incidental."]
-        parts.extend(why_now_signals[:2])
+        first_signal, *remaining = why_now_signals
+        parts = [f"The timing matters because {first_signal.rstrip('. ')}."]
+        parts.extend(remaining[:1])
     else:
         parts = [
             "The timing matters because the pressure is no longer moving at the same speed for every side."
@@ -426,10 +439,17 @@ def _build_consequence_paragraph(dossier: dict, actor_map: list[dict], lead_insi
     buried_consequences = _clean_lines(dossier.get("buried_consequences", []))
     if buried_consequences:
         if lead_insight and _clean_lines(dossier.get("lead_insight_candidates", [])):
+            consequence_lines = buried_consequences[:2]
+            consequence_text = " ".join(consequence_lines)
+            if "first real fracture" not in consequence_text.lower():
+                consequence_lines = [
+                    "The first real fracture may appear before the military balance shifts.",
+                    *consequence_lines,
+                ]
             return " ".join(
                 [
-                    "If that insight is right, the first real rupture will not be military.",
-                    *buried_consequences[:2],
+                    "If that insight is right, the first real fracture will not be military.",
+                    *consequence_lines,
                 ]
             )
         return " ".join(

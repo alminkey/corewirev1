@@ -3,6 +3,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from core.analysis.doctrine import validate_analysis_doctrine
 from core.analysis.extraction import extract_analysis_sections
 from core.analysis.writer import generate_flagship_analysis
 
@@ -368,7 +369,7 @@ def test_generate_flagship_analysis_surfaces_core_contradiction_and_sharper_why_
         "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether Washington can force concessions without splitting the coalition that has to bear the cost."
         in article["full_article"]
     )
-    assert "The timing is not incidental." in article["full_article"]
+    assert "The timing matters because Washington is racing against fuel-price pressure and allied reluctance." in article["full_article"]
     assert "Washington is racing against fuel-price pressure and allied reluctance." in article["full_article"]
     assert "The timing matters because the pressure is no longer moving at the same speed for every side." not in article["full_article"]
 
@@ -506,8 +507,78 @@ def test_generate_flagship_analysis_ties_consequence_and_ending_to_lead_insight(
         "Placeholder thesis",
     )
 
-    assert "If that insight is right, the first real rupture will not be military." in article["full_article"]
+    assert "If that insight is right, the first real fracture will not be military." in article["full_article"]
     assert "If that pressure keeps building, the hardest question is no longer abstract." in article["full_article"]
+
+
+def test_generate_flagship_analysis_emits_doctrine_shaped_lead_why_and_consequence_layers():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz is becoming a coalition test before it becomes a wider war",
+            "verified_facts": [
+                "By April 5, 2026, the war around Iran had become less a question of whether Washington could threaten Tehran harder than whether it could keep allies aligned while the cost of reopening the Strait of Hormuz kept climbing.",
+                "Trump threatened on April 5 to hit Iranian infrastructure if Tehran did not reopen the Strait of Hormuz by his deadline.",
+            ],
+            "claims": [
+                "Washington says stronger pressure is needed to reopen shipping and restore deterrence.",
+                "Bahrain says defensive action can protect shipping but rejects an open-ended offensive mandate.",
+            ],
+            "lead_insight_candidates": [
+                "The public case is about reopening the Strait of Hormuz and restoring deterrence, but the deeper fight is over whether forcing Iran into concessions without letting coalition discipline collapse under the cost of a longer war can be achieved without splitting the coalition that has to bear the cost."
+            ],
+            "public_narrative": "reopening the Strait of Hormuz and restoring deterrence",
+            "core_contradictions": [
+                "The public case is about reopening the Strait of Hormuz and restoring deterrence, but the deeper fight is over whether forcing Iran into concessions without letting coalition discipline collapse under the cost of a longer war can be achieved without splitting the coalition that has to bear the cost."
+            ],
+            "why_now_signals": [
+                "Washington is racing against rising fuel pressure and allied reluctance to underwrite a blank-check mission.",
+            ],
+            "hidden_incentives": [
+                "Several Gulf capitals want American protection without owning the next escalatory step.",
+            ],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition financing and legitimising pressure on Iran, not in the waterway itself.",
+            ],
+            "hard_questions": [
+                "Whether Washington can threaten harder without forcing allies to distance themselves from the campaign.",
+            ],
+            "hidden_layers": [
+                "The public argument centers on reopening the Strait of Hormuz and restoring deterrence, but the deeper objective is forcing Iran into concessions without letting coalition discipline collapse under the cost of a longer war.",
+                "Several Gulf capitals want American protection without owning the next escalatory step.",
+            ],
+            "stakes": [
+                "The first real rupture may appear inside the coalition financing and legitimising pressure on Iran, not in the waterway itself.",
+            ],
+            "unknowns": [
+                "Whether the first decisive crack in this crisis will appear inside the coalition before it appears at sea.",
+            ],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions from Iran before coalition discipline frays",
+                "currently_pressures": ["allied reluctance", "rising domestic fuel costs"],
+                "likely_next_move": "increase military and diplomatic pressure",
+            },
+            {
+                "name": "Iran",
+                "goal": "raise the global cost of the war faster than its adversaries can turn pressure into surrender",
+                "currently_benefits": ["maritime leverage"],
+                "likely_next_move": "keep using maritime pressure to raise costs",
+            },
+        ],
+        "Hormuz is becoming a coalition test before it becomes a wider war is escalating because the real contest is now between the U.S. drive to force strategic concessions from Iran before coalition discipline frays and Iran's effort to raise the global cost of the war faster than its adversaries can turn pressure into surrender.",
+    )
+
+    doctrine = validate_analysis_doctrine(article)
+
+    assert "What looks like" in article["full_article"]
+    assert "The timing matters because" in article["full_article"]
+    assert "The first real fracture may appear" in article["full_article"]
+    assert "missing_why" not in doctrine["violations"]
+    assert "weak_lead_insight" not in doctrine["violations"]
+    assert "weak_buried_consequence" not in doctrine["violations"]
 
 
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
