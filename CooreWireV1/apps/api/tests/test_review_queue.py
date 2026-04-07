@@ -176,12 +176,15 @@ def test_owner_can_read_review_detail_and_submit_decision(monkeypatch):
                                     "United States is likely to keep pressing for concessions.",
                                 ],
                                 "full_article": (
-                                    "The conflict is widening because coercion has displaced diplomacy. "
+                                    "What looks like a fight over restoring deterrence is becoming a fight over whether the coalition can keep coercion rising without breaking its own political tolerance for cost. "
+                                    "At its core, the conflict is no longer just about the latest exchange. "
+                                    "The visible frame is simpler: restoring deterrence. "
                                     "What matters more than the public case is the contradiction underneath it. "
                                     "The public case is about restoring deterrence, but the deeper fight is over whether coercion can keep widening without splitting the coalition underwriting it. "
                                     "The timing is not incidental because allied political tolerance is narrowing as shipping costs rise. "
-                                    "The buried consequence is easier to miss than the headline event. The first real fracture may appear inside the coalition, not on the battlefield. "
-                                    "The hardest pressure point is now becoming unavoidable. Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain. "
+                                    "Three pressures make that insight hard to ignore. Shipping disruption is reshaping alliance behavior. The public case is about restoring deterrence, but the deeper fight is over whether coercion can keep widening without splitting the coalition underwriting it. Washington is already under pressure from shipping risk and political tolerance. "
+                                    "If that insight is right, the first real rupture will not be military. The first real fracture may appear inside the coalition, not on the battlefield. "
+                                    "If that pressure keeps building, the hardest question is no longer abstract. Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain. "
                                 )
                                 * 6,
                                 "fact_blocks": [{"text": "Fact block"}],

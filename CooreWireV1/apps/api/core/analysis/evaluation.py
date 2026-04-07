@@ -3,6 +3,9 @@ WEAK_INSIGHT_VIOLATIONS = {
     "weak_why_now",
     "weak_buried_consequence",
     "weak_hard_ending",
+    "weak_lead_insight",
+    "weak_proof_stack",
+    "symmetric_actor_middle",
 }
 
 
@@ -39,6 +42,8 @@ def _score_new_value(article: dict, doctrine: dict) -> int:
         return 1
     if "weak_core_contradiction" in violations or "weak_buried_consequence" in violations:
         return 1
+    if "weak_lead_insight" in violations or "weak_proof_stack" in violations:
+        return 1
     if obscured and stakes:
         return 3
     if obscured:
@@ -48,9 +53,12 @@ def _score_new_value(article: dict, doctrine: dict) -> int:
 
 def _score_actor_map(article: dict, doctrine: dict) -> int:
     actor_map = article.get("actor_map") or []
-    if "missing_actor_map" in doctrine.get("violations", []):
+    violations = set(doctrine.get("violations", []))
+    if "missing_actor_map" in violations:
         return 0
-    if "thin_actor_map" in doctrine.get("violations", []):
+    if "thin_actor_map" in violations:
+        return 1
+    if "symmetric_actor_middle" in violations:
         return 1
 
     strong_actors = 0
@@ -100,6 +108,8 @@ def _score_tone(doctrine: dict, article: dict) -> int:
     if "thin_consequence_layer" in violations:
         return 1
     if "weak_hard_ending" in violations or "weak_buried_consequence" in violations:
+        return 1
+    if "weak_lead_insight" in violations or "weak_proof_stack" in violations:
         return 1
     if len(body) > 1000 and "meta_reader_language" not in violations:
         return 3
