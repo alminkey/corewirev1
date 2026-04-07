@@ -480,6 +480,36 @@ def test_generate_flagship_analysis_uses_proof_stack_not_symmetric_actor_blocks(
     assert "The strategic problem now looks different for each actor." not in article["full_article"]
 
 
+def test_generate_flagship_analysis_ties_consequence_and_ending_to_lead_insight():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": [],
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "lead_insight_candidates": [
+                "The real contest is coalition endurance, not only military pressure."
+            ],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition, not at sea."
+            ],
+            "hard_questions": [
+                "Whether Washington can keep pressure rising without forcing allies to pull back."
+            ],
+            "unknowns": ["Whether Washington can keep pressure rising without forcing allies to pull back."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    assert "If that insight is right, the first real rupture will not be military." in article["full_article"]
+    assert "If that pressure keeps building, the hardest question is no longer abstract." in article["full_article"]
+
+
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():
     article = generate_flagship_analysis(
         {

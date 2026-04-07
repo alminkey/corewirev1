@@ -422,9 +422,16 @@ def _build_proof_stack_paragraphs(dossier: dict, actor_map: list[dict]) -> list[
     ]
 
 
-def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
+def _build_consequence_paragraph(dossier: dict, actor_map: list[dict], lead_insight: str) -> str:
     buried_consequences = _clean_lines(dossier.get("buried_consequences", []))
     if buried_consequences:
+        if lead_insight and _clean_lines(dossier.get("lead_insight_candidates", [])):
+            return " ".join(
+                [
+                    "If that insight is right, the first real rupture will not be military.",
+                    *buried_consequences[:2],
+                ]
+            )
         return " ".join(
             [
                 "The buried consequence is easier to miss than the headline event.",
@@ -470,10 +477,19 @@ def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
     return " ".join(parts)
 
 
-def _build_hard_ending_paragraph(dossier: dict) -> str:
+def _build_hard_ending_paragraph(dossier: dict, lead_insight: str) -> str:
     hard_questions = _clean_lines(dossier.get("hard_questions", []))
     if not hard_questions:
         return ""
+
+    if lead_insight and _clean_lines(dossier.get("lead_insight_candidates", [])):
+        return " ".join(
+            [
+                "If that pressure keeps building, the hardest question is no longer abstract.",
+                *hard_questions[:2],
+                "Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain.",
+            ]
+        )
 
     return " ".join(
         [
@@ -528,8 +544,8 @@ def generate_flagship_analysis(
     actor_paragraphs = [] if proof_stack_paragraphs else _build_actor_paragraphs(actor_map)
     contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
-    consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
-    hard_ending_paragraph = _build_hard_ending_paragraph(dossier)
+    consequence_paragraph = _build_consequence_paragraph(dossier, actor_map, lead_insight)
+    hard_ending_paragraph = _build_hard_ending_paragraph(dossier, lead_insight)
 
     body_parts = [
         lead_insight,
