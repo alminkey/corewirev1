@@ -170,6 +170,12 @@ def _build_editorial_lead(lead_insight: str, thesis: str) -> str:
     if contest_marker in lowered:
         index = lowered.index(contest_marker)
         contest = text[index:].strip().rstrip(".")
+        if contest.lower().startswith("the real contest is no longer just "):
+            return (
+                "The real danger is not the latest exchange. The contest is "
+                + contest[len("The real contest is ") :].rstrip(".")
+                + "."
+            )
         if contest.lower().startswith("the real contest is now between "):
             return (
                 "What looks like escalation is becoming a contest between "
@@ -188,6 +194,12 @@ def _build_editorial_lead(lead_insight: str, thesis: str) -> str:
         _, reason = text.split("because", 1)
         reason = reason.strip().rstrip(".")
         reason_lower = reason.lower()
+        if reason_lower.startswith("the real contest is no longer just "):
+            return (
+                "The real danger is not the latest exchange. The contest is "
+                + reason[len("the real contest is ") :].rstrip(".")
+                + "."
+            )
         if reason_lower.startswith("the real contest is now between "):
             return (
                 "What looks like escalation is becoming a contest between "

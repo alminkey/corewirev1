@@ -97,7 +97,7 @@ def test_generate_flagship_analysis_avoids_source_title_leakage_and_groups_next_
     assert "; it currently benefits from" not in article["full_article"]
     assert "Washington's next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
     assert "Israel's next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
-    assert "That tension makes the next phase easier to sketch than to control." in article["full_article"]
+    assert "From there, the pressure moves along a few familiar tracks." in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_more_editorial_voice_and_closing_cadence():
@@ -263,7 +263,7 @@ def test_generate_flagship_analysis_uses_composed_hidden_layer_and_next_phase_tr
         "What matters more is the pressure building beneath the public case."
         in article["full_article"]
     )
-    assert "That tension makes the next phase easier to sketch than to control." in article["full_article"]
+    assert "From there, the pressure moves along a few familiar tracks." in article["full_article"]
     assert "The next phase is likely to follow a few predictable tracks." not in article["full_article"]
 
 
@@ -364,7 +364,7 @@ def test_generate_flagship_analysis_surfaces_core_contradiction_and_sharper_why_
         "The crisis is escalating because the real contest is no longer just military.",
     )
 
-    assert "What matters more than the public case is the contradiction underneath it." in article["full_article"]
+    assert "That is where the public case starts to fray." in article["full_article"]
     assert (
         "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether Washington can force concessions without splitting the coalition that has to bear the cost."
         in article["full_article"]
@@ -527,7 +527,7 @@ def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     assert "The buried consequence is easier to miss than the headline event." in article["full_article"]
     assert "The first real fracture may appear inside the coalition, not at sea." in article["full_article"]
     assert "The hardest questions are still open." not in article["full_article"]
-    assert "The hardest pressure point is now becoming unavoidable." in article["full_article"]
+    assert "The risk is that the pressure will break the political frame before it resolves the conflict itself." in article["full_article"]
     assert "Whether Washington can keep pressure rising without forcing allies to pull back." in article["full_article"]
     assert "The article should end under pressure, not with a neutral recap." not in article["full_article"]
 
@@ -603,7 +603,7 @@ def test_generate_flagship_analysis_ties_consequence_and_ending_to_lead_insight(
     )
 
     assert "If that insight is right, the first real fracture will not be military." in article["full_article"]
-    assert "If that pressure keeps building, the hardest question is no longer abstract." in article["full_article"]
+    assert "The risk is that the next break in the crisis will be political before it is military." in article["full_article"]
 
 
 def test_generate_flagship_analysis_emits_doctrine_shaped_lead_why_and_consequence_layers():
