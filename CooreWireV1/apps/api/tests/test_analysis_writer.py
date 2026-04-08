@@ -461,6 +461,29 @@ def test_generate_flagship_analysis_uses_editorial_proof_paragraphs_not_actor_pr
     assert "The next problem is" in article["full_article"] or "The pressure is most visible" in article["full_article"]
 
 
+def test_generate_flagship_analysis_uses_non_modular_editorial_transitions():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "buried_consequences": ["The first fracture may appear inside the coalition."],
+            "hard_questions": ["Whether Washington can keep allies aligned."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    assert "What matters more than the public case" not in article["full_article"]
+    assert "That tension makes the next phase easier to sketch than to control." not in article["full_article"]
+    assert "That is where the public case starts to fray." in article["full_article"] or "From there, the pressure moves" in article["full_article"]
+
+
 def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     article = generate_flagship_analysis(
         {

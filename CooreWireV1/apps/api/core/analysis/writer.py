@@ -255,7 +255,7 @@ def _build_contradiction_paragraph(dossier: dict) -> str:
 
     return " ".join(
         [
-            "What matters more than the public case is the contradiction underneath it.",
+            "That is where the public case starts to fray.",
             *contradictions[:2],
         ]
     )
@@ -629,7 +629,7 @@ def _build_next_phase_paragraph(next_moves: list[str]) -> str:
         return ""
     return " ".join(
         [
-            "That tension makes the next phase easier to sketch than to control.",
+            "From there, the pressure moves along a few familiar tracks.",
             *clean_moves,
         ]
     )
