@@ -410,6 +410,25 @@ def test_generate_flagship_analysis_centers_one_lead_insight_and_visible_frame()
     assert "Placeholder thesis" not in article["full_article"]
 
 
+def test_generate_flagship_analysis_opens_with_editorial_lead_not_engine_thesis():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": [],
+            "public_narrative": "reopening the Strait of Hormuz",
+            "sources": [],
+        },
+        [],
+        "Hormuz crisis is escalating because the real contest is coalition endurance.",
+    )
+
+    opening = article["full_article"].split("\n\n")[0]
+
+    assert "is escalating because" not in opening
+    assert opening.startswith("The real danger") or opening.startswith("What looks like")
+
+
 def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     article = generate_flagship_analysis(
         {

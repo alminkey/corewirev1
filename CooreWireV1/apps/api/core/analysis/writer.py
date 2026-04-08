@@ -150,6 +150,61 @@ def _select_lead_insight(dossier: dict, thesis: str) -> str:
     return thesis
 
 
+def _build_editorial_lead(lead_insight: str, thesis: str) -> str:
+    text = str(lead_insight or thesis or "").strip()
+    if not text:
+        return ""
+
+    lowered = text.lower()
+    if lowered.startswith(
+        (
+            "what looks like",
+            "the real danger",
+            "the war is already",
+            "the confrontation is exposing",
+        )
+    ):
+        return text
+
+    contest_marker = "the real contest is"
+    if contest_marker in lowered:
+        index = lowered.index(contest_marker)
+        contest = text[index:].strip().rstrip(".")
+        if contest.lower().startswith("the real contest is now between "):
+            return (
+                "What looks like escalation is becoming a contest between "
+                + contest[len("The real contest is now between ") :].rstrip(".")
+                + "."
+            )
+        if contest.lower().startswith("the real contest is "):
+            return (
+                "What looks like escalation is becoming a test of "
+                + contest[len("The real contest is ") :].rstrip(".")
+                + "."
+            )
+
+    because_marker = " because "
+    if because_marker in lowered:
+        _, reason = text.split("because", 1)
+        reason = reason.strip().rstrip(".")
+        reason_lower = reason.lower()
+        if reason_lower.startswith("the real contest is now between "):
+            return (
+                "What looks like escalation is becoming a contest between "
+                + reason[len("the real contest is now between ") :].rstrip(".")
+                + "."
+            )
+        if reason_lower.startswith("the real contest is "):
+            return (
+                "What looks like escalation is becoming a test of "
+                + reason[len("the real contest is ") :].rstrip(".")
+                + "."
+            )
+        return f"The real danger is not the latest exchange. It is {reason}."
+
+    return text
+
+
 def _build_suppressed_alternative_paragraph(dossier: dict) -> str:
     public_narrative = str(dossier.get("public_narrative") or "").strip()
     if public_narrative:
@@ -559,6 +614,7 @@ def generate_flagship_analysis(
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
     lead_insight = _select_lead_insight(dossier, thesis)
+    editorial_lead = _build_editorial_lead(lead_insight, thesis)
     suppressed_alternative = _build_suppressed_alternative_paragraph(dossier)
     proof_stack_paragraphs = _build_proof_stack_paragraphs(dossier, actor_map)
     actor_paragraphs = [] if proof_stack_paragraphs else _build_actor_paragraphs(actor_map)
@@ -568,7 +624,7 @@ def generate_flagship_analysis(
     hard_ending_paragraph = _build_hard_ending_paragraph(dossier, lead_insight)
 
     body_parts = [
-        lead_insight,
+        editorial_lead,
         _build_lead_paragraph(topic_subject, facts),
         suppressed_alternative,
         (
