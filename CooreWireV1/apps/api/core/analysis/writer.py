@@ -608,7 +608,7 @@ def _build_hard_ending_paragraph(dossier: dict, lead_insight: str) -> str:
     if lead_insight and _clean_lines(dossier.get("lead_insight_candidates", [])):
         return " ".join(
             [
-                "If that pressure keeps building, the hardest question is no longer abstract.",
+                "The risk is that the next break in the crisis will be political before it is military.",
                 *hard_questions[:2],
                 "Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain.",
             ]
@@ -616,7 +616,7 @@ def _build_hard_ending_paragraph(dossier: dict, lead_insight: str) -> str:
 
     return " ".join(
         [
-            "The hardest pressure point is now becoming unavoidable.",
+            "The risk is that the pressure will break the political frame before it resolves the conflict itself.",
             *hard_questions[:2],
             "Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain.",
         ]
@@ -692,9 +692,10 @@ def generate_flagship_analysis(
         *obscured_layer,
         consequence_paragraph,
         _build_next_phase_paragraph(next_moves),
-        hard_ending_paragraph or _build_unknowns_paragraph(unknowns),
     ]
-    body = "\n\n".join(part for part in body_parts if part).strip()
+    closing_paragraph = hard_ending_paragraph or _build_unknowns_paragraph(unknowns)
+    content_parts = [part for part in body_parts if part]
+    body = "\n\n".join([*content_parts, closing_paragraph] if closing_paragraph else content_parts).strip()
 
     filler_sentences = [
         f"That is why {topic.lower()} is becoming a contest over endurance, cost absorption, and political will rather than a story that can be measured only in battlefield damage.",
@@ -703,12 +704,8 @@ def generate_flagship_analysis(
     ]
     filler_index = 0
     while len(body) < 1400:
-        body = "\n\n".join(
-            [
-                body,
-                filler_sentences[filler_index % len(filler_sentences)],
-            ]
-        )
+        content_parts.append(filler_sentences[filler_index % len(filler_sentences)])
+        body = "\n\n".join([*content_parts, closing_paragraph] if closing_paragraph else content_parts).strip()
         filler_index += 1
 
     return {

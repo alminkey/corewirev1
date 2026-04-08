@@ -484,6 +484,27 @@ def test_generate_flagship_analysis_uses_non_modular_editorial_transitions():
     assert "That is where the public case starts to fray." in article["full_article"] or "From there, the pressure moves" in article["full_article"]
 
 
+def test_generate_flagship_analysis_ends_with_editorial_close_not_summary_loop():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "hard_questions": ["Whether Washington can keep allies aligned."],
+            "buried_consequences": ["The first fracture may appear inside the coalition."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    ending = article["full_article"].split("\n\n")[-1]
+
+    assert "The hardest pressure point is now becoming unavoidable." not in ending
+    assert "If that pressure keeps building, the hardest question is no longer abstract." not in ending
+    assert "Until that pressure breaks" in ending or "The risk is that" in ending
+
+
 def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     article = generate_flagship_analysis(
         {
