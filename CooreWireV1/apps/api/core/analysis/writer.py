@@ -490,6 +490,54 @@ def _build_proof_stack_paragraphs(dossier: dict, actor_map: list[dict]) -> list[
     ]
 
 
+def _build_editorial_proof_paragraphs(actor_map: list[dict]) -> list[str]:
+    normalized = [
+        actor
+        for actor in actor_map
+        if isinstance(actor, dict) and str(actor.get("name") or "").strip()
+    ]
+    if len(normalized) < 2:
+        return []
+
+    first = normalized[0]
+    second = normalized[1]
+    first_name = _actor_display_name(str(first.get("name") or "").strip())
+    second_name = _actor_display_name(str(second.get("name") or "").strip())
+    first_goal = str(first.get("goal") or "").strip()
+    second_goal = str(second.get("goal") or "").strip()
+    first_pressures = [str(item).strip() for item in (first.get("currently_pressures") or []) if str(item).strip()]
+    second_benefits = [str(item).strip() for item in (second.get("currently_benefits") or []) if str(item).strip()]
+
+    first_parts = ["The pressure is most visible where coalition discipline starts colliding with the other side's leverage."]
+    if first_goal:
+        first_parts.append(f"{first_name} still needs room for {_goal_as_activity(first_goal)}.")
+    if first_pressures:
+        first_parts.append(f"Instead, it is already carrying {_join_phrases(first_pressures)}.")
+    if second_goal:
+        first_parts.append(f"{second_name}, meanwhile, is gaining room for {_goal_as_activity(second_goal)}.")
+    if second_benefits:
+        first_parts.append(f"That is easiest to see in {_join_phrases(second_benefits)}.")
+
+    remaining = normalized[2:]
+    if not remaining:
+        return [" ".join(first_parts)]
+
+    second_parts = ["The next problem is not only military reach but political ownership of the next step."]
+    for actor in remaining[:3]:
+        name = _actor_display_name(str(actor.get("name") or "").strip())
+        goal = str(actor.get("goal") or "").strip()
+        pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
+        benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
+        if goal:
+            second_parts.append(f"{name} wants {_goal_as_activity(goal)}.")
+        if pressures:
+            second_parts.append(f"It is constrained by {_join_phrases(pressures)}.")
+        elif benefits:
+            second_parts.append(f"It is still benefiting from {_join_phrases(benefits)}.")
+
+    return [" ".join(first_parts), " ".join(second_parts)]
+
+
 def _build_consequence_paragraph(dossier: dict, actor_map: list[dict], lead_insight: str) -> str:
     buried_consequences = _clean_lines(dossier.get("buried_consequences", []))
     if buried_consequences:
@@ -617,7 +665,11 @@ def generate_flagship_analysis(
     editorial_lead = _build_editorial_lead(lead_insight, thesis)
     suppressed_alternative = _build_suppressed_alternative_paragraph(dossier)
     proof_stack_paragraphs = _build_proof_stack_paragraphs(dossier, actor_map)
-    actor_paragraphs = [] if proof_stack_paragraphs else _build_actor_paragraphs(actor_map)
+    actor_paragraphs = (
+        _build_editorial_proof_paragraphs(actor_map)
+        if proof_stack_paragraphs
+        else _build_actor_paragraphs(actor_map)
+    )
     contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
     consequence_paragraph = _build_consequence_paragraph(dossier, actor_map, lead_insight)

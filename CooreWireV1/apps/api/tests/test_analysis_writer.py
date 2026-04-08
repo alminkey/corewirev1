@@ -429,6 +429,38 @@ def test_generate_flagship_analysis_opens_with_editorial_lead_not_engine_thesis(
     assert opening.startswith("The real danger") or opening.startswith("What looks like")
 
 
+def test_generate_flagship_analysis_uses_editorial_proof_paragraphs_not_actor_profiles():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force concessions",
+                "currently_pressures": ["allied reluctance"],
+            },
+            {
+                "name": "Iran",
+                "goal": "raise costs",
+                "currently_benefits": ["maritime leverage"],
+            },
+        ],
+        "Placeholder thesis",
+    )
+
+    assert "Washington is trying to" not in article["full_article"]
+    assert "Iran is trying to" not in article["full_article"]
+    assert "The next problem is" in article["full_article"] or "The pressure is most visible" in article["full_article"]
+
+
 def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     article = generate_flagship_analysis(
         {
