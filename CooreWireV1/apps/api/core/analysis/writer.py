@@ -522,11 +522,11 @@ def _build_editorial_proof_paragraphs(actor_map: list[dict]) -> list[str]:
 
     first_parts = ["The pressure is most visible where coalition discipline starts colliding with the other side's leverage."]
     if first_goal:
-        first_parts.append(f"{first_name} still needs room for {_goal_as_activity(first_goal)}.")
+        first_parts.append(f"{first_name} still needs room to {first_goal}.")
     if first_pressures:
         first_parts.append(f"Instead, it is already carrying {_join_phrases(first_pressures)}.")
     if second_goal:
-        first_parts.append(f"{second_name}, meanwhile, is gaining room for {_goal_as_activity(second_goal)}.")
+        first_parts.append(f"{second_name}, meanwhile, still has room to {second_goal}.")
     if second_benefits:
         first_parts.append(f"That is easiest to see in {_join_phrases(second_benefits)}.")
 
@@ -541,7 +541,8 @@ def _build_editorial_proof_paragraphs(actor_map: list[dict]) -> list[str]:
         pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
         benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
         if goal:
-            second_parts.append(f"{name} wants {_goal_as_activity(goal)}.")
+            verb = "want" if _is_plural_subject(str(actor.get("name") or "").strip()) else "wants"
+            second_parts.append(f"{name} {verb} to {goal}.")
         if pressures:
             second_parts.append(f"It is constrained by {_join_phrases(pressures)}.")
         elif benefits:

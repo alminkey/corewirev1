@@ -461,6 +461,45 @@ def test_generate_flagship_analysis_uses_editorial_proof_paragraphs_not_actor_pr
     assert "The next problem is" in article["full_article"] or "The pressure is most visible" in article["full_article"]
 
 
+def test_generate_flagship_analysis_keeps_editorial_proof_paragraph_grammar_natural():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+                "currently_pressures": ["allied reluctance"],
+            },
+            {
+                "name": "Iran",
+                "goal": "raise costs",
+                "currently_benefits": ["maritime leverage"],
+            },
+            {
+                "name": "Bahrain and Gulf states",
+                "goal": "restore shipping security without a blank-check war mandate",
+                "currently_pressures": ["infrastructure exposure"],
+            },
+        ],
+        "Placeholder thesis",
+    )
+
+    assert "needs room for forcing" not in article["full_article"]
+    assert "wants raising" not in article["full_article"]
+    assert "wants restoring" not in article["full_article"]
+    assert "needs room to force strategic concessions" in article["full_article"]
+    assert "Iran, meanwhile, still has room to raise costs." in article["full_article"]
+
+
 def test_generate_flagship_analysis_uses_non_modular_editorial_transitions():
     article = generate_flagship_analysis(
         {
