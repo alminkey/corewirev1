@@ -8,6 +8,7 @@ from core.admin.content import (
     update_manual_story_draft,
 )
 from core.admin.overview import get_admin_overview_summary
+from core.admin.programming import get_programming_settings, update_programming_settings
 from core.admin.review import apply_review_decision, get_review_detail, get_review_queue
 from core.admin.settings import get_autonomy_settings
 
@@ -23,6 +24,16 @@ def get_admin_overview() -> dict:
 @router.get("/settings/autonomy", dependencies=[Depends(require_owner_token)])
 def get_admin_autonomy_settings() -> dict:
     return get_autonomy_settings()
+
+
+@router.get("/settings/programming", dependencies=[Depends(require_owner_token)])
+def get_admin_programming_settings() -> dict:
+    return get_programming_settings()
+
+
+@router.put("/settings/programming", dependencies=[Depends(require_owner_token)])
+def put_admin_programming_settings(payload: dict) -> dict:
+    return update_programming_settings(payload)
 
 
 @router.get("/review-queue", dependencies=[Depends(require_owner_token)])

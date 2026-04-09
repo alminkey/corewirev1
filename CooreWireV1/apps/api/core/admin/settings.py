@@ -10,6 +10,31 @@ class AutonomySettings(TypedDict):
     pause_publish: bool
 
 
+class ProgrammingTopic(TypedDict):
+    name: str
+    enabled: bool
+
+
+class ProgrammingInterval(TypedDict):
+    label: str
+    minutes: int
+    enabled: bool
+
+
+class ProgrammingWindow(TypedDict):
+    label: str
+    start_hour: int
+    end_hour: int
+    timezone: str
+    enabled: bool
+
+
+class ProgrammingSettings(TypedDict):
+    topics: list[ProgrammingTopic]
+    intervals: list[ProgrammingInterval]
+    schedule_windows: list[ProgrammingWindow]
+
+
 def get_autonomy_settings() -> AutonomySettings:
     return {
         "mode": "hybrid",
