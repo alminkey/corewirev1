@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from core.articles.service import list_published_articles_feed
 from core.admin.auth import require_owner_token
+from core.admin.overview import get_admin_overview_summary
 from core.admin.review import apply_review_decision, get_review_detail, get_review_queue
 from core.admin.settings import get_autonomy_settings
 
@@ -11,11 +12,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 @router.get("/overview", dependencies=[Depends(require_owner_token)])
 def get_admin_overview() -> dict:
-    return {
-        "publish_mode": "hybrid",
-        "system_health": "stable",
-        "review_queue_count": 3,
-    }
+    return get_admin_overview_summary()
 
 
 @router.get("/settings/autonomy", dependencies=[Depends(require_owner_token)])
