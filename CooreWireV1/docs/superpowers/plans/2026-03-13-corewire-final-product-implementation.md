@@ -2,6 +2,8 @@
 
 > **2026-04-01 note:** This plan remains valid for infrastructure, admin, review, deployment, and future Paperclip preparation. For flagship `CoreWire Analysis`, use [2026-04-01-corewire-analysis-engine-implementation.md](/f:/2026/CoreWire/CooreWireV1/docs/superpowers/plans/2026-04-01-corewire-analysis-engine-implementation.md) as the primary execution plan.
 
+> **2026-04-09 note:** For the simplified `CoreWire Admin Closure + Paperclip Bridge v1` execution path, use [2026-04-09-corewire-admin-paperclip-bridge-implementation.md](/f:/2026/CoreWire/CooreWireV1/docs/superpowers/plans/2026-04-09-corewire-admin-paperclip-bridge-implementation.md). This older plan remains useful as a broad reference, but the newer plan is the primary execution document for admin completion and first Paperclip connectivity.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Deliver a launch-ready CoreWire product with owner admin, autonomy controls, model profiles, analytics, compliance workflows, and production operations readiness.

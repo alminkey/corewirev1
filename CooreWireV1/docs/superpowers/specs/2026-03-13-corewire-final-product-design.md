@@ -2,6 +2,8 @@
 
 > **2026-04-01 note:** Infrastructure, admin, review, deployment, and future Paperclip assumptions in this document remain valid. For flagship `CoreWire Analysis`, the article-generation center of gravity is now defined by [2026-04-01-corewire-analysis-doctrine-design.md](/f:/2026/CoreWire/CooreWireV1/docs/superpowers/specs/2026-04-01-corewire-analysis-doctrine-design.md).
 
+> **2026-04-09 note:** For the simplified separation between the site owner admin and `Paperclip Bridge v1`, use [2026-04-09-corewire-admin-paperclip-bridge-design.md](/f:/2026/CoreWire/CooreWireV1/docs/superpowers/specs/2026-04-09-corewire-admin-paperclip-bridge-design.md). This older document still defines the broad launch product, but the newer spec is the authoritative scope for admin completion and first Paperclip integration.
+
 **Date:** 2026-03-13
 **Status:** Approved for planning
 **Scope:** Final launch-ready CoreWire product with owner admin, configurable autonomy, analytics, compliance, deployment operations, and Paperclip bridge preparation
