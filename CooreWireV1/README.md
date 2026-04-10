@@ -68,7 +68,13 @@ docs/runbooks/content-batch.md
 docs/runbooks/corewire-analysis-evaluation.md
 ```
 
-8. Explore the worktree branch used for implementation:
+8. For the latest full project checkpoint and handoff status, see:
+
+```bash
+docs/runbooks/2026-04-10-project-checkpoint.md
+```
+
+9. Explore the worktree branch used for implementation:
 
 ```bash
 git worktree list
