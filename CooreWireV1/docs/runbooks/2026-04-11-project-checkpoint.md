@@ -46,9 +46,18 @@ A future agent should work from the main repo root at `F:\2026\CoreWire\CooreWir
 
 - Host: `213.202.216.222`
 - Deployed branch: `master`
-- Deployed commit: `392cd55`
+- Deployed commit: `e28e9e5`
 - Deploy method: `bash scripts/deploy-webtropia.sh` via SSH with key `~/.ssh/corewire_staging_nopass`
 - Health check: `http://213.202.216.222/health` — returns `200 OK`
+
+**Current frontend/admin baseline**
+
+- the previous light editorial redesign is superseded
+- the active live baseline is now the `media-tech platform reset`
+- homepage, article pages, and admin now use the newer product-style hook family:
+  - `cw-platform-grid`
+  - `cw-reading-surface`
+  - `cw-control-plane`
 
 **Note on Caddy + gzip:** Bridge endpoints return compressed responses by default through Caddy. Always pass `Accept-Encoding: identity` when curl-testing from outside, or the body will appear empty.
 
