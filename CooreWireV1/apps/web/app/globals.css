@@ -793,6 +793,8 @@ button:hover {
   padding: 0 0 10px;
   color: #8f8070;
   font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .cw-public-bar {
@@ -803,11 +805,14 @@ button:hover {
   padding: 16px 0 18px;
 }
 
+.cw-public-header-bar {
+  border-top: 1px solid #e5d8c8;
+}
+
 .cw-public-logo {
-  color: #c13b2f;
-  font-family: Georgia, "Times New Roman", serif;
+  color: #9f5c39;
+  font-family: var(--cw-serif);
   font-size: 2rem;
-  font-style: italic;
   font-weight: 700;
   text-decoration: none;
 }
@@ -816,6 +821,10 @@ button:hover {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+}
+
+.cw-public-section-nav {
+  row-gap: 10px;
 }
 
 .cw-public-nav a,
@@ -849,6 +858,7 @@ button:hover {
 
 .cw-shell--home .cw-grid--public {
   grid-template-columns: minmax(0, 2.1fr) minmax(290px, 0.9fr);
+  gap: 28px;
 }
 
 .cw-shell--home .cw-panel,
@@ -883,26 +893,36 @@ button:hover {
 .cw-hero--light {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(38, 29, 23, 0.12), rgba(38, 29, 23, 0.5)),
-    linear-gradient(90deg, rgba(67, 49, 37, 0.75), rgba(67, 49, 37, 0.2)),
-    radial-gradient(circle at center, rgba(240, 227, 207, 0.12), transparent 45%),
-    #6f5f4d;
+  padding: 0;
+  border-radius: 24px;
 }
 
 .cw-hero-link {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(340px, 0.95fr);
+  min-height: 420px;
 }
 
-.cw-hero--light .cw-panel-header {
-  color: rgba(255, 244, 231, 0.84);
-  border-bottom-color: rgba(255, 244, 231, 0.18);
+.cw-home-hero-media {
+  min-height: 420px;
+  background-position: center;
+  background-size: cover;
+}
+
+.cw-hero-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px;
+  background:
+    linear-gradient(180deg, rgba(32, 24, 18, 0.16), rgba(32, 24, 18, 0.06)),
+    linear-gradient(180deg, #fffaf4, #f8f1e8);
 }
 
 .cw-hero--light .cw-tag {
-  color: #fff4ea;
-  border-color: rgba(255, 244, 234, 0.3);
-  background: rgba(154, 51, 38, 0.48);
+  color: var(--cw-accent);
+  border-color: rgba(163, 95, 56, 0.2);
+  background: rgba(163, 95, 56, 0.08);
 }
 
 .cw-hero--light h2,
@@ -911,7 +931,7 @@ button:hover {
 .cw-shell--home .cw-developing-item h3,
 .cw-article-shell--light .cw-article-header h1,
 .cw-article-shell--light .cw-article-section h1 {
-  color: #fdf6ee;
+  color: #1f1714;
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 700;
   text-transform: none;
@@ -919,23 +939,24 @@ button:hover {
 }
 
 .cw-hero--light h2 {
-  max-width: 10ch;
-  font-size: clamp(3rem, 5vw, 5.4rem);
-  line-height: 0.92;
+  max-width: 12ch;
+  font-size: clamp(2.8rem, 5vw, 4.7rem);
+  line-height: 0.95;
 }
 
 .cw-hero--light .cw-summary,
 .cw-hero--light .cw-meta {
-  color: rgba(255, 248, 240, 0.86);
+  color: #5b4c40;
 }
 
 .cw-hero-cta {
   display: inline-flex;
   margin-top: 20px;
   padding: 10px 16px;
-  border: 1px solid rgba(255, 244, 231, 0.35);
-  background: rgba(255, 244, 231, 0.14);
-  color: #fff7ef;
+  border: 1px solid rgba(163, 95, 56, 0.2);
+  border-radius: 999px;
+  background: rgba(163, 95, 56, 0.08);
+  color: var(--cw-accent);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -944,6 +965,12 @@ button:hover {
 .cw-card-grid--public {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
+}
+
+.cw-story-card-media {
+  height: 150px;
+  background-position: center;
+  background-size: cover;
 }
 
 .cw-card--light,
@@ -962,6 +989,16 @@ button:hover {
   display: block;
 }
 
+.cw-card-link {
+  transition:
+    transform var(--cw-transition),
+    box-shadow var(--cw-transition);
+}
+
+.cw-card-link:hover {
+  transform: translateY(-2px);
+}
+
 .cw-shell--home .cw-card h3,
 .cw-shell--home .cw-rail-item h3,
 .cw-shell--home .cw-developing-item h3,
@@ -970,6 +1007,10 @@ button:hover {
 .cw-article-shell--light .cw-newsletter-card h3,
 .cw-article-shell--light .cw-article-section h1 {
   color: #1f1714;
+}
+
+.cw-shell--home .cw-card-body {
+  padding: 16px;
 }
 
 .cw-shell--home .cw-card p,
@@ -990,6 +1031,28 @@ button:hover {
 .cw-article-shell--light .cw-meta,
 .cw-article-shell--light .cw-fact-block small {
   color: #8a493e;
+}
+
+.cw-rail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cw-home-feature-media {
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.cw-home-feature-media__frame {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #261c18, #5d4334);
+}
+
+.cw-home-feature-media__frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .cw-article-shell--light .cw-article {
@@ -1026,7 +1089,8 @@ button:hover {
 
 @media (max-width: 1100px) {
   .cw-card-grid--public,
-  .cw-shell--home .cw-grid--public {
+  .cw-shell--home .cw-grid--public,
+  .cw-hero-link {
     grid-template-columns: 1fr;
   }
 }
