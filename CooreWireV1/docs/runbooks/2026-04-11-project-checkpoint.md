@@ -30,7 +30,7 @@ This boundary is settled and deliberate. Do not rebuild the debate unless produc
 
 **Single source of truth: `master`**
 
-- `master` commit: `3c1b09a` (merge: integrate admin-paperclip-bridge-v1 into master)
+- `master` commit: `392cd55` (merge: integrate owner-editor-admin into master)
 - `origin/master` is in sync — pushed 2026-04-11
 - **All worktrees are now stale.** Their content is merged into master.
   - `lead-insight-flagship` — merged ✓
@@ -46,7 +46,7 @@ A future agent should work from the main repo root at `F:\2026\CoreWire\CooreWir
 
 - Host: `213.202.216.222`
 - Deployed branch: `master`
-- Deployed commit: `3c1b09a`
+- Deployed commit: `392cd55`
 - Deploy method: `bash scripts/deploy-webtropia.sh` via SSH with key `~/.ssh/corewire_staging_nopass`
 - Health check: `http://213.202.216.222/health` — returns `200 OK`
 
@@ -100,12 +100,24 @@ Current honest status: acceptable starting point, not considered "final flagship
 
 ### 4.4 Owner admin
 
-Complete and on master.
+Complete and on master, including the final launch-ready owner workflow.
 
 - compact dashboard summary contract (`/api/admin/summary`)
-- article/draft management endpoints (list, create, update, publish/reject)
+- article/draft management endpoints:
+  - list
+  - fetch one draft
+  - create
+  - update
+  - publish
+  - archive
 - programming controls (topic targets, intervals, scheduling windows)
-- admin UI: article manager, programming controls, improved admin shell
+- admin UI:
+  - improved admin shell
+  - single-page article manager workspace
+  - manual draft inventory
+  - editor form for `headline`, `dek`, `slug`, `tags`, `body`
+  - `New Draft`, `Save Draft`, `Publish`, `Archive`
+  - programming `Apply Changes` workflow inside `/admin`
 
 Key files:
 - [apps/api/core/admin/overview.py](../../../apps/api/core/admin/overview.py)
@@ -171,9 +183,8 @@ This is live-feedback iteration, not a structured engineering task.
 
 Low priority, no dependencies:
 
-- edit forms in the admin
-- create-draft UI actions (currently only inventory view)
-- stronger scheduling UX
+- add/remove rows for topics, intervals, and schedule windows
+- richer save feedback and validation states in admin forms
 - fuller analytics views
 
 ---
@@ -190,6 +201,7 @@ Low priority, no dependencies:
 ### Completed plan docs (do not re-execute)
 
 - [2026-04-09-corewire-admin-paperclip-bridge-implementation.md](../superpowers/plans/2026-04-09-corewire-admin-paperclip-bridge-implementation.md) — **COMPLETE 2026-04-11**
+- [2026-04-11-owner-editor-admin-completion-implementation.md](../superpowers/plans/2026-04-11-owner-editor-admin-completion-implementation.md) — **COMPLETE 2026-04-11**
 - [2026-04-08-editorial-narrator-pass-implementation.md](../superpowers/plans/2026-04-08-editorial-narrator-pass-implementation.md) — complete
 - [2026-04-07-lead-insight-flagship-implementation.md](../superpowers/plans/2026-04-07-lead-insight-flagship-implementation.md) — complete
 - [2026-03-13-corewire-final-product-implementation.md](../superpowers/plans/2026-03-13-corewire-final-product-implementation.md) — complete
@@ -253,7 +265,7 @@ As of 2026-04-11:
 - `master` is the single source of truth — all work is merged
 - Paperclip Bridge V1 is live on staging
 - the flagship analysis engine is functional and ready for quality iteration
-- the owner admin is materially complete
+- the owner admin is launch-ready for core operations
 - there are no unmerged active branches blocking anything
 
 This is a clean, integrated, deployable codebase.

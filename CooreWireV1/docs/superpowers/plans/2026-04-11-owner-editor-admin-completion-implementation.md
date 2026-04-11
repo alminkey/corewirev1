@@ -1,5 +1,7 @@
 # Owner Editor and Admin Completion Implementation Plan
 
+> **STATUS: COMPLETE** — All 5 tasks implemented, merged to `master` (`392cd55`), and verified on staging (`213.202.216.222`) on 2026-04-11. Do not re-execute this plan.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Turn the current article manager inside `/admin` into a real single-page owner editor for creating, editing, saving, and publishing manual drafts.
