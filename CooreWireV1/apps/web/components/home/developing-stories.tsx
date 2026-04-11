@@ -8,14 +8,14 @@
 
 export function DevelopingStories({ stories }: DevelopingStoriesProps) {
   return (
-    <section className="cw-panel cw-panel--light cw-module-stack">
-      <div className="cw-panel-header">
-        <span>Developing Stories</span>
-        <span>Low Confidence</span>
+    <section className="cw-brief-ribbon">
+      <div className="cw-feed-header">
+        <p className="cw-kicker">Developing</p>
+        <h2>What is still moving under the surface.</h2>
       </div>
-      <div className="cw-developing-list">
+      <div className="cw-brief-grid">
         {stories.map((story) => (
-          <article className="cw-developing-item cw-developing-item--light" key={story.slug}>
+          <article className="cw-brief-card" key={story.slug}>
             <a className="cw-developing-link" href={`/articles/${story.slug}`}>
               <h3>{story.headline}</h3>
               <p>{story.dek}</p>

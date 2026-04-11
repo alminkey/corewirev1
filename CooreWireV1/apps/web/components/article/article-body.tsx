@@ -13,12 +13,8 @@ export function ArticleBody({ fullArticle }: ArticleBodyProps) {
   }
 
   return (
-    <section className="cw-panel cw-panel--light cw-module-card cw-prose-shell">
-      <div className="cw-panel-header">
-        <span>Flagship Analysis</span>
-        <span>Full Article</span>
-      </div>
-      <div className="cw-article-section cw-article-body cw-article-prose">
+    <section className="cw-reading-column cw-body-flow">
+      <div className="cw-article-prose">
         {paragraphs.map((paragraph, index) => (
           <p className="cw-article-body-paragraph" key={`article-body-${index}`}>
             {paragraph}

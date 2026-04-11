@@ -33,9 +33,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
 
   return (
-    <main className="cw-shell cw-article-shell cw-article-shell--light cw-shell--light cw-editorial-shell cw-surface cw-reading-surface">
+    <main className="cw-shell cw-article-shell cw-feature-reading">
       <PublicHeader />
-      <article className="cw-article cw-article--light cw-article-layout">
+      <article className="cw-article cw-reading-stage">
         <ArticleJsonLd article={article} />
         <ArticleHeader
           article={{
@@ -49,7 +49,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         />
         <AdSlot placement="article-upper" />
         <ArticleBody fullArticle={article.full_article} />
-        <section className="cw-insight-grid">
+        <section className="cw-reading-column">
           <FactsSection blocks={article.facts} />
           <AnalysisSection blocks={article.analysis} />
           <DisagreementSection items={article.disagreements} />

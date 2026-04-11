@@ -4,7 +4,7 @@ type AnalysisSectionProps = {
 
 export function AnalysisSection({ blocks }: AnalysisSectionProps) {
   return (
-    <section className="cw-panel cw-insight-module">
+    <section className="cw-support-module">
       <div className="cw-panel-header">
         <span>Analysis</span>
         <span>Interpretation</span>
