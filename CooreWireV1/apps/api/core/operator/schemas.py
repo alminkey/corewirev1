@@ -1,6 +1,14 @@
 from typing import TypedDict
 
 
+class OperatorCorrelation(TypedDict, total=False):
+    ticket_id: str | None
+    actor_id: str | None
+    company_id: str | None
+    correlation_id: str | None
+    requested_by: str | None
+
+
 class OperatorCommand(TypedDict):
     type: str
     payload: dict

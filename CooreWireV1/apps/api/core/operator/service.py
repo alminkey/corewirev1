@@ -61,6 +61,7 @@ def execute_operator_command(command: dict) -> dict:
         "actor_id": command.get("actor_id"),
         "company_id": command.get("company_id"),
         "correlation_id": command.get("correlation_id"),
+        "requested_by": command.get("requested_by"),
     }
 
     if command_type == "discover_trending_story":
@@ -83,6 +84,9 @@ def execute_operator_command(command: dict) -> dict:
 
     if command_type == "archive_preview_article":
         return archive_preview_article(payload, correlation=correlation)
+
+    if command_type == "import_external_draft":
+        return import_external_draft(payload, correlation=correlation)
 
     if command_type == "rerun_story":
         return {
@@ -343,6 +347,29 @@ def publish_if_eligible(payload: dict, *, correlation: dict) -> dict:
         "type": "publish_if_eligible",
         "accepted": True,
         "decision": decision,
+        "review_item": review_item,
+        "correlation": correlation,
+    }
+
+
+def import_external_draft(payload: dict, *, correlation: dict) -> dict:
+    """Accept a Paperclip-provided draft body and route it through the standard
+    review/compliance path — never auto-publish regardless of confidence."""
+    draft = payload.get("draft", {})
+    confidence = payload.get("confidence", {"level": "low", "homepage_eligible": False})
+    flags = list(payload.get("flags", []))
+    flags.append("external_import")
+
+    review_payload = {
+        "draft": draft,
+        "confidence": confidence,
+        "flags": flags,
+        "story_tier": payload.get("story_tier", "standard"),
+    }
+    review_item = _persist_review_item(review_payload)
+    return {
+        "type": "import_external_draft",
+        "accepted": True,
         "review_item": review_item,
         "correlation": correlation,
     }

@@ -1841,3 +1841,82 @@ def test_run_content_pipeline_routes_shallow_analysis_to_review(monkeypatch):
     ]
     assert result["evaluation"]["decision"] == "rerun"
     assert result["decision"]["action"] == "review_required"
+
+
+def test_operator_command_preserves_paperclip_correlation_metadata(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-operator-corr-{uuid.uuid4().hex}.db"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", f"sqlite+pysqlite:///{database_path}")
+
+    try:
+        result = execute_operator_command(
+            {
+                "type": "publish_preview_article",
+                "ticket_id": "ticket-456",
+                "actor_id": "paperclip-agent-1",
+                "company_id": "acme-corp",
+                "correlation_id": "corr-abc",
+                "requested_by": "editorial-workflow",
+                "payload": {
+                    "draft": {
+                        "headline": "Correlation test article",
+                        "dek": "Testing correlation fields",
+                        "fact_blocks": [{"statement": "Fact", "sources": ["Reuters"]}],
+                        "analysis_blocks": [{"analysis": "Analysis"}],
+                        "sources": [{"organization": "Reuters", "url": "https://reuters.com/test"}],
+                    },
+                    "confidence": {"level": "high", "homepage_eligible": True},
+                    "story_tier": "standard",
+                    "requested_profile": "balanced",
+                    "effective_profile": "balanced",
+                },
+            }
+        )
+
+        assert result["accepted"] is True
+        assert result["correlation"]["ticket_id"] == "ticket-456"
+        assert result["correlation"]["actor_id"] == "paperclip-agent-1"
+        assert result["correlation"]["company_id"] == "acme-corp"
+        assert result["correlation"]["correlation_id"] == "corr-abc"
+        assert result["correlation"]["requested_by"] == "editorial-workflow"
+    finally:
+        if database_path.exists():
+            database_path.unlink()
+
+
+def test_operator_command_import_external_draft_routes_to_review(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-operator-import-{uuid.uuid4().hex}.db"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", f"sqlite+pysqlite:///{database_path}")
+
+    try:
+        result = execute_operator_command(
+            {
+                "type": "import_external_draft",
+                "ticket_id": "ticket-ext-1",
+                "actor_id": "paperclip-agent-2",
+                "requested_by": "content-bridge",
+                "payload": {
+                    "draft": {
+                        "headline": "External draft headline",
+                        "dek": "Imported from Paperclip",
+                        "fact_blocks": [{"statement": "External fact", "sources": ["AP"]}],
+                        "analysis_blocks": [{"analysis": "External analysis"}],
+                        "sources": [
+                            {"organization": "AP", "url": "https://apnews.com/test"},
+                            {"organization": "Reuters", "url": "https://reuters.com/test2"},
+                            {"organization": "BBC", "url": "https://bbc.com/test3"},
+                        ],
+                    },
+                    "confidence": {"level": "medium", "homepage_eligible": False},
+                },
+            }
+        )
+
+        assert result["type"] == "import_external_draft"
+        assert result["accepted"] is True
+        assert "review_item" in result
+        assert result["review_item"]["queue"] in ("pending_drafts", "flagged_items")
+        assert result["correlation"]["ticket_id"] == "ticket-ext-1"
+        assert result["correlation"]["requested_by"] == "content-bridge"
+    finally:
+        if database_path.exists():
+            database_path.unlink()
