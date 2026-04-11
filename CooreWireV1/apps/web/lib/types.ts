@@ -70,9 +70,54 @@ export type ReviewDetail = {
 };
 
 export type AdminOverview = {
+  health: {
+    system: string;
+  };
+  autonomy: {
+    mode: string;
+    allowed_modes: string[];
+    homepage_auto_publish: boolean;
+    developing_story_auto_publish: boolean;
+    pause_ingest: boolean;
+    pause_publish: boolean;
+  };
+  pause_state: {
+    ingest: boolean;
+    publish: boolean;
+  };
+  queue: {
+    review: number;
+    pending_drafts: number;
+    low_confidence: number;
+    flagged_items: number;
+  };
+  published: {
+    total: number;
+  };
+  recent_activity: Array<{
+    type: string;
+    headline: string;
+    slug: string;
+    updated_at: string;
+  }>;
   publish_mode: string;
   system_health: string;
   review_queue_count: number;
+};
+
+export type AdminDraftSummary = {
+  id: string;
+  headline: string;
+  dek: string;
+  body: string;
+  slug: string;
+  tags: string[];
+  status: string;
+};
+
+export type AdminContentPayload = {
+  drafts: AdminDraftSummary[];
+  published: StoryCard[];
 };
 
 export type AutonomySettings = {
@@ -94,4 +139,29 @@ export type ReviewDecisionResult = {
   id: string;
   status: string;
   action: "approve" | "reject" | "request_rerun";
+};
+
+export type ProgrammingTopic = {
+  name: string;
+  enabled: boolean;
+};
+
+export type ProgrammingInterval = {
+  label: string;
+  minutes: number;
+  enabled: boolean;
+};
+
+export type ProgrammingWindow = {
+  label: string;
+  start_hour: number;
+  end_hour: number;
+  timezone: string;
+  enabled: boolean;
+};
+
+export type ProgrammingSettings = {
+  topics: ProgrammingTopic[];
+  intervals: ProgrammingInterval[];
+  schedule_windows: ProgrammingWindow[];
 };

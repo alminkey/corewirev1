@@ -1,8 +1,10 @@
 import type {
+  AdminContentPayload,
   AdminOverview,
   ArticleDetail,
   AutonomySettings,
   HomepagePayload,
+  ProgrammingSettings,
   ReviewDecisionResult,
   ReviewDetail,
   ReviewQueuePayload,
@@ -109,6 +111,31 @@ const reviewDetailFallback: ReviewDetail = {
 };
 
 const adminOverviewFallback: AdminOverview = {
+  health: {
+    system: "stable",
+  },
+  autonomy: {
+    mode: "hybrid",
+    allowed_modes: ["manual", "hybrid", "autonomous"],
+    homepage_auto_publish: true,
+    developing_story_auto_publish: true,
+    pause_ingest: false,
+    pause_publish: false,
+  },
+  pause_state: {
+    ingest: false,
+    publish: false,
+  },
+  queue: {
+    review: 3,
+    pending_drafts: 0,
+    low_confidence: 1,
+    flagged_items: 0,
+  },
+  published: {
+    total: 2,
+  },
+  recent_activity: [],
   publish_mode: "hybrid",
   system_health: "stable",
   review_queue_count: 3,
@@ -127,6 +154,28 @@ const reviewQueueFallback: ReviewQueuePayload = {
   pending_drafts: [],
   low_confidence: [],
   flagged_items: [],
+};
+
+const adminContentFallback: AdminContentPayload = {
+  drafts: [],
+  published: [],
+};
+
+const programmingSettingsFallback: ProgrammingSettings = {
+  topics: [
+    { name: "ai", enabled: true },
+    { name: "business", enabled: true },
+  ],
+  intervals: [{ label: "daily-cycle", minutes: 360, enabled: true }],
+  schedule_windows: [
+    {
+      label: "default-daytime",
+      start_hour: 6,
+      end_hour: 22,
+      timezone: "Europe/Zagreb",
+      enabled: true,
+    },
+  ],
 };
 
 async function fetchJson<T>(path: string, fallback: T): Promise<T> {
@@ -221,6 +270,18 @@ export async function getReviewQueue(): Promise<ReviewQueuePayload> {
 
 export async function getPublishedArticles(): Promise<StoryCard[]> {
   return fetchJsonWithHeaders("/admin/published", [], ownerHeaders());
+}
+
+export async function getAdminContent(): Promise<AdminContentPayload> {
+  return fetchJsonWithHeaders("/admin/content", adminContentFallback, ownerHeaders());
+}
+
+export async function getProgrammingSettings(): Promise<ProgrammingSettings> {
+  return fetchJsonWithHeaders(
+    "/admin/settings/programming",
+    programmingSettingsFallback,
+    ownerHeaders(),
+  );
 }
 
 export async function getReviewDetail(id: string): Promise<ReviewDetail> {
