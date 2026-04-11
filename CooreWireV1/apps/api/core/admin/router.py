@@ -3,8 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from core.articles.service import list_published_articles_feed
 from core.admin.auth import require_owner_token
 from core.admin.content import (
+    archive_manual_story_draft,
     create_manual_story_draft,
+    get_manual_story_draft,
     list_admin_content,
+    publish_manual_story_draft,
     update_manual_story_draft,
 )
 from core.admin.overview import get_admin_overview_summary
@@ -56,9 +59,33 @@ def post_admin_content_draft(payload: dict) -> dict:
     return create_manual_story_draft(payload)
 
 
+@router.get("/content/drafts/{draft_id}", dependencies=[Depends(require_owner_token)])
+def get_admin_content_draft(draft_id: str) -> dict:
+    draft = get_manual_story_draft(draft_id)
+    if draft is None:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    return draft
+
+
 @router.patch("/content/drafts/{draft_id}", dependencies=[Depends(require_owner_token)])
 def patch_admin_content_draft(draft_id: str, payload: dict) -> dict:
     draft = update_manual_story_draft(draft_id, payload)
+    if draft is None:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    return draft
+
+
+@router.post("/content/drafts/{draft_id}/publish", dependencies=[Depends(require_owner_token)])
+def post_admin_content_draft_publish(draft_id: str) -> dict:
+    draft = publish_manual_story_draft(draft_id)
+    if draft is None:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    return draft
+
+
+@router.post("/content/drafts/{draft_id}/archive", dependencies=[Depends(require_owner_token)])
+def post_admin_content_draft_archive(draft_id: str) -> dict:
+    draft = archive_manual_story_draft(draft_id)
     if draft is None:
         raise HTTPException(status_code=404, detail="Draft not found")
     return draft

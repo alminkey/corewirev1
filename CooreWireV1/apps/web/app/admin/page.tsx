@@ -7,6 +7,7 @@ import { ProgrammingControls } from "../../components/admin/programming-controls
 import { ReviewQueue } from "../../components/admin/review-queue";
 import {
   getAdminContent,
+  getAdminDraft,
   getAdminOverview,
   getAutonomySettings,
   getPublishedArticles,
@@ -14,7 +15,17 @@ import {
   getReviewQueue,
 } from "../../lib/api";
 
-export default async function AdminPage() {
+type AdminPageProps = {
+  searchParams?: Promise<{
+    draft?: string;
+    editor?: string;
+  }>;
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const params = (await searchParams) ?? {};
+  const requestedDraftId = params.draft;
+
   const [overview, autonomySettings, reviewQueue, publishedArticles, adminContent, programming] =
     await Promise.all([
       getAdminOverview(),
@@ -24,6 +35,10 @@ export default async function AdminPage() {
       getAdminContent(),
       getProgrammingSettings(),
     ]);
+
+  const selectedDraftId =
+    params.editor === "new" ? "" : requestedDraftId || adminContent.drafts[0]?.id || "";
+  const selectedDraft = selectedDraftId ? await getAdminDraft(selectedDraftId) : null;
   const reviewQueueCount =
     reviewQueue.pending_drafts.length +
     reviewQueue.low_confidence.length +
@@ -51,7 +66,11 @@ export default async function AdminPage() {
           lowConfidence={reviewQueue.low_confidence}
           flaggedItems={reviewQueue.flagged_items}
         />
-        <ArticleManager drafts={adminContent.drafts} published={publishedArticles} />
+        <ArticleManager
+          drafts={adminContent.drafts}
+          published={publishedArticles}
+          selectedDraft={selectedDraft}
+        />
         <ProgrammingControls
           topics={programming.topics}
           intervals={programming.intervals}

@@ -115,6 +115,8 @@ export type AdminDraftSummary = {
   status: string;
 };
 
+export type AdminDraftDetail = AdminDraftSummary;
+
 export type AdminContentPayload = {
   drafts: AdminDraftSummary[];
   published: StoryCard[];

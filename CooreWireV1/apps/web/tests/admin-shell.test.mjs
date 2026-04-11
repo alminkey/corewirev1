@@ -11,6 +11,8 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(pageSource, /ArticleManager/);
   assert.match(pageSource, /ProgrammingControls/);
   assert.match(pageSource, /getAdminContent/);
+  assert.match(pageSource, /getAdminDraft/);
+  assert.match(pageSource, /searchParams/);
   assert.match(pageSource, /getProgrammingSettings/);
   assert.match(pageSource, /Published Articles/i);
   assert.match(pageSource, /System Overview/i);

@@ -13,6 +13,11 @@ test("renders programming controls for topics intervals and schedule windows", (
   assert.match(componentSource, /Topic Targets/i);
   assert.match(componentSource, /Generation Intervals/i);
   assert.match(componentSource, /Schedule Windows/i);
+  assert.match(componentSource, /Apply Changes/i);
+  assert.match(componentSource, /form action=/);
+  assert.match(componentSource, /name={`topic-name-/);
+  assert.match(componentSource, /name={`interval-label-/);
+  assert.match(componentSource, /name={`window-label-/);
   assert.match(componentSource, /topics\.map/);
   assert.match(componentSource, /intervals\.map/);
   assert.match(componentSource, /scheduleWindows\.map/);
