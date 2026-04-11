@@ -75,3 +75,52 @@ def test_owner_can_list_create_and_update_manual_story_drafts(monkeypatch):
         engine.dispose()
         if database_path.exists():
             database_path.unlink()
+
+
+def test_owner_can_fetch_one_manual_draft_in_editor_shape(monkeypatch):
+    database_path = Path(__file__).resolve().parents[3] / f"test-admin-content-editor-{uuid.uuid4().hex}.db"
+    database_url = f"sqlite+pysqlite:///{database_path}"
+    monkeypatch.setenv("COREWIRE_DATABASE_URL", database_url)
+
+    engine = build_engine(database_url)
+    Base.metadata.create_all(engine)
+
+    try:
+        client = TestClient(app)
+        headers = {"x-owner-token": "corewire-owner-token"}
+
+        create_response = client.post(
+            "/api/admin/content/drafts",
+            headers=headers,
+            json={
+                "headline": "Editor-ready draft",
+                "dek": "Editor dek",
+                "body": "Editor body",
+                "slug": "editor-ready-draft",
+                "tags": ["draft", "editor"],
+            },
+        )
+
+        assert create_response.status_code == 200
+        created = create_response.json()
+
+        detail_response = client.get(
+            f"/api/admin/content/drafts/{created['id']}",
+            headers=headers,
+        )
+
+        assert detail_response.status_code == 200
+        detail = detail_response.json()
+        assert detail == {
+            "id": created["id"],
+            "headline": "Editor-ready draft",
+            "dek": "Editor dek",
+            "body": "Editor body",
+            "slug": "editor-ready-draft",
+            "tags": ["draft", "editor"],
+            "status": "draft",
+        }
+    finally:
+        engine.dispose()
+        if database_path.exists():
+            database_path.unlink()

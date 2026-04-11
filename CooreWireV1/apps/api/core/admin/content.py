@@ -87,6 +87,21 @@ def create_manual_story_draft(payload: dict) -> dict:
         engine.dispose()
 
 
+def get_manual_story_draft(draft_id: str) -> dict | None:
+    engine = build_engine(_database_url())
+    session_factory = build_session_factory(engine)
+
+    try:
+        with session_factory() as session:
+            Base.metadata.create_all(engine)
+            draft = session.get(ArticleDraft, draft_id)
+            if draft is None:
+                return None
+            return _serialize_draft(draft)
+    finally:
+        engine.dispose()
+
+
 def update_manual_story_draft(draft_id: str, payload: dict) -> dict | None:
     engine = build_engine(_database_url())
     session_factory = build_session_factory(engine)
