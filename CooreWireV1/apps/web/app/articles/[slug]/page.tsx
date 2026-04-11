@@ -49,12 +49,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         />
         <AdSlot placement="article-upper" />
         <ArticleBody fullArticle={article.full_article} />
-        <FactsSection blocks={article.facts} />
-        <AnalysisSection blocks={article.analysis} />
+        <section className="cw-insight-grid">
+          <FactsSection blocks={article.facts} />
+          <AnalysisSection blocks={article.analysis} />
+          <DisagreementSection items={article.disagreements} />
+          <SourcesSection citations={article.sources} />
+        </section>
         <NewsletterSignupCard />
         <AdSlot placement="article-lower" />
-        <DisagreementSection items={article.disagreements} />
-        <SourcesSection citations={article.sources} />
       </article>
     </main>
   );

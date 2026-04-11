@@ -20,7 +20,9 @@ test("renders article manager with manual draft inventory", () => {
   assert.match(componentSource, /id="drafts"/);
   assert.match(componentSource, /id="published"/);
   assert.match(componentSource, /cw-admin-workspace-grid/);
+  assert.match(componentSource, /cw-workspace-module/);
   assert.match(componentSource, /cw-admin-editor-panel/);
+  assert.match(componentSource, /cw-editor-surface/);
   assert.match(componentSource, /cw-admin-inventory-panel/);
   assert.match(componentSource, /name="headline"/);
   assert.match(componentSource, /name="dek"/);

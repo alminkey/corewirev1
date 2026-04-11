@@ -1624,6 +1624,10 @@ body {
   max-width: 1180px;
 }
 
+.cw-reading-header {
+  overflow: hidden;
+}
+
 .cw-reading-surface .cw-article-header,
 .cw-reading-surface .cw-panel,
 .cw-reading-surface .cw-newsletter-card,
@@ -1638,10 +1642,40 @@ body {
   line-height: 0.94;
 }
 
+.cw-prose-shell .cw-panel-header,
+.cw-reading-header .cw-panel-header {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cw-prose-shell {
+  max-width: 860px;
+}
+
 .cw-reading-surface .cw-article-prose .cw-article-body-paragraph {
   font-family: var(--cw-ui);
   font-size: 1.08rem;
   line-height: 1.9;
+  color: #d5e0f2;
+}
+
+.cw-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.cw-insight-module {
+  min-height: 100%;
+}
+
+.cw-source-module .cw-source-list {
+  display: grid;
+  gap: 12px;
+  padding-left: 18px;
+}
+
+.cw-source-module .cw-source-list li,
+.cw-source-module .cw-source-list a {
   color: #d5e0f2;
 }
 
@@ -1664,6 +1698,10 @@ body {
     linear-gradient(180deg, rgba(16, 26, 43, 0.96), rgba(7, 13, 24, 0.98)),
     rgba(8, 17, 31, 0.92);
   box-shadow: var(--cw-shadow);
+}
+
+.cw-control-rail {
+  position: sticky;
 }
 
 .cw-control-plane .cw-admin-brand {
@@ -1722,6 +1760,10 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
+}
+
+.cw-system-chipbar {
+  align-items: stretch;
 }
 
 .cw-control-plane .cw-admin-utility__item {
@@ -1794,12 +1836,33 @@ body {
   letter-spacing: -0.04em;
 }
 
+.cw-workspace-module {
+  border-color: rgba(133, 167, 235, 0.16);
+  background:
+    linear-gradient(180deg, rgba(20, 32, 54, 0.96), rgba(9, 18, 31, 0.98)),
+    rgba(11, 19, 33, 0.94);
+}
+
+.cw-editor-surface {
+  position: relative;
+}
+
+.cw-editor-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(123, 176, 255, 0.08);
+  pointer-events: none;
+}
+
 @media (max-width: 1100px) {
   .cw-grid,
   .cw-control-plane .cw-admin-layout,
   .cw-hero-link,
   .cw-control-plane .cw-admin-utility,
-  .cw-control-plane .admin-shell__grid {
+  .cw-control-plane .admin-shell__grid,
+  .cw-insight-grid {
     grid-template-columns: 1fr;
   }
 

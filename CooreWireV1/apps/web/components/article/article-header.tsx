@@ -11,7 +11,7 @@ type ArticleHeaderProps = {
 
 export function ArticleHeader({ article }: ArticleHeaderProps) {
   return (
-    <header className="cw-panel cw-article-header cw-article-header--light">
+    <header className="cw-panel cw-article-header cw-article-header--light cw-reading-header">
       <div className="cw-panel-header">
         <span>Investigative report</span>
         <span>{article.status}</span>

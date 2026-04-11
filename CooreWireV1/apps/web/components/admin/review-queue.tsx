@@ -28,15 +28,15 @@ export function ReviewQueue({
 
   return (
     <section className="admin-shell__grid">
-      <article className="admin-shell__panel">
+      <article className="admin-shell__panel cw-workspace-module">
         <h2>Pending Drafts</h2>
         {renderItem(pendingDrafts[0], "No pending drafts")}
       </article>
-      <article className="admin-shell__panel">
+      <article className="admin-shell__panel cw-workspace-module">
         <h2>Low-confidence Stories</h2>
         {renderItem(lowConfidence[0], "No low-confidence stories")}
       </article>
-      <article className="admin-shell__panel">
+      <article className="admin-shell__panel cw-workspace-module">
         <h2>Flagged Items</h2>
         {renderItem(flaggedItems[0], "No flagged items")}
       </article>

@@ -18,6 +18,8 @@ test("renders admin as a product-style control plane", () => {
   assert.match(pageSource, /cw-app-shell/);
   assert.match(pageSource, /cw-surface/);
   assert.match(pageSource, /cw-control-plane/);
+  assert.match(pageSource, /cw-control-rail/);
+  assert.match(pageSource, /cw-system-chipbar/);
   assert.match(pageSource, /cw-admin-sidebar/);
   assert.match(pageSource, /cw-admin-main/);
   assert.match(pageSource, /cw-admin-utility/);
@@ -27,6 +29,7 @@ test("renders admin as a product-style control plane", () => {
   assert.match(shellSource, /cw-signal-chip/);
   assert.match(shellSource, /cw-admin-overview/);
   assert.match(shellSource, /cw-admin-stat-grid/);
+  assert.match(shellSource, /cw-workspace-module/);
   assert.match(shellSource, /admin-shell__signal/);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);
@@ -34,6 +37,8 @@ test("renders admin as a product-style control plane", () => {
   assert.match(globalStyles, /\.cw-surface/);
   assert.match(globalStyles, /\.cw-shell--light/);
   assert.match(globalStyles, /\.cw-control-plane/);
+  assert.match(globalStyles, /\.cw-control-rail/);
+  assert.match(globalStyles, /\.cw-system-chipbar/);
   assert.match(globalStyles, /\.cw-admin-sidebar/);
   assert.match(globalStyles, /\.cw-admin-main/);
   assert.match(globalStyles, /\.cw-admin-utility/);

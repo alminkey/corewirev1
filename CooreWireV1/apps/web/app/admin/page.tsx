@@ -49,7 +49,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     <main className="cw-shell cw-shell--admin cw-shell--light cw-app-shell cw-surface cw-control-plane">
       <div className="cw-overlay" />
       <div className="cw-admin-layout">
-        <aside className="cw-admin-sidebar">
+        <aside className="cw-admin-sidebar cw-control-rail">
           <a className="cw-admin-brand" href="#overview">
             CoreWire
           </a>
@@ -65,7 +65,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </aside>
 
         <div className="cw-admin-main">
-          <section className="cw-admin-utility">
+          <section className="cw-admin-utility cw-system-chipbar">
             <div className="cw-admin-utility__item">
               <span>Health</span>
               <strong>{systemHealth}</strong>
