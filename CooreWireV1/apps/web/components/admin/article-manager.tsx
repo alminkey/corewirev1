@@ -111,8 +111,8 @@ export function ArticleManager({
             <p>No published inventory yet.</p>
           ) : (
             <ul className="story-list">
-              {published.map((story) => (
-                <li key={story.slug}>
+              {published.map((story, index) => (
+                <li key={`${story.slug ?? story.headline ?? index}-${index}`}>
                   <article>
                     <h4>{story.headline}</h4>
                     <p>{story.status}</p>

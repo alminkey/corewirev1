@@ -89,8 +89,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             <p>No published articles yet.</p>
           ) : (
             <ul className="story-list">
-              {publishedArticles.map((story) => (
-                <li key={story.slug}>
+              {publishedArticles.map((story, index) => (
+                <li key={`${story.slug ?? story.headline ?? index}-${index}`}>
                   <article>
                     <h3>
                       <a href={`/articles/${story.slug}`}>{story.headline}</a>

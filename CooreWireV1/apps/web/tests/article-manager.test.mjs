@@ -23,4 +23,6 @@ test("renders article manager with manual draft inventory", () => {
   assert.match(componentSource, /name="body"/);
   assert.match(componentSource, /drafts\.length/);
   assert.match(componentSource, /published\.length/);
+  assert.match(componentSource, /published\.map\(\(story, index\)/);
+  assert.match(componentSource, /story\.slug \?\? story\.headline \?\? index/);
 });

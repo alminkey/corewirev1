@@ -120,8 +120,8 @@ export default async function ReviewDetailPage({ params }: ReviewDetailPageProps
             <section className="cw-review-card">
               <h2>Sources</h2>
               <ul>
-                {detail.draft.sources.map((source) => (
-                  <li key={`${detail.id}-${source.label}`}>
+                {detail.draft.sources.map((source, index) => (
+                  <li key={`${detail.id}-${source.url ?? source.label ?? index}-${index}`}>
                     <a href={source.url ?? "#"}>{source.title ?? source.label}</a>
                     {(source.publisher || source.label !== source.title) && (
                       <p>

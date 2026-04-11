@@ -6,6 +6,7 @@ import { resolve } from "node:path";
 test("renders owner admin shell with control and review sections", () => {
   const pageSource = readFileSync(resolve("app/admin/page.tsx"), "utf8");
   const shellSource = readFileSync(resolve("components/admin/admin-shell.tsx"), "utf8");
+  const globalStyles = readFileSync(resolve("app/globals.css"), "utf8");
 
   assert.match(pageSource, /AdminShell/);
   assert.match(pageSource, /ArticleManager/);
@@ -25,10 +26,16 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(pageSource, /story\.confidence/);
   assert.match(pageSource, /story\.source_count/);
   assert.match(pageSource, /story\.updated_at/);
+  assert.match(pageSource, /publishedArticles\.map\(\(story, index\)/);
+  assert.match(pageSource, /story\.slug \?\? story\.headline \?\? index/);
   assert.match(pageSource, /href=\{`\/articles\/\$\{story\.slug\}`\}/);
   assert.match(shellSource, /Owner Control Plane/i);
   assert.match(shellSource, /Signal Desk/i);
   assert.match(shellSource, /admin-shell__signal/);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);
+  assert.match(globalStyles, /\.admin-shell__panel-header/);
+  assert.match(globalStyles, /\.admin-editor\s*\{/);
+  assert.match(globalStyles, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(globalStyles, /\.admin-editor__actions/);
 });
