@@ -18,7 +18,7 @@ export function ArticleBody({ fullArticle }: ArticleBodyProps) {
         <span>Flagship Analysis</span>
         <span>Full Article</span>
       </div>
-      <div className="cw-article-section cw-article-body">
+      <div className="cw-article-section cw-article-body cw-article-prose">
         {paragraphs.map((paragraph, index) => (
           <p className="cw-article-body-paragraph" key={`article-body-${index}`}>
             {paragraph}

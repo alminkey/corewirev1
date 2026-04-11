@@ -10,7 +10,7 @@ export function AdminShell({
   reviewQueueCount,
 }: AdminShellProps) {
   return (
-    <section className="admin-shell cw-panel">
+    <section className="admin-shell cw-panel cw-admin-overview" id="overview">
       <section className="admin-shell__hero">
         <div className="admin-shell__signal" aria-hidden="true">
           <span />
@@ -18,16 +18,16 @@ export function AdminShell({
           <span />
         </div>
         <div>
-          <p className="admin-shell__eyebrow">Owner Control Plane</p>
-          <h1>Signal Desk for the newsroom command center</h1>
+          <p className="admin-shell__eyebrow">Owner Workspace</p>
+          <h1>CoreWire command center built for daily operation.</h1>
           <p>
-            Control autonomy, inspect operational health, and review publish decisions from one
-            owner-only surface.
+            Review the newsroom, manage drafts, adjust programming, and keep the publish system
+            under control from one owner-only surface.
           </p>
         </div>
       </section>
 
-      <section className="admin-shell__grid">
+      <section className="admin-shell__grid cw-admin-stat-grid">
         <article className="admin-shell__panel">
           <h2>System Health</h2>
           <p>{systemHealth}</p>

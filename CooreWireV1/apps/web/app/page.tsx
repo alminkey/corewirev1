@@ -17,12 +17,28 @@ export default async function HomePage() {
   const homepage = await getHomepage();
 
   return (
-    <main className="cw-shell cw-shell--home">
+    <main className="cw-shell cw-shell--home cw-shell--light cw-editorial-shell cw-surface">
       <PublicHeader />
       <section className="cw-grid cw-grid--public">
         <div className="cw-main">
           <HeroStory story={homepage.lead_story} />
           <StoryGrid stories={homepage.top_stories} />
+          <section className="cw-home-feature-media cw-panel">
+            <div className="cw-panel-header">
+              <span>Video Brief</span>
+              <span>Explainer</span>
+            </div>
+            <div className="cw-home-feature-media__frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/ysz5S6PUM-U?rel=0"
+                title="CoreWire feature video"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </section>
           <AdSlot placement="homepage-feed" />
           <NewsletterSignupCard />
           <DevelopingStories stories={homepage.developing_stories} />

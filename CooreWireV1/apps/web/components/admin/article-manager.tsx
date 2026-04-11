@@ -30,15 +30,16 @@ export function ArticleManager({
   const isExistingDraft = Boolean(draft.id);
 
   return (
-    <section className="admin-shell__panel admin-shell__panel--wide cw-panel">
+    <section className="admin-shell__panel admin-shell__panel--wide cw-panel" id="drafts">
       <p className="admin-shell__eyebrow">Manual Story Controls</p>
       <h2>Article Manager</h2>
       <p>
-        Track manual drafts alongside the published inventory and work one owner-managed draft at a
-        time without leaving the admin surface.
+        Work one draft at a time without leaving the admin workspace, while keeping inventory and
+        publish visibility within the same panel.
       </p>
 
-      <div className="admin-shell__grid">
+      <div className="cw-admin-workspace-grid">
+        <div className="cw-admin-inventory-panel">
         <article className="admin-shell__panel">
           <div className="admin-shell__panel-header">
             <div>
@@ -66,7 +67,26 @@ export function ArticleManager({
             </ul>
           )}
         </article>
-        <article className="admin-shell__panel">
+        <article className="admin-shell__panel" id="published">
+          <h3>Published Inventory</h3>
+          <p>{published.length} articles currently live</p>
+          {published.length === 0 ? (
+            <p>No published inventory yet.</p>
+          ) : (
+            <ul className="story-list">
+              {published.map((story, index) => (
+                <li key={`${story.slug ?? story.headline ?? index}-${index}`}>
+                  <article>
+                    <h4>{story.headline}</h4>
+                    <p>{story.status}</p>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+        </div>
+        <article className="admin-shell__panel cw-admin-editor-panel">
           <h3>Editor Workspace</h3>
           <p>{isExistingDraft ? "Edit the selected draft and publish when ready." : "Create a new manual draft."}</p>
           <form action={saveOwnerDraftAction} className="admin-editor">
@@ -103,24 +123,6 @@ export function ArticleManager({
               ) : null}
             </div>
           </form>
-        </article>
-        <article className="admin-shell__panel">
-          <h3>Published Inventory</h3>
-          <p>{published.length} articles currently live</p>
-          {published.length === 0 ? (
-            <p>No published inventory yet.</p>
-          ) : (
-            <ul className="story-list">
-              {published.map((story, index) => (
-                <li key={`${story.slug ?? story.headline ?? index}-${index}`}>
-                  <article>
-                    <h4>{story.headline}</h4>
-                    <p>{story.status}</p>
-                  </article>
-                </li>
-              ))}
-            </ul>
-          )}
         </article>
       </div>
     </section>

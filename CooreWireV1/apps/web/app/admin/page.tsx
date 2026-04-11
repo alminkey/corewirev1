@@ -46,84 +46,92 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const publishMode = overview.autonomy?.mode ?? overview.publish_mode;
   const systemHealth = overview.health?.system ?? overview.system_health;
   return (
-    <main className="cw-shell cw-shell--admin">
+    <main className="cw-shell cw-shell--admin cw-shell--light cw-app-shell cw-surface">
       <div className="cw-overlay" />
-      <div className="cw-admin-stack">
-        <AdminShell
-          publishMode={publishMode}
-          systemHealth={systemHealth}
-          reviewQueueCount={reviewQueueCount || overview.queue?.review || overview.review_queue_count}
-        />
-        <AutonomyControls
-          mode={autonomySettings.mode}
-          homepageAutoPublish={autonomySettings.homepage_auto_publish}
-          developingStoryAutoPublish={autonomySettings.developing_story_auto_publish}
-          pauseIngest={autonomySettings.pause_ingest}
-          pausePublish={autonomySettings.pause_publish}
-        />
-        <ReviewQueue
-          pendingDrafts={reviewQueue.pending_drafts}
-          lowConfidence={reviewQueue.low_confidence}
-          flaggedItems={reviewQueue.flagged_items}
-        />
-        <ArticleManager
-          drafts={adminContent.drafts}
-          published={publishedArticles}
-          selectedDraft={selectedDraft}
-        />
-        <ProgrammingControls
-          topics={programming.topics}
-          intervals={programming.intervals}
-          scheduleWindows={programming.schedule_windows}
-        />
-        <AnalyticsDashboard
-          articleThroughput={`${publishedArticles.length} published stories in the live feed`}
-          queueStatus={`${reviewQueue.pending_drafts.length} pending drafts, ${reviewQueue.low_confidence.length} low-confidence, ${reviewQueue.flagged_items.length} flagged`}
-          confidenceDistribution={`${publishedArticles.filter((story) => story.confidence === "high").length} high-confidence published`}
-          costSummary={`Mode ${publishMode}, health ${systemHealth}`}
-        />
-        <section className="admin-shell__panel admin-shell__panel--wide cw-panel">
-          <p className="admin-shell__eyebrow">System Overview</p>
-          <h2>Published Articles</h2>
-          {publishedArticles.length === 0 ? (
-            <p>No published articles yet.</p>
-          ) : (
-            <ul className="story-list">
-              {publishedArticles.map((story, index) => (
-                <li key={`${story.slug ?? story.headline ?? index}-${index}`}>
-                  <article>
-                    <h3>
-                      <a href={`/articles/${story.slug}`}>{story.headline}</a>
-                    </h3>
-                    <p>{story.dek}</p>
-                    <dl>
-                      <div>
-                        <dt>Published Status</dt>
-                        <dd>{story.status}</dd>
-                      </div>
-                      <div>
-                        <dt>Confidence</dt>
-                        <dd>{story.confidence}</dd>
-                      </div>
-                      <div>
-                        <dt>Sources</dt>
-                        <dd>{story.source_count}</dd>
-                      </div>
-                      <div>
-                        <dt>Updated</dt>
-                        <dd>{story.updated_at}</dd>
-                      </div>
-                    </dl>
-                    <p>
-                      <a href={`/articles/${story.slug}`}>Open article</a>
-                    </p>
-                  </article>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-        <ArticleActions />
+      <div className="cw-admin-layout">
+        <aside className="cw-admin-sidebar">
+          <a className="cw-admin-brand" href="#overview">
+            CoreWire
+          </a>
+          <p className="cw-admin-sidebar__label">Owner Workspace</p>
+          <nav className="cw-admin-sidebar__nav" aria-label="Admin sections">
+            <a href="#overview">Overview</a>
+            <a href="#review">Review Queue</a>
+            <a href="#drafts">Drafts</a>
+            <a href="#published">Published</a>
+            <a href="#programming">Programming</a>
+            <a href="#analytics">Analytics</a>
+          </nav>
+        </aside>
+
+        <div className="cw-admin-main">
+          <section className="cw-admin-utility">
+            <div className="cw-admin-utility__item">
+              <span>Health</span>
+              <strong>{systemHealth}</strong>
+            </div>
+            <div className="cw-admin-utility__item">
+              <span>Mode</span>
+              <strong>{publishMode}</strong>
+            </div>
+            <div className="cw-admin-utility__item">
+              <span>Review Queue</span>
+              <strong>{reviewQueueCount || overview.queue?.review || overview.review_queue_count}</strong>
+            </div>
+          </section>
+
+          <div className="cw-admin-workspace">
+            <AdminShell
+              publishMode={publishMode}
+              systemHealth={systemHealth}
+              reviewQueueCount={reviewQueueCount || overview.queue?.review || overview.review_queue_count}
+            />
+
+            <section id="review">
+              <ReviewQueue
+                pendingDrafts={reviewQueue.pending_drafts}
+                lowConfidence={reviewQueue.low_confidence}
+                flaggedItems={reviewQueue.flagged_items}
+              />
+            </section>
+
+            <ArticleManager
+              drafts={adminContent.drafts}
+              published={publishedArticles}
+              selectedDraft={selectedDraft}
+            />
+
+            <div className="cw-admin-section-grid">
+              <section>
+                <AutonomyControls
+                  mode={autonomySettings.mode}
+                  homepageAutoPublish={autonomySettings.homepage_auto_publish}
+                  developingStoryAutoPublish={autonomySettings.developing_story_auto_publish}
+                  pauseIngest={autonomySettings.pause_ingest}
+                  pausePublish={autonomySettings.pause_publish}
+                />
+              </section>
+              <section id="programming">
+                <ProgrammingControls
+                  topics={programming.topics}
+                  intervals={programming.intervals}
+                  scheduleWindows={programming.schedule_windows}
+                />
+              </section>
+            </div>
+
+            <section id="analytics">
+              <AnalyticsDashboard
+                articleThroughput={`${publishedArticles.length} published stories in the live feed`}
+                queueStatus={`${reviewQueue.pending_drafts.length} pending drafts, ${reviewQueue.low_confidence.length} low-confidence, ${reviewQueue.flagged_items.length} flagged`}
+                confidenceDistribution={`${publishedArticles.filter((story) => story.confidence === "high").length} high-confidence published`}
+                costSummary={`Mode ${publishMode}, health ${systemHealth}`}
+              />
+            </section>
+
+            <ArticleActions />
+          </div>
+        </div>
       </div>
     </main>
   );

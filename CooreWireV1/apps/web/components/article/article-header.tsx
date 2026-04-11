@@ -1,4 +1,4 @@
-﻿type ArticleHeaderProps = {
+type ArticleHeaderProps = {
   article: {
     headline: string;
     dek: string;
@@ -16,10 +16,10 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
         <span>Investigative report</span>
         <span>{article.status}</span>
       </div>
-      <div className="cw-article-header-body">
-        <p className="cw-kicker">CoreWire briefing</p>
+      <div className="cw-article-header-body cw-article-header-intro">
+        <p className="cw-kicker">CoreWire flagship analysis</p>
         <h1>{article.headline}</h1>
-        <p>{article.dek}</p>
+        <p className="article-dek">{article.dek}</p>
         <div className="cw-meta">
           <span>Sources: {article.sourceCount}</span>
           <span>Updated: {article.updatedAt}</span>
