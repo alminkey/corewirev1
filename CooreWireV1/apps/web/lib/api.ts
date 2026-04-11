@@ -260,6 +260,28 @@ async function patchJsonWithHeaders<T>(
   return (await response.json()) as T;
 }
 
+async function putJsonWithHeaders<T>(
+  path: string,
+  body: object,
+  headers: Record<string, string>,
+): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "PUT",
+    cache: "no-store",
+    headers: {
+      "content-type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return (await response.json()) as T;
+}
+
 export async function getHomepage(): Promise<HomepagePayload> {
   return fetchJson("/articles", homepageFallback);
 }
@@ -307,6 +329,16 @@ export async function getProgrammingSettings(): Promise<ProgrammingSettings> {
   return fetchJsonWithHeaders(
     "/admin/settings/programming",
     programmingSettingsFallback,
+    ownerHeaders(),
+  );
+}
+
+export async function updateProgrammingSettings(
+  payload: ProgrammingSettings,
+): Promise<ProgrammingSettings> {
+  return putJsonWithHeaders(
+    "/admin/settings/programming",
+    payload,
     ownerHeaders(),
   );
 }
