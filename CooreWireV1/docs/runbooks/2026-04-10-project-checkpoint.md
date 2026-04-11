@@ -2,7 +2,10 @@
 
 **Date:** 2026-04-10  
 **Purpose:** Durable handoff document for any future agent or engineer joining the project.  
-**Status:** Active checkpoint and roadmap alignment document.
+**Status:** SUPERSEDED — this document describes a state that no longer exists (split worktrees, unmerged branches).
+
+> **Read instead: [2026-04-11-project-checkpoint.md](2026-04-11-project-checkpoint.md)**  
+> All worktrees are merged into `master`. Staging runs `master`. This document is kept for historical reference only.
 
 ---
 

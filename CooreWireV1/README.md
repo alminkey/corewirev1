@@ -71,13 +71,7 @@ docs/runbooks/corewire-analysis-evaluation.md
 8. For the latest full project checkpoint and handoff status, see:
 
 ```bash
-docs/runbooks/2026-04-10-project-checkpoint.md
-```
-
-9. Explore the worktree branch used for implementation:
-
-```bash
-git worktree list
+docs/runbooks/2026-04-11-project-checkpoint.md
 ```
 
 ## Current MVP Capabilities

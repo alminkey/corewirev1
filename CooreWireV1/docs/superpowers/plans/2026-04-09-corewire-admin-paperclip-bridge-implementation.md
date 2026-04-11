@@ -1,6 +1,8 @@
 # CoreWire Admin Closure and Paperclip Bridge V1 Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **STATUS: COMPLETE** — All 8 tasks implemented, merged to `master` (`3c1b09a`), and verified on staging (`213.202.216.222`) on 2026-04-11. All bridge read endpoints and `import_external_draft` command confirmed live. Do not re-execute this plan.
+
+> **For agentic workers:** This plan is fully executed. All checkboxes are checked. For current project state see `docs/runbooks/2026-04-11-project-checkpoint.md`.
 
 **Goal:** Finish the practical owner-facing CoreWire site admin and add a narrow Paperclip Bridge V1 that can read CoreWire state and send authenticated commands into the system.
 
@@ -33,19 +35,19 @@ Create or extend these areas:
 - Modify: `apps/api/tests/test_admin_auth.py`
 - Modify: `apps/api/tests/test_analytics_api.py`
 
-- [ ] **Step 1: Write the failing admin summary tests**
+- [x] **Step 1: Write the failing admin summary tests**
 
 ```python
 def test_owner_can_fetch_dashboard_summary_with_health_queue_and_publish_stats():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest apps/api/tests/test_admin_auth.py apps/api/tests/test_analytics_api.py -k dashboard_summary -v`
 Expected: FAIL because the compact owner summary contract does not exist.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add an owner-only summary response that returns:
 
@@ -56,12 +58,12 @@ Add an owner-only summary response that returns:
 - published counts
 - recent activity summary
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest apps/api/tests/test_admin_auth.py apps/api/tests/test_analytics_api.py -k dashboard_summary -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/core/admin/router.py apps/api/core/admin/overview.py apps/api/tests/test_admin_auth.py apps/api/tests/test_analytics_api.py
@@ -76,19 +78,19 @@ git commit -m "feat: add owner dashboard summary contract"
 - Modify: `apps/api/tests/test_article_actions.py`
 - Create: `apps/api/tests/test_admin_content.py`
 
-- [ ] **Step 1: Write the failing admin content tests**
+- [x] **Step 1: Write the failing admin content tests**
 
 ```python
 def test_owner_can_list_create_and_update_manual_story_drafts():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest apps/api/tests/test_admin_content.py apps/api/tests/test_article_actions.py -v`
 Expected: FAIL because admin content endpoints for manual story operations are incomplete.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Support owner actions for:
 
@@ -97,12 +99,12 @@ Support owner actions for:
 - updating headline, dek, body, slug, and tags
 - handing off final publish/reject actions to existing lifecycle logic
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest apps/api/tests/test_admin_content.py apps/api/tests/test_article_actions.py -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/core/admin/content.py apps/api/core/admin/router.py apps/api/tests/test_admin_content.py apps/api/tests/test_article_actions.py
@@ -116,19 +118,19 @@ git commit -m "feat: add owner article management endpoints"
 - Modify: `apps/api/core/admin/settings.py`
 - Create: `apps/api/tests/test_admin_programming.py`
 
-- [ ] **Step 1: Write the failing programming control tests**
+- [x] **Step 1: Write the failing programming control tests**
 
 ```python
 def test_owner_can_configure_topic_targets_and_generation_intervals():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest apps/api/tests/test_admin_programming.py apps/api/tests/test_autonomy_controls.py -v`
 Expected: FAIL because programming controls do not exist.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Support owner-defined:
 
@@ -137,12 +139,12 @@ Support owner-defined:
 - basic scheduling windows
 - enable/disable state for those rules
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest apps/api/tests/test_admin_programming.py apps/api/tests/test_autonomy_controls.py -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/core/admin/programming.py apps/api/core/admin/settings.py apps/api/tests/test_admin_programming.py apps/api/tests/test_autonomy_controls.py
@@ -162,7 +164,7 @@ git commit -m "feat: add owner programming controls"
 - Create: `apps/web/tests/programming-controls.test.mjs`
 - Modify: `apps/web/tests/admin-shell.test.mjs`
 
-- [ ] **Step 1: Write the failing admin UI tests**
+- [x] **Step 1: Write the failing admin UI tests**
 
 ```javascript
 test("admin shell renders article manager and programming controls", async () => {
@@ -170,12 +172,12 @@ test("admin shell renders article manager and programming controls", async () =>
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm --dir apps/web test -- admin-shell article-manager programming-controls`
 Expected: FAIL because the new admin surfaces are missing.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Render:
 
@@ -184,12 +186,12 @@ Render:
 - programming controls
 - existing review and autonomy sections with the new data contract
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm --dir apps/web test -- admin-shell article-manager programming-controls`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/web/app/admin/page.tsx apps/web/components/admin/admin-shell.tsx apps/web/components/admin/article-manager.tsx apps/web/components/admin/programming-controls.tsx apps/web/lib/api.ts apps/web/lib/types.ts apps/web/tests/article-manager.test.mjs apps/web/tests/programming-controls.test.mjs apps/web/tests/admin-shell.test.mjs
@@ -206,19 +208,19 @@ git commit -m "feat: close owner admin surface"
 - Modify: `apps/api/core/operator/schemas.py`
 - Create: `apps/api/tests/test_operator_bridge.py`
 
-- [ ] **Step 1: Write the failing bridge read tests**
+- [x] **Step 1: Write the failing bridge read tests**
 
 ```python
 def test_internal_bridge_can_read_corewire_status_summary():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest apps/api/tests/test_operator_bridge.py -k read -v`
 Expected: FAIL because bridge read endpoints do not exist.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add internal read endpoints for:
 
@@ -229,12 +231,12 @@ Add internal read endpoints for:
 
 All protected by `x-internal-token`.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest apps/api/tests/test_operator_bridge.py -k read -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/core/operator/bridge.py apps/api/core/operator/router.py apps/api/core/operator/schemas.py apps/api/tests/test_operator_bridge.py
@@ -249,19 +251,19 @@ git commit -m "feat: add paperclip bridge read endpoints"
 - Modify: `apps/api/tests/test_operator_api.py`
 - Modify: `apps/api/tests/test_operator_service.py`
 
-- [ ] **Step 1: Write the failing command enrichment tests**
+- [x] **Step 1: Write the failing command enrichment tests**
 
 ```python
 def test_operator_command_preserves_paperclip_correlation_metadata():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest apps/api/tests/test_operator_api.py apps/api/tests/test_operator_service.py -k correlation -v`
 Expected: FAIL because correlation metadata and optional external draft import are incomplete.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Extend command handling so it preserves:
 
@@ -277,12 +279,12 @@ And optionally supports:
 
 that creates a CoreWire draft from a Paperclip-provided body without bypassing review and compliance rules.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest apps/api/tests/test_operator_api.py apps/api/tests/test_operator_service.py -k correlation -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/core/operator/service.py apps/api/core/operator/schemas.py apps/api/tests/test_operator_api.py apps/api/tests/test_operator_service.py
@@ -296,19 +298,19 @@ git commit -m "feat: preserve paperclip bridge metadata"
 - Create: `docs/runbooks/paperclip-http-adapter.md`
 - Modify: `tests/integration/test_operator_docs.py`
 
-- [ ] **Step 1: Write the failing docs test**
+- [x] **Step 1: Write the failing docs test**
 
 ```python
 def test_paperclip_bridge_docs_cover_read_endpoints_http_adapter_and_auth():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/integration/test_operator_docs.py -v`
 Expected: FAIL because the bridge docs do not yet describe the V1 read path and adapter setup.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Document:
 
@@ -320,12 +322,12 @@ Document:
 - correlation fields
 - staging smoke flow
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/integration/test_operator_docs.py -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/ops/paperclip-bridge.md docs/runbooks/paperclip-http-adapter.md tests/integration/test_operator_docs.py
@@ -340,19 +342,19 @@ git commit -m "docs: finalize paperclip bridge v1 contract"
 - Modify: `docs/ops/staging-rehearsal.md`
 - Create: `tests/integration/test_admin_bridge_contract.py`
 
-- [ ] **Step 1: Write the failing integration contract test**
+- [x] **Step 1: Write the failing integration contract test**
 
 ```python
 def test_staging_rehearsal_covers_owner_admin_and_paperclip_bridge_v1():
     ...
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/integration/test_admin_bridge_contract.py -v`
 Expected: FAIL because the combined rehearsal contract is not yet documented.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Document and verify:
 
@@ -362,12 +364,12 @@ Document and verify:
 - bridge command checks
 - expected staging smoke order
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/integration/test_admin_bridge_contract.py tests/integration/test_operator_docs.py -v`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/ops/staging-rehearsal.md tests/integration/test_admin_bridge_contract.py
@@ -381,6 +383,18 @@ git commit -m "docs: add admin and paperclip bridge staging rehearsal"
 - `pnpm --dir apps/web test -- admin-shell article-manager programming-controls`
 - `docker compose -f infra/docker/docker-compose.prod.yml config`
 
-## Handoff
+## Completion Record
 
-Plan complete and saved to `docs/superpowers/plans/2026-04-09-corewire-admin-paperclip-bridge-implementation.md`. Ready to execute?
+**Completed:** 2026-04-11  
+**Merge commit:** `3c1b09a` on `master`  
+**Staging verified:** `213.202.216.222`
+
+All tasks passed verification:
+
+- 113 API tests pass on master
+- 3 integration tests pass (`test_operator_docs`, `test_admin_bridge_contract`)
+- All 4 bridge read endpoints live and responding
+- `import_external_draft` command with full correlation echo confirmed on staging
+- `master` pushed to `origin`, staging redeployed from master
+
+**Next canonical document:** `docs/runbooks/2026-04-11-project-checkpoint.md`
