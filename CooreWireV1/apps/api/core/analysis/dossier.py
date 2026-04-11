@@ -98,6 +98,39 @@ def _build_hard_questions(obscured_questions: list[str], unknowns: list[str]) ->
     return hard_questions
 
 
+def _build_lead_insight_candidates(
+    *,
+    core_contradictions: list[str],
+    why_now_signals: list[str],
+    hidden_incentives: list[str],
+    buried_consequences: list[str],
+) -> list[str]:
+    candidates: list[str] = []
+
+    for text in core_contradictions[:2]:
+        normalized = _normalize_text(text)
+        if normalized and normalized not in candidates:
+            candidates.append(normalized)
+
+    if why_now_signals and hidden_incentives:
+        candidate = (
+            f"The real contest is now being shaped by {why_now_signals[0].rstrip('. ')} "
+            f"while {hidden_incentives[0].rstrip('. ')}."
+        )
+        if candidate not in candidates:
+            candidates.append(candidate)
+
+    if buried_consequences and hidden_incentives:
+        candidate = (
+            f"What looks like a visible operational crisis is becoming a deeper struggle because "
+            f"{buried_consequences[0].rstrip('. ')} while {hidden_incentives[0].rstrip('. ')}."
+        )
+        if candidate not in candidates:
+            candidates.append(candidate)
+
+    return candidates
+
+
 def build_research_dossier(candidate: dict) -> dict:
     verified_facts = []
     summary = _normalize_text(candidate.get("summary"))
@@ -150,6 +183,12 @@ def build_research_dossier(candidate: dict) -> dict:
     why_now_signals = _build_why_now_signals(timing_pressures)
     buried_consequences = _build_buried_consequences(stakes)
     hard_questions = _build_hard_questions(obscured_questions, unknowns)
+    lead_insight_candidates = _build_lead_insight_candidates(
+        core_contradictions=core_contradictions,
+        why_now_signals=why_now_signals,
+        hidden_incentives=hidden_incentives,
+        buried_consequences=buried_consequences,
+    )
 
     return {
         "topic": candidate.get("title", ""),
@@ -169,4 +208,5 @@ def build_research_dossier(candidate: dict) -> dict:
         "why_now_signals": why_now_signals,
         "buried_consequences": buried_consequences,
         "hard_questions": hard_questions,
+        "lead_insight_candidates": lead_insight_candidates,
     }

@@ -3,6 +3,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from core.analysis.doctrine import validate_analysis_doctrine
 from core.analysis.extraction import extract_analysis_sections
 from core.analysis.writer import generate_flagship_analysis
 
@@ -96,7 +97,7 @@ def test_generate_flagship_analysis_avoids_source_title_leakage_and_groups_next_
     assert "; it currently benefits from" not in article["full_article"]
     assert "Washington's next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
     assert "Israel's next move is likely to be to increase military and diplomatic pressure." in article["full_article"]
-    assert "That tension makes the next phase easier to sketch than to control." in article["full_article"]
+    assert "From there, the pressure moves along a few familiar tracks." in article["full_article"]
 
 
 def test_generate_flagship_analysis_uses_more_editorial_voice_and_closing_cadence():
@@ -262,7 +263,7 @@ def test_generate_flagship_analysis_uses_composed_hidden_layer_and_next_phase_tr
         "What matters more is the pressure building beneath the public case."
         in article["full_article"]
     )
-    assert "That tension makes the next phase easier to sketch than to control." in article["full_article"]
+    assert "From there, the pressure moves along a few familiar tracks." in article["full_article"]
     assert "The next phase is likely to follow a few predictable tracks." not in article["full_article"]
 
 
@@ -363,14 +364,184 @@ def test_generate_flagship_analysis_surfaces_core_contradiction_and_sharper_why_
         "The crisis is escalating because the real contest is no longer just military.",
     )
 
-    assert "What matters more than the public case is the contradiction underneath it." in article["full_article"]
+    assert "That is where the public case starts to fray." in article["full_article"]
     assert (
         "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether Washington can force concessions without splitting the coalition that has to bear the cost."
         in article["full_article"]
     )
-    assert "The timing is not incidental." in article["full_article"]
+    assert "The timing matters because Washington is racing against fuel-price pressure and allied reluctance." in article["full_article"]
     assert "Washington is racing against fuel-price pressure and allied reluctance." in article["full_article"]
     assert "The timing matters because the pressure is no longer moving at the same speed for every side." not in article["full_article"]
+
+
+def test_generate_flagship_analysis_centers_one_lead_insight_and_visible_frame():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Washington says pressure is needed."],
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "lead_insight_candidates": [
+                "What looks like a fight over reopening shipping is becoming a fight over whether Washington can force concessions before coalition discipline breaks."
+            ],
+            "core_contradictions": [
+                "The public case is about reopening shipping, but the deeper fight is over whether Washington can keep its coalition aligned while forcing concessions."
+            ],
+            "why_now_signals": [
+                "Washington is racing against fuel-price pressure and allied reluctance."
+            ],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition, not at sea."
+            ],
+            "hard_questions": [
+                "Whether coalition discipline can hold."
+            ],
+            "unknowns": ["Whether coalition discipline can hold."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    assert article["full_article"].startswith(
+        "What looks like a fight over reopening shipping is becoming a fight over whether Washington can force concessions before coalition discipline breaks."
+    )
+    assert "The visible frame is simpler: reopening shipping and restoring deterrence." in article["full_article"]
+    assert "Placeholder thesis" not in article["full_article"]
+
+
+def test_generate_flagship_analysis_opens_with_editorial_lead_not_engine_thesis():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": [],
+            "public_narrative": "reopening the Strait of Hormuz",
+            "sources": [],
+        },
+        [],
+        "Hormuz crisis is escalating because the real contest is coalition endurance.",
+    )
+
+    opening = article["full_article"].split("\n\n")[0]
+
+    assert "is escalating because" not in opening
+    assert opening.startswith("The real danger") or opening.startswith("What looks like")
+
+
+def test_generate_flagship_analysis_uses_editorial_proof_paragraphs_not_actor_profiles():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force concessions",
+                "currently_pressures": ["allied reluctance"],
+            },
+            {
+                "name": "Iran",
+                "goal": "raise costs",
+                "currently_benefits": ["maritime leverage"],
+            },
+        ],
+        "Placeholder thesis",
+    )
+
+    assert "Washington is trying to" not in article["full_article"]
+    assert "Iran is trying to" not in article["full_article"]
+    assert "The next problem is" in article["full_article"] or "The pressure is most visible" in article["full_article"]
+
+
+def test_generate_flagship_analysis_keeps_editorial_proof_paragraph_grammar_natural():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions",
+                "currently_pressures": ["allied reluctance"],
+            },
+            {
+                "name": "Iran",
+                "goal": "raise costs",
+                "currently_benefits": ["maritime leverage"],
+            },
+            {
+                "name": "Bahrain and Gulf states",
+                "goal": "restore shipping security without a blank-check war mandate",
+                "currently_pressures": ["infrastructure exposure"],
+            },
+        ],
+        "Placeholder thesis",
+    )
+
+    assert "needs room for forcing" not in article["full_article"]
+    assert "wants raising" not in article["full_article"]
+    assert "wants restoring" not in article["full_article"]
+    assert "needs room to force strategic concessions" in article["full_article"]
+    assert "Iran, meanwhile, still has room to raise costs." in article["full_article"]
+
+
+def test_generate_flagship_analysis_uses_non_modular_editorial_transitions():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "buried_consequences": ["The first fracture may appear inside the coalition."],
+            "hard_questions": ["Whether Washington can keep allies aligned."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    assert "What matters more than the public case" not in article["full_article"]
+    assert "That tension makes the next phase easier to sketch than to control." not in article["full_article"]
+    assert "That is where the public case starts to fray." in article["full_article"] or "From there, the pressure moves" in article["full_article"]
+
+
+def test_generate_flagship_analysis_ends_with_editorial_close_not_summary_loop():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "lead_insight_candidates": ["The real contest is coalition endurance."],
+            "hard_questions": ["Whether Washington can keep allies aligned."],
+            "buried_consequences": ["The first fracture may appear inside the coalition."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    ending = article["full_article"].split("\n\n")[-1]
+
+    assert "The hardest pressure point is now becoming unavoidable." not in ending
+    assert "If that pressure keeps building, the hardest question is no longer abstract." not in ending
+    assert "Until that pressure breaks" in ending or "The risk is that" in ending
 
 
 def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
@@ -395,9 +566,153 @@ def test_generate_flagship_analysis_adds_buried_consequence_and_hard_ending():
     assert "The buried consequence is easier to miss than the headline event." in article["full_article"]
     assert "The first real fracture may appear inside the coalition, not at sea." in article["full_article"]
     assert "The hardest questions are still open." not in article["full_article"]
-    assert "The hardest pressure point is now becoming unavoidable." in article["full_article"]
+    assert "The risk is that the pressure will break the political frame before it resolves the conflict itself." in article["full_article"]
     assert "Whether Washington can keep pressure rising without forcing allies to pull back." in article["full_article"]
     assert "The article should end under pressure, not with a neutral recap." not in article["full_article"]
+
+
+def test_generate_flagship_analysis_uses_proof_stack_not_symmetric_actor_blocks():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": ["Washington says stronger pressure is needed."],
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "lead_insight_candidates": [
+                "The real contest is coalition endurance, not only military pressure."
+            ],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "why_now_signals": ["Washington is racing against allied reluctance."],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition."
+            ],
+            "hard_questions": [
+                "Whether Washington can keep pressure rising without losing allies."
+            ],
+            "unknowns": ["Whether Washington can keep pressure rising without losing allies."],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force concessions",
+                "likely_next_move": "increase pressure",
+                "currently_pressures": ["allied reluctance"],
+            },
+            {
+                "name": "Iran",
+                "goal": "raise global costs",
+                "likely_next_move": "maintain maritime pressure",
+                "currently_benefits": ["maritime leverage"],
+            },
+        ],
+        "Placeholder thesis",
+    )
+
+    assert "Three pressures make that insight hard to ignore." in article["full_article"]
+    assert "The strategic problem now looks different for each actor." not in article["full_article"]
+
+
+def test_generate_flagship_analysis_ties_consequence_and_ending_to_lead_insight():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz crisis",
+            "verified_facts": ["Shipping disruption is spreading."],
+            "claims": [],
+            "public_narrative": "reopening shipping and restoring deterrence",
+            "lead_insight_candidates": [
+                "The real contest is coalition endurance, not only military pressure."
+            ],
+            "core_contradictions": [
+                "The public case is about shipping, but the deeper fight is coalition endurance."
+            ],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition, not at sea."
+            ],
+            "hard_questions": [
+                "Whether Washington can keep pressure rising without forcing allies to pull back."
+            ],
+            "unknowns": ["Whether Washington can keep pressure rising without forcing allies to pull back."],
+            "sources": [],
+        },
+        [],
+        "Placeholder thesis",
+    )
+
+    assert "If that insight is right, the first real fracture will not be military." in article["full_article"]
+    assert "The risk is that the next break in the crisis will be political before it is military." in article["full_article"]
+
+
+def test_generate_flagship_analysis_emits_doctrine_shaped_lead_why_and_consequence_layers():
+    article = generate_flagship_analysis(
+        {
+            "topic": "Hormuz is becoming a coalition test before it becomes a wider war",
+            "verified_facts": [
+                "By April 5, 2026, the war around Iran had become less a question of whether Washington could threaten Tehran harder than whether it could keep allies aligned while the cost of reopening the Strait of Hormuz kept climbing.",
+                "Trump threatened on April 5 to hit Iranian infrastructure if Tehran did not reopen the Strait of Hormuz by his deadline.",
+            ],
+            "claims": [
+                "Washington says stronger pressure is needed to reopen shipping and restore deterrence.",
+                "Bahrain says defensive action can protect shipping but rejects an open-ended offensive mandate.",
+            ],
+            "lead_insight_candidates": [
+                "The public case is about reopening the Strait of Hormuz and restoring deterrence, but the deeper fight is over whether forcing Iran into concessions without letting coalition discipline collapse under the cost of a longer war can be achieved without splitting the coalition that has to bear the cost."
+            ],
+            "public_narrative": "reopening the Strait of Hormuz and restoring deterrence",
+            "core_contradictions": [
+                "The public case is about reopening the Strait of Hormuz and restoring deterrence, but the deeper fight is over whether forcing Iran into concessions without letting coalition discipline collapse under the cost of a longer war can be achieved without splitting the coalition that has to bear the cost."
+            ],
+            "why_now_signals": [
+                "Washington is racing against rising fuel pressure and allied reluctance to underwrite a blank-check mission.",
+            ],
+            "hidden_incentives": [
+                "Several Gulf capitals want American protection without owning the next escalatory step.",
+            ],
+            "buried_consequences": [
+                "The first real fracture may appear inside the coalition financing and legitimising pressure on Iran, not in the waterway itself.",
+            ],
+            "hard_questions": [
+                "Whether Washington can threaten harder without forcing allies to distance themselves from the campaign.",
+            ],
+            "hidden_layers": [
+                "The public argument centers on reopening the Strait of Hormuz and restoring deterrence, but the deeper objective is forcing Iran into concessions without letting coalition discipline collapse under the cost of a longer war.",
+                "Several Gulf capitals want American protection without owning the next escalatory step.",
+            ],
+            "stakes": [
+                "The first real rupture may appear inside the coalition financing and legitimising pressure on Iran, not in the waterway itself.",
+            ],
+            "unknowns": [
+                "Whether the first decisive crack in this crisis will appear inside the coalition before it appears at sea.",
+            ],
+            "sources": [],
+        },
+        [
+            {
+                "name": "United States",
+                "goal": "force strategic concessions from Iran before coalition discipline frays",
+                "currently_pressures": ["allied reluctance", "rising domestic fuel costs"],
+                "likely_next_move": "increase military and diplomatic pressure",
+            },
+            {
+                "name": "Iran",
+                "goal": "raise the global cost of the war faster than its adversaries can turn pressure into surrender",
+                "currently_benefits": ["maritime leverage"],
+                "likely_next_move": "keep using maritime pressure to raise costs",
+            },
+        ],
+        "Hormuz is becoming a coalition test before it becomes a wider war is escalating because the real contest is now between the U.S. drive to force strategic concessions from Iran before coalition discipline frays and Iran's effort to raise the global cost of the war faster than its adversaries can turn pressure into surrender.",
+    )
+
+    doctrine = validate_analysis_doctrine(article)
+
+    assert "What looks like" in article["full_article"]
+    assert "The timing matters because" in article["full_article"]
+    assert "The first real fracture may appear" in article["full_article"]
+    assert "missing_why" not in doctrine["violations"]
+    assert "weak_lead_insight" not in doctrine["violations"]
+    assert "weak_buried_consequence" not in doctrine["violations"]
 
 
 def test_generate_flagship_analysis_uses_plural_verbs_for_compound_actor_names():

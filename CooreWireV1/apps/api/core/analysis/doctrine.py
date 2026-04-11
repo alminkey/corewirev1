@@ -43,6 +43,18 @@ HARD_ENDING_MARKERS = (
     "until that pressure breaks",
     "pressure point is now becoming unavoidable",
 )
+LEAD_INSIGHT_MARKERS = (
+    "what looks like",
+    "real contest is",
+    "visible conflict masks",
+    "no longer mainly about",
+)
+PROOF_STACK_MARKERS = (
+    "three pressures make that insight hard to ignore",
+)
+SYMMETRIC_ACTOR_MARKERS = (
+    "the strategic problem now looks different for each actor",
+)
 
 
 def _has_meaningful_actor_map(actor_map: list[dict]) -> bool:
@@ -89,6 +101,7 @@ def validate_analysis_doctrine(article: dict) -> dict:
     body = str(article.get("body") or article.get("full_article") or "")
     thesis = str(article.get("thesis") or "")
     body_lower = body.lower()
+    lead_slice = body_lower[:350]
     thesis_lower = thesis.lower()
     violations = []
 
@@ -128,6 +141,15 @@ def validate_analysis_doctrine(article: dict) -> dict:
 
     if not _contains_any_marker(body, HARD_ENDING_MARKERS):
         violations.append("weak_hard_ending")
+
+    if not _contains_any_marker(lead_slice, LEAD_INSIGHT_MARKERS):
+        violations.append("weak_lead_insight")
+
+    if not _contains_any_marker(body, PROOF_STACK_MARKERS):
+        violations.append("weak_proof_stack")
+
+    if _contains_any_marker(body, SYMMETRIC_ACTOR_MARKERS):
+        violations.append("symmetric_actor_middle")
 
     if any(marker in body_lower for marker in GENERIC_LANGUAGE_MARKERS):
         violations.append("generic_analysis_language")

@@ -131,6 +131,99 @@ def _build_lead_paragraph(topic_subject: str, facts: list[str]) -> str:
     return lead
 
 
+def _select_lead_insight(dossier: dict, thesis: str) -> str:
+    candidates = _clean_lines(dossier.get("lead_insight_candidates", []))
+    if candidates:
+        first = candidates[0]
+        public_narrative = str(dossier.get("public_narrative") or "").strip()
+        if first.startswith("The public case is about ") and ", but the deeper fight is over whether " in first:
+            visible_frame, deeper_fight = first.split(", but the deeper fight is over whether ", maxsplit=1)
+            visible_frame = visible_frame.removeprefix("The public case is about ").strip().rstrip(".")
+            deeper_fight = deeper_fight.strip().rstrip(".")
+            if visible_frame and deeper_fight:
+                return (
+                    f"What looks like {visible_frame} is becoming a fight over whether {deeper_fight}."
+                )
+        if public_narrative and first.lower().startswith(public_narrative.lower()):
+            return f"What looks like {public_narrative.rstrip('. ')} is becoming {first.rstrip('. ')}."
+        return first
+    return thesis
+
+
+def _build_editorial_lead(lead_insight: str, thesis: str) -> str:
+    text = str(lead_insight or thesis or "").strip()
+    if not text:
+        return ""
+
+    lowered = text.lower()
+    if lowered.startswith(
+        (
+            "what looks like",
+            "the real danger",
+            "the war is already",
+            "the confrontation is exposing",
+        )
+    ):
+        return text
+
+    contest_marker = "the real contest is"
+    if contest_marker in lowered:
+        index = lowered.index(contest_marker)
+        contest = text[index:].strip().rstrip(".")
+        if contest.lower().startswith("the real contest is no longer just "):
+            return (
+                "The real danger is not the latest exchange. The contest is "
+                + contest[len("The real contest is ") :].rstrip(".")
+                + "."
+            )
+        if contest.lower().startswith("the real contest is now between "):
+            return (
+                "What looks like escalation is becoming a contest between "
+                + contest[len("The real contest is now between ") :].rstrip(".")
+                + "."
+            )
+        if contest.lower().startswith("the real contest is "):
+            return (
+                "What looks like escalation is becoming a test of "
+                + contest[len("The real contest is ") :].rstrip(".")
+                + "."
+            )
+
+    because_marker = " because "
+    if because_marker in lowered:
+        _, reason = text.split("because", 1)
+        reason = reason.strip().rstrip(".")
+        reason_lower = reason.lower()
+        if reason_lower.startswith("the real contest is no longer just "):
+            return (
+                "The real danger is not the latest exchange. The contest is "
+                + reason[len("the real contest is ") :].rstrip(".")
+                + "."
+            )
+        if reason_lower.startswith("the real contest is now between "):
+            return (
+                "What looks like escalation is becoming a contest between "
+                + reason[len("the real contest is now between ") :].rstrip(".")
+                + "."
+            )
+        if reason_lower.startswith("the real contest is "):
+            return (
+                "What looks like escalation is becoming a test of "
+                + reason[len("the real contest is ") :].rstrip(".")
+                + "."
+            )
+        return f"The real danger is not the latest exchange. It is {reason}."
+
+    return text
+
+
+def _build_suppressed_alternative_paragraph(dossier: dict) -> str:
+    public_narrative = str(dossier.get("public_narrative") or "").strip()
+    if public_narrative:
+        return f"The visible frame is simpler: {public_narrative.rstrip('. ')}."
+    return ""
+
+
 def _build_obscured_layer(dossier: dict, actor_map: list[dict]) -> list[str]:
     hidden_layers = _clean_lines(dossier.get("hidden_layers", []))
     if hidden_layers:
@@ -174,7 +267,7 @@ def _build_contradiction_paragraph(dossier: dict) -> str:
 
     return " ".join(
         [
-            "What matters more than the public case is the contradiction underneath it.",
+            "That is where the public case starts to fray.",
             *contradictions[:2],
         ]
     )
@@ -188,8 +281,9 @@ def _build_timing_paragraph(dossier: dict) -> str:
         return ""
 
     if why_now_signals:
-        parts = ["The timing is not incidental."]
-        parts.extend(why_now_signals[:2])
+        first_signal, *remaining = why_now_signals
+        parts = [f"The timing matters because {first_signal.rstrip('. ')}."]
+        parts.extend(remaining[:1])
     else:
         parts = [
             "The timing matters because the pressure is no longer moving at the same speed for every side."
@@ -369,9 +463,111 @@ def _build_actor_paragraphs(actor_map: list[dict]) -> list[str]:
     return paragraphs
 
 
-def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
+def _build_proof_stack_paragraphs(dossier: dict, actor_map: list[dict]) -> list[str]:
+    lead_insight_candidates = _clean_lines(dossier.get("lead_insight_candidates", []))
+    if not lead_insight_candidates:
+        return []
+
+    facts = _clean_lines(dossier.get("verified_facts", []))
+    contradictions = _clean_lines(dossier.get("core_contradictions", []))
+    why_now_signals = _clean_lines(dossier.get("why_now_signals", []))
+    proof_lines: list[str] = []
+
+    if facts:
+        proof_lines.append(facts[0])
+    if contradictions:
+        proof_lines.append(contradictions[0])
+    if why_now_signals:
+        proof_lines.append(why_now_signals[0])
+
+    for actor in actor_map:
+        if not isinstance(actor, dict):
+            continue
+        name = str(actor.get("name") or "").strip()
+        pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
+        benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
+        if name and pressures:
+            proof_lines.append(f"{_actor_display_name(name)} is already under pressure from {_join_phrases(pressures)}.")
+            break
+        if name and benefits:
+            proof_lines.append(f"{_actor_display_name(name)} is still benefiting from {_join_phrases(benefits)}.")
+            break
+
+    if not proof_lines:
+        return []
+
+    return [
+        "Three pressures make that insight hard to ignore.",
+        " ".join(proof_lines[:3]),
+    ]
+
+
+def _build_editorial_proof_paragraphs(actor_map: list[dict]) -> list[str]:
+    normalized = [
+        actor
+        for actor in actor_map
+        if isinstance(actor, dict) and str(actor.get("name") or "").strip()
+    ]
+    if len(normalized) < 2:
+        return []
+
+    first = normalized[0]
+    second = normalized[1]
+    first_name = _actor_display_name(str(first.get("name") or "").strip())
+    second_name = _actor_display_name(str(second.get("name") or "").strip())
+    first_goal = str(first.get("goal") or "").strip()
+    second_goal = str(second.get("goal") or "").strip()
+    first_pressures = [str(item).strip() for item in (first.get("currently_pressures") or []) if str(item).strip()]
+    second_benefits = [str(item).strip() for item in (second.get("currently_benefits") or []) if str(item).strip()]
+
+    first_parts = ["The pressure is most visible where coalition discipline starts colliding with the other side's leverage."]
+    if first_goal:
+        first_parts.append(f"{first_name} still needs room to {first_goal}.")
+    if first_pressures:
+        first_parts.append(f"Instead, it is already carrying {_join_phrases(first_pressures)}.")
+    if second_goal:
+        first_parts.append(f"{second_name}, meanwhile, still has room to {second_goal}.")
+    if second_benefits:
+        first_parts.append(f"That is easiest to see in {_join_phrases(second_benefits)}.")
+
+    remaining = normalized[2:]
+    if not remaining:
+        return [" ".join(first_parts)]
+
+    second_parts = ["The next problem is not only military reach but political ownership of the next step."]
+    for actor in remaining[:3]:
+        name = _actor_display_name(str(actor.get("name") or "").strip())
+        goal = str(actor.get("goal") or "").strip()
+        pressures = [str(item).strip() for item in (actor.get("currently_pressures") or []) if str(item).strip()]
+        benefits = [str(item).strip() for item in (actor.get("currently_benefits") or []) if str(item).strip()]
+        if goal:
+            verb = "want" if _is_plural_subject(str(actor.get("name") or "").strip()) else "wants"
+            second_parts.append(f"{name} {verb} to {goal}.")
+        if pressures:
+            second_parts.append(f"It is constrained by {_join_phrases(pressures)}.")
+        elif benefits:
+            second_parts.append(f"It is still benefiting from {_join_phrases(benefits)}.")
+
+    return [" ".join(first_parts), " ".join(second_parts)]
+
+
+def _build_consequence_paragraph(dossier: dict, actor_map: list[dict], lead_insight: str) -> str:
     buried_consequences = _clean_lines(dossier.get("buried_consequences", []))
     if buried_consequences:
+        if lead_insight and _clean_lines(dossier.get("lead_insight_candidates", [])):
+            consequence_lines = buried_consequences[:2]
+            consequence_text = " ".join(consequence_lines)
+            if "first real fracture" not in consequence_text.lower():
+                consequence_lines = [
+                    "The first real fracture may appear before the military balance shifts.",
+                    *consequence_lines,
+                ]
+            return " ".join(
+                [
+                    "If that insight is right, the first real fracture will not be military.",
+                    *consequence_lines,
+                ]
+            )
         return " ".join(
             [
                 "The buried consequence is easier to miss than the headline event.",
@@ -417,14 +613,23 @@ def _build_consequence_paragraph(dossier: dict, actor_map: list[dict]) -> str:
     return " ".join(parts)
 
 
-def _build_hard_ending_paragraph(dossier: dict) -> str:
+def _build_hard_ending_paragraph(dossier: dict, lead_insight: str) -> str:
     hard_questions = _clean_lines(dossier.get("hard_questions", []))
     if not hard_questions:
         return ""
 
+    if lead_insight and _clean_lines(dossier.get("lead_insight_candidates", [])):
+        return " ".join(
+            [
+                "The risk is that the next break in the crisis will be political before it is military.",
+                *hard_questions[:2],
+                "Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain.",
+            ]
+        )
+
     return " ".join(
         [
-            "The hardest pressure point is now becoming unavoidable.",
+            "The risk is that the pressure will break the political frame before it resolves the conflict itself.",
             *hard_questions[:2],
             "Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain.",
         ]
@@ -437,7 +642,7 @@ def _build_next_phase_paragraph(next_moves: list[str]) -> str:
         return ""
     return " ".join(
         [
-            "That tension makes the next phase easier to sketch than to control.",
+            "From there, the pressure moves along a few familiar tracks.",
             *clean_moves,
         ]
     )
@@ -469,15 +674,24 @@ def generate_flagship_analysis(
     unknowns = _clean_lines(dossier.get("unknowns", []))
     obscured_layer = _build_obscured_layer(dossier, actor_map)
     next_moves = _build_next_moves(actor_map)
-    actor_paragraphs = _build_actor_paragraphs(actor_map)
+    lead_insight = _select_lead_insight(dossier, thesis)
+    editorial_lead = _build_editorial_lead(lead_insight, thesis)
+    suppressed_alternative = _build_suppressed_alternative_paragraph(dossier)
+    proof_stack_paragraphs = _build_proof_stack_paragraphs(dossier, actor_map)
+    actor_paragraphs = (
+        _build_editorial_proof_paragraphs(actor_map)
+        if proof_stack_paragraphs
+        else _build_actor_paragraphs(actor_map)
+    )
     contradiction_paragraph = _build_contradiction_paragraph(dossier)
     timing_paragraph = _build_timing_paragraph(dossier)
-    consequence_paragraph = _build_consequence_paragraph(dossier, actor_map)
-    hard_ending_paragraph = _build_hard_ending_paragraph(dossier)
+    consequence_paragraph = _build_consequence_paragraph(dossier, actor_map, lead_insight)
+    hard_ending_paragraph = _build_hard_ending_paragraph(dossier, lead_insight)
 
     body_parts = [
-        thesis,
+        editorial_lead,
         _build_lead_paragraph(topic_subject, facts),
+        suppressed_alternative,
         (
             f"The public case for the confrontation is straightforward. {' '.join(claims[:2])}"
             if claims
@@ -486,13 +700,15 @@ def generate_flagship_analysis(
         " ".join(stakes) if stakes else "",
         contradiction_paragraph,
         timing_paragraph,
+        *proof_stack_paragraphs,
         *actor_paragraphs,
         *obscured_layer,
         consequence_paragraph,
         _build_next_phase_paragraph(next_moves),
-        hard_ending_paragraph or _build_unknowns_paragraph(unknowns),
     ]
-    body = "\n\n".join(part for part in body_parts if part).strip()
+    closing_paragraph = hard_ending_paragraph or _build_unknowns_paragraph(unknowns)
+    content_parts = [part for part in body_parts if part]
+    body = "\n\n".join([*content_parts, closing_paragraph] if closing_paragraph else content_parts).strip()
 
     filler_sentences = [
         f"That is why {topic.lower()} is becoming a contest over endurance, cost absorption, and political will rather than a story that can be measured only in battlefield damage.",
@@ -501,12 +717,8 @@ def generate_flagship_analysis(
     ]
     filler_index = 0
     while len(body) < 1400:
-        body = "\n\n".join(
-            [
-                body,
-                filler_sentences[filler_index % len(filler_sentences)],
-            ]
-        )
+        content_parts.append(filler_sentences[filler_index % len(filler_sentences)])
+        body = "\n\n".join([*content_parts, closing_paragraph] if closing_paragraph else content_parts).strip()
         filler_index += 1
 
     return {

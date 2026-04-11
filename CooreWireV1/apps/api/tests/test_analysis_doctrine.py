@@ -42,15 +42,15 @@ def test_analysis_doctrine_passes_strong_analysis_payload():
     article = {
         "thesis": "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
         "full_article": (
-            "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure. "
+            "What looks like a fight over reopening shipping is becoming a fight over whether coalition governments can keep pressure high without breaking their own tolerance for energy shock. "
+            "At its core, the Hormuz crisis is no longer just about the latest exchange. "
+            "The visible frame is simpler: reopening shipping and restoring deterrence. "
             "What matters more than the public case is the contradiction underneath it. "
             "The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether coalition governments can keep maritime pressure high without breaking their own political tolerance for an energy shock. "
-            "The timing is not incidental. Washington is racing against fuel pressure and allied drift. "
-            "The buried consequence is easier to miss than the headline event. The first real fracture may appear inside the coalition, not at sea. "
-            "Washington is trying to preserve coercive leverage while Gulf partners narrow the mandate and hedge against infrastructure risk. "
-            "Iran is trying to make shipping and insurance costs rise faster than its adversaries can turn military pressure into surrender. "
-            "That is why the conflict now matters beyond the battlefield and why the next phase is likely to be shaped by maritime pressure, coalition drift, and energy-market nerves. "
-            "The hardest pressure point is now becoming unavoidable. Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain. "
+            "The timing is not incidental because Washington is racing against fuel pressure and allied drift. "
+            "Three pressures make that insight hard to ignore. Shipping disruption is spreading across Gulf routes. The public case is about reopening shipping and restoring deterrence, but the deeper fight is over whether coalition governments can keep maritime pressure high without breaking their own political tolerance for an energy shock. Washington is already under pressure from fuel costs and allied drift. "
+            "If that insight is right, the first real rupture will not be military. The first real fracture may appear inside the coalition, not at sea. "
+            "If that pressure keeps building, the hardest question is no longer abstract. Until that pressure breaks one side's strategy, the conflict will keep widening the costs it is supposed to contain. "
         )
         * 3,
         "actor_map": [
@@ -150,3 +150,36 @@ def test_analysis_flags_missing_flagship_insight_layers():
     assert "weak_why_now" in result["violations"]
     assert "weak_buried_consequence" in result["violations"]
     assert "weak_hard_ending" in result["violations"]
+
+
+def test_validate_analysis_doctrine_flags_missing_lead_insight_shape():
+    article = {
+        "thesis": "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure.",
+        "full_article": (
+            "Hormuz crisis is escalating because shipping leverage now collides with coercive pressure. "
+            "The public case for the confrontation is straightforward. "
+            "The strategic problem now looks different for each actor. "
+            "Washington is trying to preserve coercive leverage while allies hesitate. "
+            "Iran is trying to raise costs before pressure hardens into a settlement. "
+            "The consequences are no longer confined to the battlefield. "
+            "The hardest pressure point is now becoming unavoidable. "
+        )
+        * 10,
+        "actor_map": [
+            {"name": "Iran", "goal": "raise shipping costs", "likely_next_move": "maintain maritime pressure"},
+            {"name": "United States", "goal": "force strategic concessions", "likely_next_move": "increase deterrence"},
+        ],
+        "obscured_layer": [
+            "The public case is about reopening shipping and restoring deterrence.",
+            "Washington is trying to preserve coercive leverage while allies hesitate.",
+        ],
+        "stakes": ["Costs are rising."],
+        "next_moves": ["United States is likely to increase deterrence."],
+        "unknowns": ["It remains unclear how long coalition discipline can hold."],
+    }
+
+    result = validate_analysis_doctrine(article)
+
+    assert "weak_lead_insight" in result["violations"]
+    assert "weak_proof_stack" in result["violations"]
+    assert "symmetric_actor_middle" in result["violations"]
