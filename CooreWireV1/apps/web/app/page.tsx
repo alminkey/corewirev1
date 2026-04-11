@@ -19,7 +19,7 @@ export default async function HomePage() {
   return (
     <main className="cw-shell cw-shell--home cw-shell--light cw-editorial-shell cw-surface">
       <PublicHeader />
-      <section className="cw-grid cw-grid--public">
+      <section className="cw-grid cw-grid--public cw-platform-grid">
         <div className="cw-main">
           <HeroStory story={homepage.lead_story} />
           <StoryGrid stories={homepage.top_stories} />

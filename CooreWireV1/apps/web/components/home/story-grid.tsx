@@ -17,7 +17,7 @@ export function StoryGrid({ stories }: StoryGridProps) {
   return (
     <section className="cw-card-grid cw-card-grid--public">
       {stories.map((story, index) => (
-        <article className="cw-panel cw-card cw-card--light" key={story.slug}>
+        <article className="cw-panel cw-card cw-card--light cw-module-card" key={story.slug}>
           <a className="cw-card-link" href={`/articles/${story.slug}`}>
             <div
               className="cw-story-card-media"

@@ -13,7 +13,7 @@ export function ArticleBody({ fullArticle }: ArticleBodyProps) {
   }
 
   return (
-    <section className="cw-panel cw-panel--light">
+    <section className="cw-panel cw-panel--light cw-module-card cw-prose-shell">
       <div className="cw-panel-header">
         <span>Flagship Analysis</span>
         <span>Full Article</span>

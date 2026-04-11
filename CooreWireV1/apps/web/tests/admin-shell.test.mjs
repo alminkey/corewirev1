@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-test("renders owner admin shell with control and review sections", () => {
+test("renders admin as a product-style control plane", () => {
   const pageSource = readFileSync(resolve("app/admin/page.tsx"), "utf8");
   const shellSource = readFileSync(resolve("components/admin/admin-shell.tsx"), "utf8");
   const globalStyles = readFileSync(resolve("app/globals.css"), "utf8");
@@ -17,20 +17,28 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(pageSource, /getProgrammingSettings/);
   assert.match(pageSource, /cw-app-shell/);
   assert.match(pageSource, /cw-surface/);
+  assert.match(pageSource, /cw-control-plane/);
+  assert.match(pageSource, /cw-control-rail/);
+  assert.match(pageSource, /cw-system-chipbar/);
   assert.match(pageSource, /cw-admin-sidebar/);
   assert.match(pageSource, /cw-admin-main/);
   assert.match(pageSource, /cw-admin-utility/);
   assert.match(pageSource, /href="#drafts"/);
   assert.match(pageSource, /href="#programming"/);
   assert.match(shellSource, /Owner Workspace/i);
+  assert.match(shellSource, /cw-signal-chip/);
   assert.match(shellSource, /cw-admin-overview/);
   assert.match(shellSource, /cw-admin-stat-grid/);
+  assert.match(shellSource, /cw-workspace-module/);
   assert.match(shellSource, /admin-shell__signal/);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);
   assert.match(globalStyles, /\.cw-app-shell/);
   assert.match(globalStyles, /\.cw-surface/);
   assert.match(globalStyles, /\.cw-shell--light/);
+  assert.match(globalStyles, /\.cw-control-plane/);
+  assert.match(globalStyles, /\.cw-control-rail/);
+  assert.match(globalStyles, /\.cw-system-chipbar/);
   assert.match(globalStyles, /\.cw-admin-sidebar/);
   assert.match(globalStyles, /\.cw-admin-main/);
   assert.match(globalStyles, /\.cw-admin-utility/);

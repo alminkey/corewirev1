@@ -9,7 +9,7 @@ type IntelligenceRailProps = {
 export function IntelligenceRail({ entries }: IntelligenceRailProps) {
   return (
     <aside className="cw-rail cw-rail--light">
-      <div className="cw-rail-stack">
+      <div className="cw-rail-stack cw-live-desk">
         <section className="cw-panel cw-panel--light">
           <div className="cw-panel-header">
             <span>Latest Dispatch</span>
@@ -21,6 +21,22 @@ export function IntelligenceRail({ entries }: IntelligenceRailProps) {
                 <a className="cw-rail-link" href={`/articles/${entry.slug}`}>
                   <h3>{entry.headline}</h3>
                   <p>{entry.dek}</p>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+        <section className="cw-panel cw-panel--light cw-signal-feed">
+          <div className="cw-panel-header">
+            <span>Signal Feed</span>
+            <span>Realtime</span>
+          </div>
+          <div className="cw-rail-list">
+            {entries.slice(0, 3).map((entry, index) => (
+              <article className="cw-rail-item cw-rail-item--light" key={`${entry.slug}-signal-${index}`}>
+                <a className="cw-rail-link" href={`/articles/${entry.slug}`}>
+                  <p className="cw-kicker">Signal {index + 1}</p>
+                  <h3>{entry.headline}</h3>
                 </a>
               </article>
             ))}

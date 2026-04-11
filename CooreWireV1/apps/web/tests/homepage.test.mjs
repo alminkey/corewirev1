@@ -3,27 +3,44 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-test("renders clickable public homepage sections with light editorial header", () => {
+test("renders homepage as a media-tech platform surface", () => {
   const pageSource = readFileSync(resolve("app/page.tsx"), "utf8");
   const heroSource = readFileSync(resolve("components/home/hero-story.tsx"), "utf8");
   const railSource = readFileSync(resolve("components/home/intelligence-rail.tsx"), "utf8");
   const gridSource = readFileSync(resolve("components/home/story-grid.tsx"), "utf8");
   const developingSource = readFileSync(resolve("components/home/developing-stories.tsx"), "utf8");
   const headerSource = readFileSync(resolve("components/public/public-header.tsx"), "utf8");
+  const globalStyles = readFileSync(resolve("app/globals.css"), "utf8");
 
   assert.match(pageSource, /PublicHeader/);
   assert.match(pageSource, /cw-home-feature-media/);
   assert.match(pageSource, /cw-grid--public/);
+  assert.match(pageSource, /cw-platform-grid/);
+  assert.match(headerSource, /cw-signal-chip/);
   assert.match(headerSource, /cw-public-header-bar/);
   assert.match(headerSource, /cw-public-section-nav/);
+  assert.match(headerSource, /cw-top-signal-bar/);
+  assert.match(headerSource, /cw-platform-nav-cluster/);
   assert.match(headerSource, /CoreWire/);
   assert.match(headerSource, /Newsletter/);
+  assert.match(heroSource, /cw-platform-hero/);
+  assert.match(heroSource, /cw-platform-hero-body/);
+  assert.match(heroSource, /cw-hero-actions/);
+  assert.match(heroSource, /Signal brief/i);
   assert.match(heroSource, /cw-home-hero-media/);
   assert.match(heroSource, /href=\{`\/articles\/\$\{story\.slug\}`\}/);
   assert.match(heroSource, /Read full report/i);
+  assert.match(gridSource, /cw-module-card/);
   assert.match(gridSource, /cw-story-card-media/);
   assert.match(gridSource, /href=\{`\/articles\/\$\{story\.slug\}`\}/);
+  assert.match(railSource, /cw-live-desk/);
+  assert.match(railSource, /cw-signal-feed/);
   assert.match(railSource, /cw-rail-stack/);
   assert.match(railSource, /href=\{`\/articles\/\$\{entry\.slug\}`\}/);
+  assert.match(developingSource, /cw-module-stack/);
   assert.match(developingSource, /href=\{`\/articles\/\$\{story\.slug\}`\}/);
+  assert.match(globalStyles, /\.cw-platform-grid/);
+  assert.match(globalStyles, /\.cw-top-signal-bar/);
+  assert.match(globalStyles, /\.cw-hero-actions/);
+  assert.match(globalStyles, /\.cw-signal-feed/);
 });

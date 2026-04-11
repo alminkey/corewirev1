@@ -15,7 +15,7 @@ export function ProgrammingControls({
   return (
     <section
       id="programming-controls"
-      className="admin-shell__panel admin-shell__panel--wide cw-panel"
+      className="admin-shell__panel admin-shell__panel--wide cw-panel cw-workspace-module"
     >
       <p className="admin-shell__eyebrow">Programming</p>
       <h2>Programming Controls</h2>
@@ -27,7 +27,7 @@ export function ProgrammingControls({
         <input type="hidden" name="window-count" value={scheduleWindows.length} />
 
         <div className="admin-shell__grid">
-          <article className="admin-shell__panel">
+          <article className="admin-shell__panel cw-workspace-module">
             <h3>Topic Targets</h3>
             <ul className="story-list">
               {topics.map((topic, index) => (
@@ -50,7 +50,7 @@ export function ProgrammingControls({
               ))}
             </ul>
           </article>
-          <article className="admin-shell__panel">
+          <article className="admin-shell__panel cw-workspace-module">
             <h3>Generation Intervals</h3>
             <ul className="story-list">
               {intervals.map((interval, index) => (
@@ -82,7 +82,7 @@ export function ProgrammingControls({
               ))}
             </ul>
           </article>
-          <article className="admin-shell__panel">
+          <article className="admin-shell__panel cw-workspace-module">
             <h3>Schedule Windows</h3>
             <ul className="story-list">
               {scheduleWindows.map((window, index) => (

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-test("renders article page with shared public header and editorial sections", () => {
+test("renders article page as a platform reading surface", () => {
   const pageSource = readFileSync(resolve("app/articles/[slug]/page.tsx"), "utf8");
   const bodySource = readFileSync(resolve("components/article/article-body.tsx"), "utf8");
   const factsSource = readFileSync(resolve("components/article/facts-section.tsx"), "utf8");
@@ -17,23 +17,36 @@ test("renders article page with shared public header and editorial sections", ()
   assert.match(pageSource, /PublicHeader/);
   assert.match(pageSource, /cw-editorial-shell/);
   assert.match(pageSource, /cw-surface/);
+  assert.match(pageSource, /cw-reading-surface/);
   assert.match(pageSource, /cw-article-shell--light/);
   assert.match(pageSource, /cw-article-layout/);
+  assert.match(pageSource, /cw-insight-grid/);
   assert.match(pageSource, /ArticleBody/);
   assert.match(pageSource, /FactsSection/);
   assert.match(pageSource, /AnalysisSection/);
   assert.match(pageSource, /SourcesSection/);
   assert.match(bodySource, /fullArticle/);
+  assert.match(bodySource, /cw-module-card/);
+  assert.match(bodySource, /cw-prose-shell/);
   assert.match(bodySource, /cw-article-prose/);
   assert.match(bodySource, /split\(\/\\n\\n\+\/\)/);
   assert.match(factsSource, /What is Verified/i);
+  assert.match(factsSource, /cw-insight-module/);
   assert.match(analysisSource, /Analysis/i);
+  assert.match(analysisSource, /cw-insight-module/);
   assert.match(sourcesSource, /Sources/i);
+  assert.match(sourcesSource, /cw-source-module/);
   assert.match(headerSource, /Investigative report/i);
+  assert.match(headerSource, /cw-signal-chip/);
+  assert.match(headerSource, /cw-reading-header/);
   assert.match(headerSource, /cw-article-header-intro/);
   const globalStyles = readFileSync(resolve("app/globals.css"), "utf8");
   assert.match(globalStyles, /\.cw-editorial-shell/);
   assert.match(globalStyles, /\.cw-surface/);
+  assert.match(globalStyles, /\.cw-reading-surface/);
+  assert.match(globalStyles, /\.cw-reading-header/);
+  assert.match(globalStyles, /\.cw-prose-shell/);
+  assert.match(globalStyles, /\.cw-insight-grid/);
   assert.match(globalStyles, /\.cw-article-layout/);
   assert.match(globalStyles, /\.cw-article-prose/);
 });

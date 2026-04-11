@@ -14,7 +14,7 @@ export function AutonomyControls({
   pausePublish,
 }: AutonomyControlsProps) {
   return (
-    <section className="admin-shell__panel">
+    <section className="admin-shell__panel cw-workspace-module">
       <p className="admin-shell__eyebrow">Autonomy Controls</p>
       <h2>Publishing policy</h2>
       <ul>
