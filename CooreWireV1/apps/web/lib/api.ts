@@ -1,5 +1,6 @@
 import type {
   AdminContentPayload,
+  AdminDraftDetail,
   AdminOverview,
   ArticleDetail,
   AutonomySettings,
@@ -237,6 +238,28 @@ async function postJsonWithHeaders<T>(
   return (await response.json()) as T;
 }
 
+async function patchJsonWithHeaders<T>(
+  path: string,
+  body: object,
+  headers: Record<string, string>,
+): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "PATCH",
+    cache: "no-store",
+    headers: {
+      "content-type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return (await response.json()) as T;
+}
+
 export async function getHomepage(): Promise<HomepagePayload> {
   return fetchJson("/articles", homepageFallback);
 }
@@ -276,6 +299,10 @@ export async function getAdminContent(): Promise<AdminContentPayload> {
   return fetchJsonWithHeaders("/admin/content", adminContentFallback, ownerHeaders());
 }
 
+export async function getAdminDraft(id: string): Promise<AdminDraftDetail | null> {
+  return fetchJsonWithHeaders(`/admin/content/drafts/${id}`, null, ownerHeaders());
+}
+
 export async function getProgrammingSettings(): Promise<ProgrammingSettings> {
   return fetchJsonWithHeaders(
     "/admin/settings/programming",
@@ -293,6 +320,37 @@ export async function getReviewDetail(id: string): Promise<ReviewDetail> {
     },
     ownerHeaders(),
   );
+}
+
+export async function createAdminDraft(payload: {
+  headline: string;
+  dek: string;
+  body: string;
+  slug: string;
+  tags: string[];
+}): Promise<AdminDraftDetail> {
+  return postJsonWithHeaders("/admin/content/drafts", payload, ownerHeaders());
+}
+
+export async function updateAdminDraft(
+  id: string,
+  payload: {
+    headline: string;
+    dek: string;
+    body: string;
+    slug: string;
+    tags: string[];
+  },
+): Promise<AdminDraftDetail> {
+  return patchJsonWithHeaders(`/admin/content/drafts/${id}`, payload, ownerHeaders());
+}
+
+export async function publishAdminDraft(id: string): Promise<AdminDraftDetail> {
+  return postJsonWithHeaders(`/admin/content/drafts/${id}/publish`, {}, ownerHeaders());
+}
+
+export async function archiveAdminDraft(id: string): Promise<AdminDraftDetail> {
+  return postJsonWithHeaders(`/admin/content/drafts/${id}/archive`, {}, ownerHeaders());
 }
 
 export async function postReviewDecision(
