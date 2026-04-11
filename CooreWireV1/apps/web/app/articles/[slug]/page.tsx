@@ -35,7 +35,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <main className="cw-shell cw-article-shell cw-article-shell--light cw-shell--light cw-editorial-shell cw-surface">
       <PublicHeader />
-      <article className="cw-article cw-article--light">
+      <article className="cw-article cw-article--light cw-article-layout">
         <ArticleJsonLd article={article} />
         <ArticleHeader
           article={{

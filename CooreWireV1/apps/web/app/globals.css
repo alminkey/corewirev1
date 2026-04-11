@@ -1057,15 +1057,38 @@ button:hover {
 
 .cw-article-shell--light .cw-article {
   gap: 18px;
+  max-width: 1080px;
 }
 
 .cw-article-header--light .cw-panel-header {
   color: #8a493e;
 }
 
+.cw-article-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cw-article-header-intro {
+  padding: 28px;
+}
+
 .cw-article-header--light h1 {
   font-size: clamp(2.7rem, 5vw, 4.8rem);
-  line-height: 0.95;
+  line-height: 0.98;
+  max-width: 12ch;
+}
+
+.cw-article-prose {
+  max-width: 760px;
+}
+
+.cw-article-prose .cw-article-body-paragraph {
+  font-family: var(--cw-serif);
+  font-size: 1.16rem;
+  line-height: 1.9;
+  color: #2f251f;
 }
 
 .cw-article-shell--light .cw-article-header,
