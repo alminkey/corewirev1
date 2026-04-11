@@ -18,6 +18,7 @@ export function AdminShell({
           <span />
         </div>
         <div>
+          <div className="cw-signal-chip">Live system</div>
           <p className="admin-shell__eyebrow">Owner Workspace</p>
           <h1>CoreWire command center built for daily operation.</h1>
           <p>

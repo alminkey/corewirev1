@@ -8,7 +8,7 @@
 
 export function DevelopingStories({ stories }: DevelopingStoriesProps) {
   return (
-    <section className="cw-panel cw-panel--light">
+    <section className="cw-panel cw-panel--light cw-module-stack">
       <div className="cw-panel-header">
         <span>Developing Stories</span>
         <span>Low Confidence</span>

@@ -17,6 +17,7 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
         <span>{article.status}</span>
       </div>
       <div className="cw-article-header-body cw-article-header-intro">
+        <div className="cw-signal-chip">Flagship</div>
         <p className="cw-kicker">CoreWire flagship analysis</p>
         <h1>{article.headline}</h1>
         <p className="article-dek">{article.dek}</p>

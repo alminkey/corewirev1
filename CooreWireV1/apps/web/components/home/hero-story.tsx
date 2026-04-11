@@ -14,10 +14,10 @@ const heroImage =
 
 export function HeroStory({ story }: HeroStoryProps) {
   return (
-    <section className="cw-panel cw-hero cw-hero--light">
+    <section className="cw-panel cw-hero cw-hero--light cw-platform-hero">
       <a className="cw-hero-link" href={`/articles/${story.slug}`}>
         <div className="cw-home-hero-media" style={{ backgroundImage: `url(${heroImage})` }} />
-        <div className="cw-hero-body">
+        <div className="cw-hero-body cw-platform-hero-body">
           <p className="cw-tag">Lead Analysis</p>
           <h2>{story.headline}</h2>
           <p className="cw-summary">{story.dek}</p>
@@ -26,7 +26,10 @@ export function HeroStory({ story }: HeroStoryProps) {
             <span>Confidence: {story.confidence}</span>
             <span>Status: {story.status}</span>
           </div>
-          <span className="cw-hero-cta">Read full report</span>
+          <div className="cw-hero-actions">
+            <span className="cw-hero-cta">Read full report</span>
+            <span className="cw-hero-cta cw-hero-cta--ghost">Signal brief</span>
+          </div>
         </div>
       </a>
     </section>

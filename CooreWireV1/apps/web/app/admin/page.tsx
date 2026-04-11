@@ -46,7 +46,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const publishMode = overview.autonomy?.mode ?? overview.publish_mode;
   const systemHealth = overview.health?.system ?? overview.system_health;
   return (
-    <main className="cw-shell cw-shell--admin cw-shell--light cw-app-shell cw-surface">
+    <main className="cw-shell cw-shell--admin cw-shell--light cw-app-shell cw-surface cw-control-plane">
       <div className="cw-overlay" />
       <div className="cw-admin-layout">
         <aside className="cw-admin-sidebar">
