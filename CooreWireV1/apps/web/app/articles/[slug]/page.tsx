@@ -33,7 +33,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
 
   return (
-    <main className="cw-shell cw-article-shell cw-article-shell--light">
+    <main className="cw-shell cw-article-shell cw-article-shell--light cw-shell--light cw-editorial-shell cw-surface">
       <PublicHeader />
       <article className="cw-article cw-article--light">
         <ArticleJsonLd article={article} />

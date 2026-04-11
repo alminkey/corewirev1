@@ -1,18 +1,23 @@
 :root {
-  --cw-bg: #04070c;
-  --cw-bg-deep: #020407;
-  --cw-panel: rgba(10, 16, 24, 0.9);
-  --cw-panel-strong: rgba(8, 12, 18, 0.98);
-  --cw-panel-soft: rgba(255, 255, 255, 0.04);
-  --cw-border: rgba(111, 153, 196, 0.18);
-  --cw-border-strong: rgba(255, 138, 102, 0.28);
-  --cw-text: #dce5ef;
-  --cw-muted: #8291a5;
-  --cw-accent: #ff8a66;
-  --cw-accent-strong: #ff5c26;
-  --cw-cyan: #75d5ff;
-  --cw-glow: rgba(117, 213, 255, 0.18);
-  --cw-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --cw-bg: #f6f0e7;
+  --cw-bg-deep: #efe7dd;
+  --cw-panel: rgba(255, 252, 247, 0.92);
+  --cw-panel-strong: rgba(255, 250, 244, 0.98);
+  --cw-panel-soft: rgba(117, 84, 58, 0.045);
+  --cw-border: rgba(122, 86, 64, 0.14);
+  --cw-border-strong: rgba(161, 94, 56, 0.24);
+  --cw-text: #201814;
+  --cw-muted: #6a594e;
+  --cw-accent: #a35f38;
+  --cw-accent-strong: #7f4422;
+  --cw-cyan: #8b563a;
+  --cw-glow: rgba(163, 95, 56, 0.1);
+  --cw-shadow: 0 24px 48px rgba(49, 35, 24, 0.08);
+  --cw-paper: #fffaf4;
+  --cw-ink: #231a15;
+  --cw-ui: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  --cw-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --cw-transition: 180ms ease;
 }
 
 * {
@@ -24,14 +29,11 @@ body {
   margin: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, rgba(117, 213, 255, 0.12), transparent 26%),
-    radial-gradient(circle at left center, rgba(255, 138, 102, 0.1), transparent 28%),
-    linear-gradient(rgba(117, 213, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(117, 213, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at top right, rgba(163, 95, 56, 0.08), transparent 28%),
+    radial-gradient(circle at left center, rgba(181, 145, 112, 0.08), transparent 32%),
     linear-gradient(180deg, var(--cw-bg), var(--cw-bg-deep));
-  background-size: auto, auto, 48px 48px, 48px 48px, auto;
   color: var(--cw-text);
-  font-family: "JetBrains Mono", "IBM Plex Mono", "Courier New", monospace;
+  font-family: var(--cw-ui);
 }
 
 body {
@@ -43,14 +45,27 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255, 138, 102, 0.08), transparent 40%, rgba(117, 213, 255, 0.06));
-  mix-blend-mode: screen;
-  opacity: 0.45;
+  background: linear-gradient(135deg, rgba(163, 95, 56, 0.05), transparent 40%, rgba(181, 145, 112, 0.05));
+  mix-blend-mode: multiply;
+  opacity: 0.7;
 }
 
 .cw-shell {
   position: relative;
   padding: 24px;
+}
+
+.cw-shell--light {
+  color: var(--cw-text);
+}
+
+.cw-surface {
+  position: relative;
+}
+
+.cw-app-shell,
+.cw-editorial-shell {
+  isolation: isolate;
 }
 
 .cw-shell--admin,
@@ -63,11 +78,11 @@ body {
   pointer-events: none;
   position: fixed;
   inset: 0;
-  opacity: 0.18;
+  opacity: 0.2;
   background:
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.18) 50%),
-    linear-gradient(90deg, rgba(255, 138, 102, 0.05), rgba(117, 213, 255, 0.03), rgba(255, 138, 102, 0.05));
-  background-size: 100% 2px, 4px 100%;
+    linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(92, 70, 50, 0.025) 50%),
+    linear-gradient(90deg, rgba(163, 95, 56, 0.025), rgba(181, 145, 112, 0.015), rgba(163, 95, 56, 0.025));
+  background-size: 100% 3px, 100% 100%;
 }
 
 .cw-topbar,
@@ -88,10 +103,14 @@ body {
 .article-layout {
   border: 1px solid var(--cw-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.2)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 248, 240, 0.9)),
     var(--cw-panel);
-  box-shadow: var(--cw-shadow), inset 0 0 18px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(10px);
+  box-shadow: var(--cw-shadow);
+  backdrop-filter: blur(8px);
+  transition:
+    transform var(--cw-transition),
+    box-shadow var(--cw-transition),
+    border-color var(--cw-transition);
 }
 
 .cw-topbar {
@@ -155,7 +174,8 @@ body {
 .article-layout h1,
 .admin-shell__hero h1 {
   margin: 0;
-  color: #f3f7fb;
+  color: var(--cw-ink);
+  font-family: var(--cw-serif);
 }
 
 .cw-topbar-note,

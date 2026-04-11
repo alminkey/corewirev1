@@ -15,6 +15,8 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(pageSource, /getAdminDraft/);
   assert.match(pageSource, /searchParams/);
   assert.match(pageSource, /getProgrammingSettings/);
+  assert.match(pageSource, /cw-app-shell/);
+  assert.match(pageSource, /cw-surface/);
   assert.match(pageSource, /Published Articles/i);
   assert.match(pageSource, /System Overview/i);
   assert.match(pageSource, /Published Status/i);
@@ -34,6 +36,9 @@ test("renders owner admin shell with control and review sections", () => {
   assert.match(shellSource, /admin-shell__signal/);
   assert.match(shellSource, /Review Queue/i);
   assert.match(shellSource, /System Health/i);
+  assert.match(globalStyles, /\.cw-app-shell/);
+  assert.match(globalStyles, /\.cw-surface/);
+  assert.match(globalStyles, /\.cw-shell--light/);
   assert.match(globalStyles, /\.admin-shell__panel-header/);
   assert.match(globalStyles, /\.admin-editor\s*\{/);
   assert.match(globalStyles, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);

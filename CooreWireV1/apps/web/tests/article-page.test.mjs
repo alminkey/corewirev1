@@ -15,6 +15,8 @@ test("renders article page with shared public header and editorial sections", ()
   const headerSource = readFileSync(resolve("components/article/article-header.tsx"), "utf8");
 
   assert.match(pageSource, /PublicHeader/);
+  assert.match(pageSource, /cw-editorial-shell/);
+  assert.match(pageSource, /cw-surface/);
   assert.match(pageSource, /cw-article-shell--light/);
   assert.match(pageSource, /ArticleBody/);
   assert.match(pageSource, /FactsSection/);
@@ -26,6 +28,9 @@ test("renders article page with shared public header and editorial sections", ()
   assert.match(analysisSource, /Analysis/i);
   assert.match(sourcesSource, /Sources/i);
   assert.match(headerSource, /Investigative report/i);
+  const globalStyles = readFileSync(resolve("app/globals.css"), "utf8");
+  assert.match(globalStyles, /\.cw-editorial-shell/);
+  assert.match(globalStyles, /\.cw-surface/);
 });
 
 test("renders article sources as structured links instead of raw strings", () => {
