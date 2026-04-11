@@ -1,17 +1,20 @@
 export function PublicHeader() {
   return (
-    <header className="cw-public-header">
-      <div className="cw-public-meta cw-top-signal-bar">
+    <header className="cw-public-header cw-minimal-topbar">
+      <div className="cw-public-meta">
         <span>Friday, Apr 11, 2026</span>
         <span>Global dispatch edition</span>
       </div>
-      <div className="cw-public-bar cw-public-header-bar">
-        <a className="cw-public-logo" href="/">
-          CoreWire
-        </a>
-        <div className="cw-platform-nav-cluster">
+      <div className="cw-public-bar">
+        <div className="cw-brand-cluster">
+          <a className="cw-public-logo" href="/">
+            CoreWire
+          </a>
+          <p className="cw-public-tagline">Global analysis, staged with intent.</p>
+        </div>
+        <div className="cw-primary-nav">
           <div className="cw-signal-chip">Signal edition</div>
-          <nav className="cw-public-nav cw-public-section-nav" aria-label="Primary">
+          <nav className="cw-public-nav" aria-label="Primary">
             <a href="/">Front Page</a>
             <a href="/">World</a>
             <a href="/">Security</a>

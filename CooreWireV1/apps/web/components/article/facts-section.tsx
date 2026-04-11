@@ -4,7 +4,7 @@ type FactsSectionProps = {
 
 export function FactsSection({ blocks }: FactsSectionProps) {
   return (
-    <section className="cw-panel cw-insight-module">
+    <section className="cw-support-module">
       <div className="cw-panel-header">
         <span>What is Verified</span>
         <span>Facts</span>

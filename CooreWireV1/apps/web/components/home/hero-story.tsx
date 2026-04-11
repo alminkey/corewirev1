@@ -14,21 +14,25 @@ const heroImage =
 
 export function HeroStory({ story }: HeroStoryProps) {
   return (
-    <section className="cw-panel cw-hero cw-hero--light cw-platform-hero">
-      <a className="cw-hero-link" href={`/articles/${story.slug}`}>
-        <div className="cw-home-hero-media" style={{ backgroundImage: `url(${heroImage})` }} />
-        <div className="cw-hero-body cw-platform-hero-body">
-          <p className="cw-tag">Lead Analysis</p>
-          <h2>{story.headline}</h2>
-          <p className="cw-summary">{story.dek}</p>
-          <div className="cw-meta">
-            <span>Sources: {story.source_count}</span>
-            <span>Confidence: {story.confidence}</span>
-            <span>Status: {story.status}</span>
+    <section className="cw-lead-stage">
+      <a className="cw-lead-frame" href={`/articles/${story.slug}`}>
+        <div className="cw-lead-media" style={{ backgroundImage: `url(${heroImage})` }} />
+        <div className="cw-lead-content">
+          <div className="cw-lead-copy">
+            <p className="cw-kicker">Lead Analysis</p>
+            <h1>{story.headline}</h1>
+            <p className="cw-summary">{story.dek}</p>
           </div>
-          <div className="cw-hero-actions">
-            <span className="cw-hero-cta">Read full report</span>
-            <span className="cw-hero-cta cw-hero-cta--ghost">Signal brief</span>
+          <div className="cw-lead-actions">
+            <div className="cw-meta">
+              <span>Sources: {story.source_count}</span>
+              <span>Confidence: {story.confidence}</span>
+              <span>Status: {story.status}</span>
+            </div>
+            <div className="cw-lead-buttons">
+              <span className="cw-hero-cta">Read full report</span>
+              <span className="cw-hero-cta cw-hero-cta--ghost">Open issue brief</span>
+            </div>
           </div>
         </div>
       </a>
