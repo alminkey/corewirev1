@@ -33,9 +33,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
 
   return (
-    <main className="cw-shell cw-article-shell cw-feature-reading">
+    <main className="cw-shell cw-article-shell cw-public-dw-zdf cw-feature-reading">
       <PublicHeader />
-      <article className="cw-article cw-reading-stage">
+      <article className="cw-article cw-article-reading-shell">
         <ArticleJsonLd article={article} />
         <ArticleHeader
           article={{
@@ -47,16 +47,20 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             updatedAt: article.updated_at,
           }}
         />
-        <AdSlot placement="article-upper" />
-        <ArticleBody fullArticle={article.full_article} />
-        <section className="cw-reading-column">
-          <FactsSection blocks={article.facts} />
-          <AnalysisSection blocks={article.analysis} />
-          <DisagreementSection items={article.disagreements} />
-          <SourcesSection citations={article.sources} />
-        </section>
-        <NewsletterSignupCard />
-        <AdSlot placement="article-lower" />
+        <div className="cw-context-column">
+          <div className="cw-reading-main">
+            <AdSlot placement="article-upper" />
+            <ArticleBody fullArticle={article.full_article} />
+            <NewsletterSignupCard />
+            <AdSlot placement="article-lower" />
+          </div>
+          <section className="cw-support-zone">
+            <FactsSection blocks={article.facts} />
+            <AnalysisSection blocks={article.analysis} />
+            <DisagreementSection items={article.disagreements} />
+            <SourcesSection citations={article.sources} />
+          </section>
+        </div>
       </article>
     </main>
   );

@@ -15,16 +15,16 @@ const storyImages = [
 
 export function StoryGrid({ stories }: StoryGridProps) {
   return (
-    <section className="cw-support-strip">
+    <section className="cw-top-band">
       {stories.map((story, index) => (
-        <article className="cw-support-card" key={story.slug}>
+        <article className="cw-top-band-card" key={`${story.slug}-${index}`}>
           <a className="cw-card-link" href={`/articles/${story.slug}`}>
             <div
               className="cw-story-card-media"
               style={{ backgroundImage: `url(${storyImages[index % storyImages.length]})` }}
             />
             <div className="cw-card-body">
-              <p className="cw-kicker">Support {index + 1}</p>
+              <p className="cw-kicker">Top Story {index + 1}</p>
               <h3>{story.headline}</h3>
               <p>{story.dek}</p>
             </div>

@@ -13,8 +13,8 @@ export function ArticleBody({ fullArticle }: ArticleBodyProps) {
   }
 
   return (
-    <section className="cw-reading-column cw-body-flow">
-      <div className="cw-article-prose">
+    <section className="cw-article-reading-shell">
+      <div className="cw-body-copy">
         {paragraphs.map((paragraph, index) => (
           <p className="cw-article-body-paragraph" key={`article-body-${index}`}>
             {paragraph}

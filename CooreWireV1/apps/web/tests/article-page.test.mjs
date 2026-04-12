@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-test("renders article page as a clean-slate premium feature surface", () => {
+test("renders article page as a DW/ZDF-style active reading shell", () => {
   const pageSource = readFileSync(resolve("app/articles/[slug]/page.tsx"), "utf8");
   const bodySource = readFileSync(resolve("components/article/article-body.tsx"), "utf8");
   const factsSource = readFileSync(resolve("components/article/facts-section.tsx"), "utf8");
@@ -15,32 +15,31 @@ test("renders article page as a clean-slate premium feature surface", () => {
   const headerSource = readFileSync(resolve("components/article/article-header.tsx"), "utf8");
 
   assert.match(pageSource, /PublicHeader/);
-  assert.match(pageSource, /cw-feature-reading/);
-  assert.match(pageSource, /cw-reading-stage/);
-  assert.match(pageSource, /cw-reading-column/);
+  assert.match(pageSource, /cw-article-reading-shell/);
+  assert.match(pageSource, /cw-context-column/);
+  assert.match(pageSource, /cw-support-zone/);
   assert.match(pageSource, /ArticleBody/);
   assert.match(pageSource, /FactsSection/);
   assert.match(pageSource, /AnalysisSection/);
   assert.match(pageSource, /SourcesSection/);
   assert.match(bodySource, /fullArticle/);
-  assert.match(bodySource, /cw-reading-column/);
-  assert.match(bodySource, /cw-body-flow/);
+  assert.match(bodySource, /cw-article-reading-shell/);
+  assert.match(bodySource, /cw-body-copy/);
   assert.match(bodySource, /split\(\/\\n\\n\+\/\)/);
   assert.match(factsSource, /What is Verified/i);
-  assert.match(factsSource, /cw-support-module/);
+  assert.match(factsSource, /cw-support-zone/);
   assert.match(analysisSource, /Analysis/i);
-  assert.match(analysisSource, /cw-support-module/);
+  assert.match(analysisSource, /cw-support-zone/);
   assert.match(sourcesSource, /Sources/i);
-  assert.match(sourcesSource, /cw-support-module/);
+  assert.match(sourcesSource, /cw-support-zone/);
   assert.match(headerSource, /Investigative report/i);
-  assert.match(headerSource, /cw-signal-chip/);
-  assert.match(headerSource, /cw-article-stage/);
-  assert.match(headerSource, /cw-stage-copy/);
+  assert.match(headerSource, /cw-article-hero-frame/);
+  assert.match(headerSource, /cw-hero-copy/);
   const globalStyles = readFileSync(resolve("app/globals.css"), "utf8");
-  assert.match(globalStyles, /\.cw-feature-reading/);
-  assert.match(globalStyles, /\.cw-reading-stage/);
-  assert.match(globalStyles, /\.cw-reading-column/);
-  assert.match(globalStyles, /\.cw-support-module/);
+  assert.match(globalStyles, /\.cw-article-hero-frame/);
+  assert.match(globalStyles, /\.cw-article-reading-shell/);
+  assert.match(globalStyles, /\.cw-context-column/);
+  assert.match(globalStyles, /\.cw-support-zone/);
 });
 
 test("renders article sources as structured links instead of raw strings", () => {

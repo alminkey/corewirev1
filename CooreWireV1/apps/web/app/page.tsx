@@ -22,44 +22,50 @@ export default async function HomePage() {
   ];
 
   return (
-    <main className="cw-shell cw-shell--home cw-shell--light cw-editorial-shell cw-surface cw-public-luxury">
+    <main className="cw-shell cw-shell--home cw-shell--light cw-editorial-shell cw-surface cw-public-dw-zdf">
       <PublicHeader />
-      <section className="cw-lead-stage">
-        <HeroStory story={homepage.lead_story} />
-      </section>
-      <section className="cw-support-strip">
-        <StoryGrid stories={homepage.top_stories} />
-      </section>
-      <section className="cw-feature-band">
-        <section className="cw-home-feature-media cw-feature-module">
-          <div className="cw-feature-copy">
-            <p className="cw-kicker">Visual explainer</p>
-            <h2>Watch the strategic map behind today&apos;s lead story.</h2>
-            <p>
-              A short-form briefing surface for timelines, routes, actors, and the stakes that sit
-              behind the day&apos;s main analysis.
-            </p>
-          </div>
-          <div className="cw-home-feature-media__frame">
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/ysz5S6PUM-U?rel=0"
-              title="CoreWire feature video"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-          </div>
+      <section className="cw-homepage-shell">
+        <section className="cw-homepage-top cw-dw-lead-cluster">
+          <HeroStory story={homepage.lead_story} />
+          <section className="cw-latest-desk">
+            <IntelligenceRail entries={feedEntries} />
+          </section>
         </section>
-      </section>
-      <section className="cw-curated-feed">
-        <div className="cw-main">
-          <DevelopingStories stories={homepage.developing_stories} />
-          <NewsletterSignupCard />
-          <AdSlot placement="homepage-feed" />
-          <AdSlot placement="homepage-lower" />
+        <section className="cw-top-band">
+          <StoryGrid stories={homepage.top_stories} />
+        </section>
+        <section className="cw-analysis-zone">
+          <section className="cw-home-feature-media cw-feature-module">
+            <div className="cw-feature-copy">
+              <p className="cw-kicker">Analysis Zone</p>
+              <h2>Context, briefings, and visual explainers built around the lead file.</h2>
+              <p>
+                A heavier homepage rhythm for the active desk: explainers, strategic maps, and
+                short-form issue packaging that makes the front page feel current.
+              </p>
+            </div>
+            <div className="cw-home-feature-media__frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/ysz5S6PUM-U?rel=0"
+                title="CoreWire feature video"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </section>
+        </section>
+        <div className="cw-homepage-bottom">
+          <section className="cw-current-feed">
+            <DevelopingStories stories={homepage.developing_stories} />
+          </section>
+          <div className="cw-homepage-extras">
+            <NewsletterSignupCard />
+            <AdSlot placement="homepage-feed" />
+            <AdSlot placement="homepage-lower" />
+          </div>
         </div>
-        <IntelligenceRail entries={feedEntries} />
       </section>
     </main>
   );
