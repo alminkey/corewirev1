@@ -2747,3 +2747,102 @@ body {
     font-size: clamp(2.8rem, 11vw, 4.3rem);
   }
 }
+
+.cw-public-dw-zdf .cw-article-reading-shell {
+  max-width: 1400px;
+  margin: 0 auto 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cw-article-hero-frame {
+  display: flex;
+  align-items: flex-end;
+  min-height: 460px;
+  padding: 28px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(25, 17, 12, 0.14), rgba(25, 17, 12, 0.06)),
+    url("https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1600&q=80") center/cover;
+  box-shadow: 0 30px 80px rgba(70, 46, 30, 0.12);
+}
+
+.cw-hero-copy {
+  max-width: 780px;
+  padding: 28px;
+  border-radius: 22px;
+  background: rgba(255, 250, 244, 0.86);
+  backdrop-filter: blur(8px);
+}
+
+.cw-hero-copy h1 {
+  margin: 0;
+  color: #111;
+  font-family: "Sora", "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(3rem, 4.8vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.07em;
+}
+
+.cw-context-column {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.75fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.cw-reading-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cw-body-copy {
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 22px 50px rgba(70, 46, 30, 0.1);
+  padding: 30px 32px;
+}
+
+.cw-public-dw-zdf .cw-body-copy .cw-article-body-paragraph {
+  color: #2b211a;
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: 1.12rem;
+  line-height: 1.9;
+}
+
+.cw-support-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cw-support-zone .cw-panel-header {
+  color: #87553a;
+  border-bottom: 1px solid rgba(70, 46, 30, 0.08);
+}
+
+.cw-support-zone .cw-article-section {
+  padding: 20px 22px 22px;
+}
+
+.cw-support-zone .cw-fact-block,
+.cw-support-zone .cw-analysis-block,
+.cw-support-zone .cw-disagreement-block,
+.cw-support-zone.cw-source-module {
+  border-radius: 18px;
+  background: #fffaf5;
+  box-shadow: 0 18px 40px rgba(70, 46, 30, 0.08);
+  border: 1px solid rgba(70, 46, 30, 0.08);
+}
+
+.cw-support-zone.cw-source-module .cw-article-section {
+  padding-top: 16px;
+}
+
+@media (max-width: 1100px) {
+  .cw-context-column {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,7 +6,7 @@ type SourcesSectionProps = {
 
 export function SourcesSection({ citations }: SourcesSectionProps) {
   return (
-    <section className="cw-support-module cw-source-module">
+    <section className="cw-support-zone cw-source-module">
       <div className="cw-panel-header">
         <span>Sources</span>
         <span>Outbound Links</span>
